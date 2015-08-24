@@ -5,6 +5,8 @@ Bundler.require
 
 require 'yaml'
 
+require_relative 'watcher'
+
 config = YAML.load(File.open("config.yml"))
 
 bot = Cinch::Bot.new do
@@ -46,4 +48,5 @@ bot = Cinch::Bot.new do
   end
 end
 
+Thread.new { Plugins::DCTV::Watcher.new(bot).start }
 bot.start
