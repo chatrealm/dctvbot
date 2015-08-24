@@ -1,0 +1,10 @@
+server:
+  host: chat.freenode.net
+  port: 6667
+bot:
+  nick: mynick
+  user: somename
+  realname: Fake Name
+  password: password
+  channels:
+    - "#chat"
