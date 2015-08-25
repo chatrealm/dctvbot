@@ -2,7 +2,6 @@
 
 require 'bundler/setup'
 Bundler.require
-
 require 'yaml'
 
 require_relative 'watcher'
