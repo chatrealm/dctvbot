@@ -7,7 +7,7 @@ class Watcher
 
   def start
     while true
-      @bot.handlers.dispatch :handler
+      @bot.handlers.dispatch :check_dctv
       sleep 10
     end
   end
