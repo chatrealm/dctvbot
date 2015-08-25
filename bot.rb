@@ -49,5 +49,5 @@ bot = Cinch::Bot.new do
   end
 end
 
-Thread.new { Plugins::DCTV::Watcher.new(bot).start }
+Thread.new { Watcher.new(bot).start }
 bot.start
