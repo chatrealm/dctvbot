@@ -32,6 +32,13 @@ module Plugins
         still_soon = false
         still_soon = true if current_channels.any? { |channel| soon_ch['streamid'] == channel['streamid'] && is_upcoming(channel) }
         @soon_channels.delete soon_ch unless still_soon
+      current_channels.each do |channel|
+        next if (@live_channels + @soon_channels).include?(channel)
+        @live_channels << channel if is_live channel
+        @soon_channels << channel if is_upcoming channel
+        msg = announce_message channel
+        Channel(@bot.channels[0]).send msg
+        end
       end
 
       channels.each do |channel|
@@ -51,6 +58,17 @@ module Plugins
         return JSON.parse(response.body)['assignedchannels']
       end
 
+      def announce_message(channel)
+        if is_live channel
+          status = Format :white, :red, " LIVE "
+        else
+          status = Format :black, :yellow, " UP NEXT "
+        end
+        msg = "#{status} #{channel['friendlyalias']}"
+        msg += " - #{channel['twitch_yt_description']}" unless channel['twitch_yt_description'].empty?
+        msg += " - #{channel['urltoplayer']}"
+        return msg
+      end
       def is_live(channel)
         return channel['nowonline'] == 'yes' && !channel['yt_upcoming']
       end
