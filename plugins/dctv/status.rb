@@ -10,7 +10,7 @@ module Plugins
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      match /now\s?\-{0,2}(v?)(?:erbose)?/, method: :now
+      match /now\s?\-?(v?)/, method: :now
       def now(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
         response = Net::HTTP.get_response(URI.parse('http://diamondclub.tv/api/channelsv2.php'))
@@ -21,7 +21,7 @@ module Plugins
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
-      match /next\s?\-{0,2}(v?)(?:erbose)?/, method: :next
+      match /next\s?\-?(v?)/, method: :next
       def next(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
         entries = get_calendar_entries 2
@@ -30,7 +30,7 @@ module Plugins
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
-      match /schedule\s?\-{0,2}(v?)(?:erbose)?/, method: :schedule
+      match /schedule\s?\-?(v?)/, method: :schedule
       def schedule(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
         entries = get_calendar_entries
