@@ -13,6 +13,11 @@ module Plugins
 
       match /secs (.+)/
 
+      def initialize(*args)
+        super
+        @second_screen_list = Array.new
+      end
+
       def execute(m, input)
         if input =~ /^http/ || input == "on" || input == "off" || input == "clear"
           response = HTTParty.get("http://diamondclub.tv/api/secondscreen.php?url=#{input}&pro=4938827&user=#{m.user.nick}")
@@ -22,12 +27,12 @@ module Plugins
         end
 
         if input == "on"
-          @bot.recorded_second_screen_list.clear
+          @second_screen_list.clear
         elsif input == "off"
-          return if @bot.recorded_second_screen_list.empty?
+          return if @second_screen_list.empty?
 
           paste = ""
-          @bot.recorded_second_screen_list.each do |link|
+          @second_screen_list.each do |link|
             paste += "#{link}\n"
           end
 
@@ -39,9 +44,9 @@ module Plugins
           }
           result = Net::HTTP.post_form(url, params)
           m.user.notice "Assembling Pastebin. Result: #{result.body}"
-          @bot.recorded_second_screen_list.clear
+          @second_screen_list.clear
         else
-          @bot.recorded_second_screen_list << input unless input == "clear"
+          @second_screen_list << input unless input == "clear"
         end
       end
     end
