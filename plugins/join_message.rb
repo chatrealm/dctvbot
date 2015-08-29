@@ -14,6 +14,7 @@ module Plugins
 
     listen_to :join
     def listen(m)
+      return unless m.channel == Channel(@bot.channels[0])
       m.user.notice @join_message if @message_active
     end
 
@@ -22,23 +23,23 @@ module Plugins
       return unless authenticated?(m)
       reply = "Join message is"
       case input
-      when"off"
+      when 'off'
         if @message_active
           @message_active = false
           reply += " now off"
         else
           reply += " already off"
         end
-      when"on"
+      when 'on'
         if @message_active
           reply += " already on"
         else
           @message_active = true
           reply += " now on"
         end
-      when"status"
+      when 'status'
         on_off = @message_active ? "on" : "off"
-        reply += " #{on_off} and set to \"#{@join_message}\""
+        reply += " #{on_off} and set to ''#{@join_message}'"
       else
         @join_message = input
         reply += " changed to: #{@join_message}"
