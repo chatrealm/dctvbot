@@ -91,6 +91,11 @@ module Plugins
         msg += " - #{channel['urltoplayer']}"
         return msg
       end
+
+      def is_official(channel)
+        return channel['channel'] == 1
+      end
+
       def is_live(channel)
         return channel['nowonline'] == 'yes' && !channel['yt_upcoming']
       end
