@@ -9,6 +9,11 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 `!next [-v]` - Display next scheduled show and estimated time until it starts.  
 `!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
 
+## DCTV Second Screen Commands
+**_Restricted to users with voice or higher._**  
+
+`!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
+
 ## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
 
