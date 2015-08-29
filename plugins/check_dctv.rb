@@ -35,10 +35,12 @@ module Plugins
       end
 
       channels.each do |channel|
+
+      (@live_channels + @soon_channels).each do |channel|
         output = "Ch. #{channel['channel']} - #{channel['friendlyalias']}"
-        output += " - Live" if is_live(channel)
-        output += " - Upcoming" if is_upcoming(channel)
-        @bot.log(output)
+        output += " - Live" if is_live channel
+        output += " - Upcoming" if is_upcoming channel
+        @bot.log output
       end
     end
 
