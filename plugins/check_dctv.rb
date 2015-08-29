@@ -45,6 +45,7 @@ module Plugins
 
       current_channels.each do |channel|
         next if (@live_channels + @soon_channels).include?(channel)
+        next if @official_live
         @live_channels << channel if is_live channel
         @soon_channels << channel if is_upcoming channel
         msg = announce_message channel
