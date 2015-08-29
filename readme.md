@@ -30,3 +30,6 @@ Sample live announcement:
 
 ## Cleverbot Integration
 Mentioning dctvbot in chat will trigger a response from [cleverbot.com](https://cleverbot.com) by sending your message to their api.  
+
+## Twitter Integration
+The cleverbot integration extends to twitter for replies to mentions of [@dctvbot](https://twitter.com/dctvbt)  
