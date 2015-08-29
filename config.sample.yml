@@ -8,3 +8,6 @@ bot:
   password: password
   channels:
     - "#chat"
+plugins:
+  second-screen:
+    pastebin-api-key: api-key

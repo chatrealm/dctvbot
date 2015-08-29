@@ -44,6 +44,9 @@ bot = Cinch::Bot.new do
       Cinch::Plugins::Identify => {
         type: :nickserv,
         password: config['bot']['password']
+      },
+      Plugins::DCTV::SecondScreen => {
+        pastebin_api_key: config['plugins']['second-screen']['pastebin-api']
       }
     }
   end
