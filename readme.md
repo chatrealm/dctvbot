@@ -18,6 +18,7 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 **_Restricted to users with voice or higher._**  
 
 `!turn [cleverbot|dctv|all] [on|off]` - Turns the specified set of commands on or off  
+`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets a user notice when they join the channel  
 
 ## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
