@@ -19,7 +19,7 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 `!turn [cleverbot|dctv|all] [on|off]` - Turns the specified set of commands on or off  
 `!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets a user notice when they join the channel  
 
-### Live Announcements
+## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
 
 Sample upcoming announcement:  
@@ -30,5 +30,5 @@ Sample live announcement:
 ## Cleverbot Integration
 Mentioning dctvbot in chat will trigger a response from [cleverbot.com](https://cleverbot.com) by sending your message to their api.  
 
-## Twitter Integration
+**Twitter Integration**  
 The cleverbot integration extends to twitter for replies to mentions of [@dctvbot](https://twitter.com/dctvbt)  
