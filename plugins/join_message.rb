@@ -2,47 +2,48 @@
 
 module Plugins
   class JoinMessage
-    
+
     include Cinch::Plugin
     include Cinch::Extensions::Authentication
 
     def initialize(*args)
       super
-      @current_join_msg = "Welcome to Chatrealm!"
-      @do_msg = false
+      @join_message = "Welcome to Chatrealm!"
+      @message_active = false
     end
 
     listen_to :join
     def listen(m)
-      if @do_msg
-        m.user.notice @current_join_msg
-      end
+      m.user.notice @join_message if @message_active
     end
 
     match /setjoin (.+)/
     def execute(m, input)
       return unless authenticated?(m)
-      if input == "off"
-        if @do_msg
-          @do_msg = false
-          m.user.notice "Join message is now off"
+      reply = "Join message is"
+      case input
+      when"off"
+        if @message_active
+          @message_active = false
+          reply += " now off"
         else
-          m.user.notice "Join message is already off"
+          reply += " already off"
         end
-      elsif input == "on"
-        if @do_msg
-          m.user.notice "Join message is already on"
+      when"on"
+        if @message_active
+          reply += " already on"
         else
-          @do_msg = true
-          m.user.notice "Join message is now on"
+          @message_active = true
+          reply += " now on"
         end
-      elsif input == "status"
-        on_off = @do_msg ? "on" : "off"
-        m.user.notice "Join message is #{on_off} and set to \"#{@current_join_msg}\""
+      when"status"
+        on_off = @message_active ? "on" : "off"
+        reply += " #{on_off} and set to \"#{@join_message}\""
       else
-        @current_join_msg = input
-        m.user.notice "Join message has been changed to: #{@current_join_msg}"
+        @join_message = input
+        reply += " changed to: #{@join_message}"
       end
+      m.user.notice reply
     end
 
   end
