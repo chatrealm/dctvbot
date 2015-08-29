@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/jalada/cleverbot.git
+  revision: 75717384e88739eea1d8b8af8635f9dfa74309ad
+  specs:
+    cleverbot (0.2.0)
+      httparty (>= 0.8.1, < 1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -32,6 +39,7 @@ DEPENDENCIES
   cinch
   cinch-authentication
   cinch-identify
+  cleverbot!
   httparty
   json
   time_sentence
