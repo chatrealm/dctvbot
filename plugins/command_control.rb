@@ -18,22 +18,18 @@ module Plugins
     def execute(m, group, action)
       failed = false
       case action
-      when "on"
-        @turn_off = false
-      when "off"
-        @turn_off = true
+      when "on": turn_off = false
+      when "off": turn_off = true
       else
         failed = true
       end
 
       case group
-      when "cleverbot",
-        @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", @bot.cleverbot_enabled)
-      when "dctv"
-        @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", @bot.dctv_commands_enabled)
+      when "cleverbot": @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", turn_off, @bot.cleverbot_enabled)
+      when "dctv": @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", turn_off, @bot.dctv_commands_enabled)
       when "all"
-        @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", @bot.cleverbot_enabled)
-        @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", @bot.dctv_commands_enabled)
+        @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", turn_off, @bot.cleverbot_enabled)
+        @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", turn_off, @bot.dctv_commands_enabled)
       else
         failed = true
       end
@@ -43,20 +39,12 @@ module Plugins
 
     private
 
-      def toggle_command_set(m, command_set_name, command_boolean_variable)
-        if @turn_off
-          if command_boolean_variable
-            m.user.notice "#{command_set_name} have been disabled"
-          else
-            m.user.notice "#{command_set_name} are already disabled"
-          end
+      def toggle_command_set(m, command_set_name, turn_off, command_boolean_variable)
+        if turn_off
+          command_boolean_variable ? m.user.notice("#{command_set_name} have been disabled") : m.user.notice("#{command_set_name} are already disabled")
           return false
         else
-          if command_boolean_variable
-            m.user.notice "#{command_set_name} are already enabled"
-          else
-            m.user.notice "#{command_set_name} have been enabled"
-          end
+          command_boolean_variable ? m.user.notice("#{command_set_name} are already enabled") : m.user.notice("#{command_set_name} have been enabled")
           return true
         end
       end
