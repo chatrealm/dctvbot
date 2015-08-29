@@ -2,7 +2,7 @@
 
 module Plugins
   class CheckTwitter
-    
+
     include Cinch::Plugin
 
     listen_to :check_twitter
@@ -36,14 +36,10 @@ module Plugins
         end
 
         # Auto follow back girl
-        follower_ids = []
-        @bot.twitter.follower_ids.each do |id|
-          follower_ids.push id
-        end
-        friend_ids = []
-        @bot.twitter.friend_ids.each do |id|
-          friend_ids.push id
-        end
+        follower_ids = Array.new
+        @bot.twitter.follower_ids.each { |id| follower_ids << id }
+        friend_ids = Array.new
+        @bot.twitter.friend_ids.each { |id| friend_ids << id }
         new_followers = follower_ids - friend_ids
         @bot.twitter.follow new_followers if new_followers.any?
       rescue Twitter::Error::TooManyRequests => error
