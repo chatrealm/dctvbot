@@ -16,22 +16,17 @@ module Plugins
     end
 
     def execute(m, group, action)
-      failed = false
-      case action
-      when "on": turn_off = false
-      when "off": turn_off = true
-      else
-        failed = true
-      end
-
+      failed = true unless ["on", "off"].include?(action)
       case group
-      when "cleverbot": @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", turn_off, @bot.cleverbot_enabled)
-      when "dctv": @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", turn_off, @bot.dctv_commands_enabled)
+      when "cleverbot"
+        @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", action, @bot.cleverbot_enabled)
+      when "dctv"
+        @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", action, @bot.dctv_commands_enabled)
       when "all"
-        @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", turn_off, @bot.cleverbot_enabled)
-        @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", turn_off, @bot.dctv_commands_enabled)
+        @bot.cleverbot_enabled = toggle_command_set(m, "Cleverbot interfaces", action, @bot.cleverbot_enabled)
+        @bot.dctv_commands_enabled = toggle_command_set(m, "DCTV commands", action, @bot.dctv_commands_enabled)
       else
-        failed = true
+        @failed = true
       end
 
       m.user.notice "Sorry, I don't know how to turn #{group} #{action}" if failed
@@ -39,7 +34,14 @@ module Plugins
 
     private
 
-      def toggle_command_set(m, command_set_name, turn_off, command_boolean_variable)
+      def toggle_command_set(m, command_set_name, action, command_boolean_variable)
+        case action
+        when "on"
+          turn_off = false
+        when "off"
+          turn_off = true
+        end
+
         if turn_off
           command_boolean_variable ? m.user.notice("#{command_set_name} have been disabled") : m.user.notice("#{command_set_name} are already disabled")
           return false
