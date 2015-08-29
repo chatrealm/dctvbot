@@ -5,6 +5,7 @@ Bundler.require
 require 'yaml'
 
 require_relative 'plugins/dctv/check_dctv'
+require_relative 'plugins/dctv/status'
 require_relative 'watcher'
 
 config = YAML.load(File.open "config.yml")
@@ -28,6 +29,7 @@ bot = Cinch::Bot.new do
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
       Plugins::DCTV::CheckDCTV,
+      Plugins::DCTV::Status
     ]
 
     c.plugins.options = {
@@ -48,6 +50,11 @@ bot = Cinch::Bot.new do
     bot.quit
   end
 end
+
+class << bot
+  attr_accessor :dctv_commands_enabled
+end
+bot.dctv_commands_enabled = true
 
 Thread.new { Watcher.new(bot).start }
 bot.start
