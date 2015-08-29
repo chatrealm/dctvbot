@@ -14,6 +14,11 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 
 `!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
 
+## Bot Control Commands
+**_Restricted to users with voice or higher._**  
+
+`!turn [cleverbot|dctv|all] [on|off]` - Turns the specified set of commands on or off  
+
 ## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
 
