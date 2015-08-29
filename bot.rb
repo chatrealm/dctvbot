@@ -4,12 +4,13 @@ require 'bundler/setup'
 Bundler.require
 require 'yaml'
 
-require_relative 'watcher'
-require_relative 'plugins/command_control'
-require_relative 'plugins/join_message'
 require_relative 'plugins/dctv/check_dctv'
 require_relative 'plugins/dctv/second_screen'
 require_relative 'plugins/dctv/status'
+require_relative 'plugins/clevererbot'
+require_relative 'plugins/command_control'
+require_relative 'plugins/join_message'
+require_relative 'watcher'
 
 config = YAML.load(File.open "config.yml")
 
@@ -31,11 +32,12 @@ bot = Cinch::Bot.new do
 
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
-      Plugins::CommandControl,
-      Plugins::JoinMessage,
       Plugins::DCTV::CheckDCTV,
       Plugins::DCTV::SecondScreen,
-      Plugins::DCTV::Status
+      Plugins::DCTV::Status,
+      Plugins::ClevererBot,
+      Plugins::CommandControl,
+      Plugins::JoinMessage
     ]
 
     c.plugins.options = {

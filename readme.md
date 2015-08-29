@@ -27,3 +27,6 @@ Sample upcoming announcement:
 ![Live Announcement](https://dl.dropboxusercontent.com/u/18589646/dctvbot_announce_soon.png)  
 Sample live announcement:  
 ![Live Announcement](https://dl.dropboxusercontent.com/u/18589646/dctvbot_announce_live.png)  
+
+## Cleverbot Integration
+Mentioning dctvbot in chat will trigger a response from [cleverbot.com](https://cleverbot.com) by sending your message to their api.  
