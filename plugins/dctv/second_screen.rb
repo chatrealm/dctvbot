@@ -4,13 +4,12 @@ require 'net/http'
 
 module Plugins
   module DCTV
-
     class SecondScreen
+
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
       enable_authentication
-
       match /secs (.+)/
 
       def initialize(*args)
@@ -30,12 +29,8 @@ module Plugins
           @second_screen_list.clear
         elsif input == "off"
           return if @second_screen_list.empty?
-
           paste = ""
-          @second_screen_list.each do |link|
-            paste += "#{link}\n"
-          end
-
+          @second_screen_list.each { |link| paste += "#{link}\n" }
           url = URI.parse("http://pastebin.com/api/api_post.php")
           params = {
             "api_dev_key" => config[:pastebin_api_key],
@@ -49,7 +44,7 @@ module Plugins
           @second_screen_list << input unless input == "clear"
         end
       end
+      
     end
-
   end
 end
