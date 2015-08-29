@@ -6,6 +6,7 @@ require 'yaml'
 
 require_relative 'watcher'
 require_relative 'plugins/command_control'
+require_relative 'plugins/join_message'
 require_relative 'plugins/dctv/check_dctv'
 require_relative 'plugins/dctv/second_screen'
 require_relative 'plugins/dctv/status'
@@ -31,6 +32,7 @@ bot = Cinch::Bot.new do
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
       Plugins::CommandControl,
+      Plugins::JoinMessage,
       Plugins::DCTV::CheckDCTV,
       Plugins::DCTV::SecondScreen,
       Plugins::DCTV::Status
