@@ -5,6 +5,7 @@ Bundler.require
 require 'yaml'
 
 require_relative 'plugins/dctv/check_dctv'
+require_relative 'plugins/dctv/second_screen'
 require_relative 'plugins/dctv/status'
 require_relative 'watcher'
 
@@ -29,6 +30,7 @@ bot = Cinch::Bot.new do
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
       Plugins::DCTV::CheckDCTV,
+      Plugins::DCTV::SecondScreen,
       Plugins::DCTV::Status
     ]
 
