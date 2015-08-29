@@ -3,9 +3,9 @@
 A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/cinch)  
 
 ## DCTV Status Commands
-_Voiced and higher users can specify the `v` option to have it show in main chat._  
-  
-`!now [-v]` - Display channels that are currently live via user notice.
+**_Users with voice or higher can specify the `-v` option to have the reply shown in main chat._**  
+
+`!now [-v]` - Display channels that are currently live via user notice.  
 `!next [-v]` - Display next scheduled show and estimated time until it starts.  
 `!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
 
