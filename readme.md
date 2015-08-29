@@ -2,6 +2,13 @@
 [![Code Climate](https://codeclimate.com/github/tinnvec/dctvbot/badges/gpa.svg)](https://codeclimate.com/github/tinnvec/dctvbot)  
 A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/cinch)  
 
+## DCTV Status Commands
+_Voiced and higher users can specify the `v` option to have it show in main chat._  
+  
+`!now [-v]` - Display channels that are currently live via user notice.
+`!next [-v]` - Display next scheduled show and estimated time until it starts.  
+`!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
+
 ## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
 
