@@ -7,6 +7,7 @@ require 'yaml'
 require_relative 'plugins/dctv/check_dctv'
 require_relative 'plugins/dctv/second_screen'
 require_relative 'plugins/dctv/status'
+require_relative 'plugins/check_twitter'
 require_relative 'plugins/clevererbot'
 require_relative 'plugins/command_control'
 require_relative 'plugins/join_message'
@@ -35,6 +36,7 @@ bot = Cinch::Bot.new do
       Plugins::DCTV::CheckDCTV,
       Plugins::DCTV::SecondScreen,
       Plugins::DCTV::Status,
+      Plugins::CheckTwitter,
       Plugins::ClevererBot,
       Plugins::CommandControl,
       Plugins::JoinMessage
@@ -44,6 +46,9 @@ bot = Cinch::Bot.new do
       Cinch::Plugins::Identify => {
         type: :nickserv,
         password: config['bot']['password']
+      },
+      Plugins::DCTV::SecondScreen => {
+        pastebin_api_key: config['plugins']['second-screen']['pastebin-api']
       }
     }
   end
@@ -60,7 +65,14 @@ bot = Cinch::Bot.new do
 end
 
 class << bot
-  attr_accessor :cleverbot_enabled, :dctv_commands_enabled
+  attr_accessor :cleverbot_enabled, :dctv_commands_enabled, :twitter
+end
+
+bot.twitter = Twitter::REST::Client.new do |c|
+  c.consumer_key        = config['plugins']['twitter']['consumer-key']
+  c.consumer_secret     = config['plugins']['twitter']['consumer-secret']
+  c.access_token        = config['plugins']['twitter']['access-token']
+  c.access_token_secret = config['plugins']['twitter']['access-token-secret']
 end
 
 Thread.new { Watcher.new(bot).start }
