@@ -14,72 +14,45 @@ module Plugins
       def now(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
         response = Net::HTTP.get_response(URI.parse('http://diamondclub.tv/api/channelsv2.php'))
-        apiResult = JSON.parse(response.body)['assignedchannels']
-        onCount = 0
+        current_channels = JSON.parse(response.body)['assignedchannels']
         output = ""
-        apiResult.each do |result|
-          unless result['yt_upcoming']
-            output += "#{result['friendlyalias']} is live on Channel #{result['channel']} - #{result['urltoplayer']}\n"
-            onCount += 1
-          end
-        end
-        if onCount == 0
-          output = "Nothing is currently live"
-        end
-
-        if flag == "v" && authenticated?(m)
-          m.reply output
-        else
-          m.user.notice output
-        end
+        current_channels.each { |channel| output += "#{channel['friendlyalias']} is live on Channel #{channel['channel']} - #{channel['urltoplayer']}\n" unless channel['yt_upcoming'] }
+        output = "Nothing is currently live" if current_channels.count == 0
+        flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
-      match /next/, method: :next
-      def next(m)
+      match /next\s?\-{0,2}(v?)(?:erbose)?/, method: :next
+      def next(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
-        entries = getCalendarEntries(2)
-        if entries[0]["time"] < Time.new
-          entry = entries[1]
-        else
-          entry = entries[0]
-        end
-        title = CGI.unescape_html entry["title"]
-        m.user.notice "Next scheduled show: #{title} (#{timeUntil(entry["time"])})"
+        entries = get_calendar_entries 2
+        entries[0]['time'] < Time.new ? entry = entries[1] : entry = entries[0]
+        output = "Next scheduled show: #{CGI.unescape_html entry['title']} (#{time_until(entry['time'])})"
+        flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
       match /schedule\s?\-{0,2}(v?)(?:erbose)?/, method: :schedule
       def schedule(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
-        entries = getCalendarEntries
+        entries = get_calendar_entries
         output =  "Here are the scheduled shows for the next 48 hours:"
-        entries.each do |entry|
-          if entry["time"] - 48.hours < Time.new
-            title = CGI.unescape_html entry["title"]
-            output += "\n#{title} - #{timeIsLink(entry["time"], true)}"
-          end
-        end
-        if flag == "v" && authenticated?(m)
-          m.reply output
-        else
-          m.user.notice output
-        end
+        entries.each { |entry| output += "\n#{CGI.unescape_html entry["title"]} - #{timeIsLink(entry["time"], true)}" if entry["time"] - 48.hours < Time.new }
+        flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
       private
 
-        def timeIsLink(time, includeDay=false, timezone='US/Eastern')
+        def timeIsLink(time, include_day=false, timezone='US/Eastern')
           time = time.in_time_zone(timezone)
-          return "http://time.is/#{time.strftime("%H%M_%Z")}" unless includeDay
+          return "http://time.is/#{time.strftime("%H%M_%Z")}" unless include_day
           return "http://time.is/#{time.strftime("%H%M_%d_%b_%Y_%Z")}"
         end
 
-        def timeUntil(time, timezone='US/Eastern')
-          time = time.in_time_zone(timezone)
-          differenceInSeconds = (time - Time.new).round
+        def time_until(time, timezone='US/Eastern')
+          differenceInSeconds = (time.in_time_zone(timezone) - Time.new).round
           return differenceInSeconds.seconds.to_time_sentence
         end
 
-        def getCalendarEntries(numEntries=10)
+        def get_calendar_entries(num_entries=10)
           uri = URI.parse("http://www.google.com/calendar/feeds/a5jeb9t5etasrbl6dt5htkv4to%40group.calendar.google.com/public/basic")
           params = {
             orderby: "starttime",
@@ -87,22 +60,20 @@ module Plugins
             sortorder: "ascending",
             futureevents: "true",
             ctz: "US/Eastern",
-            'max-results' => "#{numEntries}"
+            'max-results' => "#{num_entries}"
           }
           uri.query = URI.encode_www_form(params)
           response = Net::HTTP.get_response(uri)
           xml = Document.new(response.body)
           response = Array.new
-          xml.elements.each("feed/entry") do |entry|
-            calItem = Hash.new
-            entry.elements.each("title") do |title|
-              calItem["title"] = title.text
-            end
-            entry.elements.each("content") do |content|
+          xml.elements.each('feed/entry') do |entry|
+            calendar_item = Hash.new
+            entry.elements.each('title') { |title| calendar_item['title'] = title.text }
+            entry.elements.each('content') do |content|
               content.text =~ /when:\s(.+)\sto/i
-              calItem["time"] = Time.parse("#{$1} EDT")
+              calendar_item['time'] = Time.parse("#{$1} EDT")
             end
-            response << calItem
+            response << calendar_item
           end
           return response
         end
