@@ -4,7 +4,7 @@ require 'bundler/setup'
 Bundler.require
 require 'yaml'
 
-require_relative 'plugins/check_dctv'
+require_relative 'plugins/dctv/check_dctv'
 require_relative 'watcher'
 
 config = YAML.load(File.open "config.yml")
@@ -27,7 +27,7 @@ bot = Cinch::Bot.new do
 
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
-      Plugins::CheckDCTV
+      Plugins::DCTV::CheckDCTV,
     ]
 
     c.plugins.options = {
