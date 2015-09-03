@@ -13,7 +13,6 @@ module Plugins
       @cleverbot = Cleverbot::Client.new
       begin
         @last_mention_id = @bot.twitter.mentions_timeline.first.id
-        @last_dctvalerts_tweet_id = @bot.twitter.user_timeline('dctvalerts').first.id
       rescue Twitter::Error::TooManyRequests => error
         @bot.log error.message
         @rate_time_cleared = Time.now + error.rate_limit.reset_in.seconds + 1.second
