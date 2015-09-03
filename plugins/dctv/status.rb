@@ -71,7 +71,11 @@ module Plugins
             entry.elements.each('title') { |title| calendar_item['title'] = title.text }
             entry.elements.each('content') do |content|
               content.text =~ /when:\s(.+)\sto/i
-              calendar_item['time'] = Time.parse("#{$1} EDT")
+              if $1 == nil
+                calendar_item['time'] = "All Day (or Unknown)"
+              else
+                calendar_item['time'] = Time.parse("#{$1} EDT")
+              end
             end
             response << calendar_item
           end
