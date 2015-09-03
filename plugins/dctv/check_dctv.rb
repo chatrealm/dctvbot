@@ -14,7 +14,7 @@ module Plugins
         # Set announced arrays so as to not re-announce what's already on
         @announced_channels = Array.new
         get_current_channels.each do |channel|
-          @announced_channels << channel
+          @announced_channels << channel if is_live channel
         end
       end
 
@@ -50,7 +50,7 @@ module Plugins
             update_topic msg
             @official_live = true
           end
-          Channel(@bot.channels[0]).send msg
+          Channel(@bot.channels[0]).send msg if is_live channel
         end
 
         @announced_channels.each do |channel|
@@ -76,11 +76,7 @@ module Plugins
         end
 
         def announce_message(channel)
-          if is_live channel
-            status = Format :white, :red, " LIVE "
-          else
-            status = Format :black, :yellow, " UP NEXT "
-          end
+          status = Format :white, :red, " LIVE "
           msg = "#{status} #{channel['friendlyalias']}"
           msg += " - #{channel['twitch_yt_description']}" unless channel['twitch_yt_description'].empty?
           msg += " - #{channel['urltoplayer']}"
