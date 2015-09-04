@@ -35,7 +35,12 @@ module Plugins
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
         entries = get_calendar_entries
         output =  "Here are the scheduled shows for the next 48 hours:"
-        entries.each { |entry| output += "\n#{CGI.unescape_html entry["title"]} - #{timeIsLink(entry["time"], true)}" if entry["time"] - 48.hours < Time.new }
+        entries.each do |entry|
+          if entry["time"] == 0 || entry["time"] - 48.hours < Time.new
+            output += "\n#{CGI.unescape_html entry["title"]}"
+            output += " - #{timeIsLink(entry["time"], true)}" unless entry["time"] == 0
+          end
+        end
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
@@ -71,7 +76,11 @@ module Plugins
             entry.elements.each('title') { |title| calendar_item['title'] = title.text }
             entry.elements.each('content') do |content|
               content.text =~ /when:\s(.+)\sto/i
-              calendar_item['time'] = Time.parse("#{$1} EDT")
+              if $1 == nil
+                calendar_item['time'] = 0
+              else
+                calendar_item['time'] = Time.parse("#{$1} EDT")
+              end
             end
             response << calendar_item
           end
