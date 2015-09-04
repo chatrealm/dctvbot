@@ -24,8 +24,13 @@ module Plugins
       match /next\s?\-?(v?)/, method: :next
       def next(m, flag=nil)
         return unless (@bot.dctv_commands_enabled || authenticated?(m))
-        entries = get_calendar_entries 2
-        entries[0]['time'] < Time.new ? entry = entries[1] : entry = entries[0]
+        entry = nil
+        get_calendar_entries(3).each do |e|
+          next if e['time'] == 0
+          next if e['time'] < Time.new
+          entry = e
+          break
+        end
         output = "Next scheduled show: #{CGI.unescape_html entry['title']} (#{time_until(entry['time'])})"
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
