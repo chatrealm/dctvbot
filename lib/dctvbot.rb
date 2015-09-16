@@ -24,9 +24,10 @@ class DCTVBot < Cinch::Bot
     end
   end
 
-  def custom_log_file(file_name, log_level)
+  # Set a custom log file for the bot
+  def custom_log_file(file_name, log_level=:info)
     file = open(file_name, 'a')
-    file.sync = true
+    file.sync = true # Write buffered data immediately
     self.loggers << Cinch::Logger::FormattedLogger.new(file)
     self.loggers.first.level = log_level
   end
