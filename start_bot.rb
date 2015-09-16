@@ -50,7 +50,7 @@ dctvbot = DCTVBot.new do
   # end
 
   # Custom Log File
-  custom_log_file(config_file['log-file'])
+  custom_log_file(config_file['log-file'], :debug)
 end
 
 # Thread.new { Watcher.new(dctvbot, :check_dctv).start }
