@@ -1,3 +1,5 @@
+require 'cinch'
+
 class DCTVBot < Cinch::Bot
   def initialize(&b)
     super
