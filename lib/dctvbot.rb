@@ -1,6 +1,13 @@
 require 'cinch'
 
 class DCTVBot < Cinch::Bot
+
+  # Command Control
+  # attr_accessor :cleverbot_enabled, :dctv_commands_enabled
+
+  # Twitter Endpoint
+  # attr_accessor :twitter
+
   def initialize(&b)
     super
 
