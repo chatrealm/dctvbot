@@ -6,20 +6,7 @@ GEM
       cinch (~> 2.0)
     cinch-identify (1.7.0)
       cinch (~> 2.0)
-    diff-lcs (1.2.5)
-    rspec (3.3.0)
-      rspec-core (~> 3.3.0)
-      rspec-expectations (~> 3.3.0)
-      rspec-mocks (~> 3.3.0)
-    rspec-core (3.3.2)
-      rspec-support (~> 3.3.0)
-    rspec-expectations (3.3.1)
-      diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.3.0)
-    rspec-mocks (3.3.2)
-      diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.3.0)
-    rspec-support (3.3.0)
+    json (1.8.3)
 
 PLATFORMS
   ruby
@@ -28,4 +15,4 @@ DEPENDENCIES
   cinch (= 2.2.6)
   cinch-authentication (= 0.1.1)
   cinch-identify (= 1.7.0)
-  rspec (= 3.3.0)
+  json (= 1.8.3)
