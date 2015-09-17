@@ -7,9 +7,10 @@ class Watcher
   end
 
   def start
-    puts 'ping'
     while true
+      @bot.debug "Dispatching #{@hander_sumbol} handler..."
       @bot.handlers.dispatch @handler_symbol
+      @bot.debug "Waiting #{@sleep_seconds} seconds before dispatching #{@handler_symbol} again."
       sleep @sleep_seconds
     end
   end
