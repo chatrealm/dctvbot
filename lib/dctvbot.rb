@@ -1,6 +1,8 @@
 require 'cinch'
 
 class DCTVBot < Cinch::Bot
+  # Array for assigned channels
+  attr_accessor :assignedchannels
 
   # Command Control
   # attr_accessor :cleverbot_enabled, :dctv_commands_enabled
@@ -8,7 +10,7 @@ class DCTVBot < Cinch::Bot
   # Twitter Endpoint
   # attr_accessor :twitter
 
-  def initialize(&b)
+  def initialize(&block)
     super
 
     # Handle SIGINT (Ctrl-C)
