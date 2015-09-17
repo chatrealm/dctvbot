@@ -2,24 +2,30 @@ require 'dctvbot'
 
 describe DCTVBot do
 
-  subject do
+  let(:dctvbot) do
     DCTVBot.new do
       configure do |c|
-        c.server  = "irc.chatrealm.net"
-        c.port    = "6667"
+        c.server  = 'irc.chatrealm.net'
+        c.port    = 6667
 
-        c.nick      = "dctvbot"
-        c.user      = "Cinch"
-        c.realname  = "DCTV Bot"
-        c.channels  = [ "#testbot" ]
+        c.nick      = 'testbot'
+        c.user      = 'Cinch'
+        c.realname  = 'Test Bot'
+        c.channels  = [ '#testbot' ]
       end
     end
   end
 
-  describe "attributes" do
-    it { is_expected.to respond_to(:channels) }
-    it { is_expected.to respond_to(:config) }
-    it { is_expected.to respond_to(:nick) }
+  describe '#new' do
+    it 'returns a DCTVBot object' do
+      expect(dctvbot).to be_an_instance_of(DCTVBot)
+    end
+  end
+
+  describe '#assignedchannels' do
+    it 'exists' do
+      expect(dctvbot).to respond_to(:assignedchannels)
+    end
   end
 
   # describe "#custom_log_file" do
