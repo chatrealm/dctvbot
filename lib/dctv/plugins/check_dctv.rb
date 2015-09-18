@@ -1,50 +1,33 @@
 module DCTV
   module Plugins
 
-    class CheckDCTV
+    class CheckDctv
       # Cinch plugin
       include Cinch::Plugin
-
+      # Set plugin name, help text and options
+      set(
+        plugin_name: 'CheckDctv',
+        help: 'Updates diamondclub.tv information and announces live/upcoming shows.'
+      )
       # Handler to respond to
       listen_to :check_dctv
 
       def initialize(*args)
         super
-
         # Already announced channels
         @already_announced = Array.new
-
         # Official channel live status
         @official_channel_live = false
-
         # Mark currently live channels as already announced
         update_dctv_status
-        # @bot.assignedchannels.each do |channel|
-        #   @already_announced << channel
-        # end
-
-        # @bot.assignedchannels = JSON.parse( '[
-        #   {
-        #     "streamid": 16,
-        #     "channelname": "Frogpants_Scott",
-        #     "friendlyalias": "Frogpants Studios",
-        #     "streamtype": "twitch",
-        #     "nowonline": "yes",
-        #     "alerts": true,
-        #     "twitch_currentgame": "",
-        #     "twitch_yt_description": "Game Talkin!",
-        #     "yt_upcoming": false,
-        #     "yt_liveurl": "",
-        #     "imageasset": "http://diamondclub.tv/i/ea96e36fe6008c793d05acef02d16e8c7927463e.png",
-        #     "imageassethd": "",
-        #     "urltoplayer": "http://dctv.link/2",
-        #     "channel": 2
-        #   }
-        # ]')
+        @bot.assignedchannels.each do |channel|
+          @already_announced << channel
+        end
       end
 
       # Executed on event trigger
       def listen(m)
+        # @bot.debug("Did it!")
         # Update assigned channels and official live status from dctv
         update_dctv_status
         # Clean already announced list of upcoming and live channels when their status has changed
@@ -82,10 +65,12 @@ module DCTV
 
         # Refreshes official channel live status
         def update_official_live
+          was_official_live = @official_live
           @official_live = false
           @bot.assignedchannels.each do |channel|
             @official_live = true if is_online(channel) && is_official(channel)
           end
+          update_primary_channel_topic(' <>') if was_official_live && !@official_live
         end
 
         # Triggers update methods for dctv status
@@ -134,22 +119,31 @@ module DCTV
         end
 
         def clean_announced_list
-          # Remove formerly upcoming channels from announced channels list if no longer upcoming
+          remove_no_longer_upcoming_channels
+          remove_offline_channels
+        end
+
+        # Remove formerly upcoming channels from announced channels list if no longer upcoming
+        def remove_no_longer_upcoming_channels
           announced_upcoming = @already_announced.find_all { |aa| aa['yt_upcoming'] }
           announced_upcoming.each do |au|
             channel = @bot.assignedchannels.find { |ch| ch['streamid'] == au['streamid'] }
             unless channel.nil? || channel['yt_upcoming']
               @already_announced.delete(channel)
+              @bot.debug "Removing #{channel['friendlyalias']} from already announced - no longer upcoming"
             end
           end
+        end
 
-          # Remove offline channels from announced channels list
+        # Remove offline channels from announced channels list
+        def remove_offline_channels
           @already_announced.each do |aa|
+            channel = @bot.assignedchannels.find { |ac| aa['streamid'] == ac['streamid'] }
             @already_announced.delete(aa)
-            @bot.assignedchannels.each do |ac|
-              if aa['streamid'] == ac['streamid']
-                @already_announced << ac
-              end
+            if !channel.nil? && is_online(channel)
+              @already_announced << channel
+            else
+              @bot.debug "Removing #{channel['friendlyalias']} from already announced - no longer live"
             end
           end
         end
