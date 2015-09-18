@@ -5,9 +5,10 @@ require 'yaml'
 
 require_relative 'lib/dctvbot'
 require_relative 'lib/watcher'
+require_relative 'lib/dctv/plugins/check_dctv'
 
 # Load up config file
-config_file = YAML.load(File.open 'config.yml')
+config_file = YAML.load(File.open 'config.test.yml')
 
 dctvbot = DCTVBot.new do
   # Define Cinch Configuration
@@ -29,7 +30,8 @@ dctvbot = DCTVBot.new do
 
     # Load Up Plugins
     c.plugins.plugins = [
-      Cinch::Plugins::Identify
+      Cinch::Plugins::Identify,
+      DCTV::Plugins::CheckDCTV
     ]
 
     # Set Plugin Options
@@ -53,7 +55,10 @@ dctvbot = DCTVBot.new do
   custom_log_file(config_file['log-file'], :debug)
 end
 
-# Thread.new { Watcher.new(self, :check_dctv).start }
-# Thread.new { Watcher.new(self, :check_twitter, 300).start }
+# puts YAML::dump(dctvbot)
+# puts YAML::dump(dctvbot.bot)
+
+Thread.new { Watcher.new(dctvbot, :check_dctv).start }
+# Thread.new { Watcher.new(dctvbot, :check_twitter, 300).start }
 
 dctvbot.start
