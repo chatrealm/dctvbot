@@ -2,18 +2,17 @@ server:
   host: chat.freenode.net
   port: 6667
 bot:
-  nick: dctvbot
-  user: Cinch
-  realname: DCTV Bot
+  nick: mynick
+  user: somename
+  realname: Fake Name
   password: password
   channels:
     - "#chat"
 plugins:
   second-screen:
-    pastebin-api-key: apikey
+    pastebin-api-key: api-key
   twitter:
     consumer-key: 'KEY'
     consumer-secret: 'SECRET'
     access-token: 'TOKEN'
     access-token-secret: 'TOKENSECRET'
-log-file: '/tmp/log/cinch/dctvbot.log'
