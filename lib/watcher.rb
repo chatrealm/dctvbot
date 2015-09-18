@@ -8,9 +8,8 @@ class Watcher
 
   def start
     while true
-      @bot.debug "Dispatching #{@handler_symbol} handler..."
       @bot.handlers.dispatch @handler_symbol
-      @bot.debug "Waiting #{@sleep_seconds} seconds before dispatching #{@handler_symbol} again."
+      @bot.debug "#{@handler_symbol} handler dispatched, waiting #{@sleep_seconds} before dispatching again"
       sleep @sleep_seconds
     end
   end
