@@ -103,8 +103,12 @@ module Cinch
         begin
           const = Cinch::Plugins.const_get(plugin)
         rescue NameError
-          m.user.notice "Could not set plugin option for #{plugin} because no matching class was found."
-          return
+          begin
+            const = DCTV::Plugins.const_get(plugin)
+          rescue NameError
+            m.user.notice "Could not set plugin option for #{plugin} because no matching class was found."
+            return
+          end
         end
         @bot.config.plugins.options[const][option.to_sym] = eval(value)
         m.user.notice "Successfuly set option."
