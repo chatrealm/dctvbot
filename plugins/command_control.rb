@@ -45,10 +45,8 @@ module Plugins
         if turn_off
           command_boolean_variable ? m.user.notice("#{command_set_name} have been disabled") : m.user.notice("#{command_set_name} are already disabled")
           return false
-        else
-          command_boolean_variable ? m.user.notice("#{command_set_name} are already enabled") : m.user.notice("#{command_set_name} have been enabled")
-          return true
         end
+        command_boolean_variable ? m.user.notice("#{command_set_name} are already enabled") : m.user.notice("#{command_set_name} have been enabled")
       end
   end
 
