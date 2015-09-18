@@ -8,6 +8,7 @@ require_relative 'lib/watcher'
 
 require_relative 'lib/cinch/plugins/plugin_management'
 
+require_relative 'lib/dctv/plugins/channel_status'
 require_relative 'lib/dctv/plugins/check_dctv'
 
 # Load up config file
@@ -35,15 +36,14 @@ dctvbot = DCTVBot.new do
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
       Cinch::Plugins::PluginManagement,
+      DCTV::Plugins::ChannelStatus,
       DCTV::Plugins::CheckDCTV
     ]
 
     # Set Plugin Options
     c.plugins.options = {
-      Cinch::Plugins::Identify => {
-        type: :nickserv,
-        password: config_file['bot']['password']
-      }
+      Cinch::Plugins::Identify => { type: :nickserv, password: config_file['bot']['password'] },
+      Cinch::Plugins::PluginManagement => { authentication_level: :o }
     }
   end
 
