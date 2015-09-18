@@ -6,7 +6,7 @@ module DCTV
       include Cinch::Plugin
       # Set plugin name, help text and options
       set(
-        plugin_name: 'CheckDctv',
+        plugin_name: 'CheckDCTV',
         help: 'Updates diamondclub.tv information and announces live/upcoming shows.'
       )
       # Handler to respond to
@@ -32,6 +32,12 @@ module DCTV
         update_dctv_status
         # Clean already announced list of upcoming and live channels when their status has changed
         clean_announced_list
+
+        @bot.debug "Announced Channels:"
+        @already_announced.each do |channel|
+          @bot.debug "#{channel['channel']}. #{channel['friendlyalias']} - #{channel['online'] == "yes" ? 'Live' : 'Upcoming'}"
+        end
+
         # Check all currently assigned channels
         @bot.assignedchannels.each do |channel|
           # Skip announcements if official cahnnel is live
@@ -102,7 +108,7 @@ module DCTV
           # Announce channel
           @bot.primary_channel.send(output)
           # Update topic, if channel is official
-          update_channel_topic(output) if is_official(channel)
+          update_primary_channel_topic(output) if is_official(channel)
         end
 
         # Updates primary channel's topic from given title, preserving existing title after first "|"
@@ -140,7 +146,7 @@ module DCTV
           @already_announced.each do |aa|
             channel = @bot.assignedchannels.find { |ac| aa['streamid'] == ac['streamid'] }
             @already_announced.delete(aa)
-            if !channel.nil? && is_online(channel)
+            if !channel.nil? && (is_online(channel) || channel['yt_upcoming'])
               @already_announced << channel
             else
               @bot.debug "Removing #{channel['friendlyalias']} from already announced - no longer live"
