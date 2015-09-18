@@ -5,6 +5,9 @@ require 'yaml'
 
 require_relative 'lib/dctvbot'
 require_relative 'lib/watcher'
+
+require_relative 'lib/cinch/plugins/plugin_management'
+
 require_relative 'lib/dctv/plugins/check_dctv'
 
 # Load up config file
@@ -31,7 +34,8 @@ dctvbot = DCTVBot.new do
     # Load Up Plugins
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
-      DCTV::Plugins::CheckDCTV
+      Cinch::Plugins::PluginManagement,
+      DCTV::Plugins::CheckDctv
     ]
 
     # Set Plugin Options
