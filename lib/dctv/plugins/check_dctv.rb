@@ -27,7 +27,6 @@ module DCTV
 
       # Executed on event trigger
       def listen(m)
-        # @bot.debug("Did it!")
         # Update assigned channels and official live status from dctv
         update_dctv_status
         # Clean already announced list of upcoming and live channels when their status has changed
