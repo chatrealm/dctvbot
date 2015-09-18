@@ -1,7 +1,7 @@
 module DCTV
   module Plugins
 
-    class CheckDctv
+    class CheckDCTV
       # Cinch plugin
       include Cinch::Plugin
       # Set plugin name, help text and options

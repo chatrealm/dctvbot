@@ -35,7 +35,7 @@ dctvbot = DCTVBot.new do
     c.plugins.plugins = [
       Cinch::Plugins::Identify,
       Cinch::Plugins::PluginManagement,
-      DCTV::Plugins::CheckDctv
+      DCTV::Plugins::CheckDCTV
     ]
 
     # Set Plugin Options
