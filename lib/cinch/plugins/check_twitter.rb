@@ -1,6 +1,8 @@
+require 'twitter'
+
 module Cinch
   module Plugins
-    
+
     class CheckTwitter
       include Cinch::Plugin
 
