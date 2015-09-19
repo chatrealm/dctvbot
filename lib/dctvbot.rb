@@ -9,6 +9,7 @@ require_relative 'cinch/plugins/clever_bot'
 require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
+require_relative 'cinch/plugins/straw_poll'
 
 require_relative 'dctv/plugins/channel_status'
 require_relative 'dctv/plugins/check_dctv'
@@ -47,6 +48,7 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::JoinMessage,
         Cinch::Plugins::Kill,
         Cinch::Plugins::PluginManagement,
+        Cinch::Plugins::StrawPoll,
         DCTV::Plugins::ChannelStatus,
         DCTV::Plugins::CheckDCTV,
         DCTV::Plugins::SecondScreen
