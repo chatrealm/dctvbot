@@ -41,13 +41,15 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::Identify,
         Cinch::Plugins::PluginManagement,
         DCTV::Plugins::ChannelStatus,
-        DCTV::Plugins::CheckDCTV
+        DCTV::Plugins::CheckDCTV,
+        DCTV::Plugins::SecondScreen
       ]
 
       # Set Plugin Options
       c.plugins.options = {
         Cinch::Plugins::Identify => { type: :nickserv, password: config_file['bot']['password'] },
-        Cinch::Plugins::PluginManagement => { authentication_level: config_file['authentication']['admin-level'] }
+        Cinch::Plugins::PluginManagement => { authentication_level: config_file['authentication']['admin-level'] },
+        DCTV::Plugins::SecondScreen => { pastebin_api_key: config_file['plugins']['second-screen']['pastebin-api'] }
       }
     end
 
