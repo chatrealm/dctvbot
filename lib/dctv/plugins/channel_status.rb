@@ -14,9 +14,12 @@ module DCTV
       match /now\s?\-?(v?)/, method: :now
       def now(m, flag=nil)
         output = ""
-        @bot.assignedchannels.each do |channel|
+        @bot.assignedchannels.sort_by!{ |c| c['channel'] }.each do |channel|
           unless channel['yt_upcoming']
-            output += "#{channel['friendlyalias']} is live on Channel #{channel['channel']} - #{channel['urltoplayer']}\n"
+            output += "Ch. #{channel['channel']}"
+            output += " - #{channel['friendlyalias']}"
+            output += " - #{channel['twitch_yt_description']}" unless channel['twitch_yt_description'].blank?
+            output += " - #{channel['urltoplayer']}\n"
           end
         end
         output = "Nothing is currently live" if @bot.assignedchannels.count == 0
