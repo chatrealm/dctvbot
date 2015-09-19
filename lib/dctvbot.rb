@@ -9,6 +9,7 @@ require_relative 'cinch/plugins/clever_bot'
 require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
+
 require_relative 'dctv/plugins/channel_status'
 require_relative 'dctv/plugins/check_dctv'
 require_relative 'dctv/plugins/second_screen'
@@ -60,7 +61,7 @@ class DCTVBot < Cinch::Bot
       }
     end
 
-    #Setup Twitter Endpoint
+    # Set Twitter Endpoint
     @twitter = Twitter::REST::Client.new do |c|
       c.consumer_key        = config_file['plugins']['twitter']['consumer-key']
       c.consumer_secret     = config_file['plugins']['twitter']['consumer-secret']
@@ -69,8 +70,7 @@ class DCTVBot < Cinch::Bot
     end
 
     # Set custom Log File
-    # TODO: Uncomment this before production
-    # custom_log_file(config_file['custom-log']['file'], config_file['custom-log']['level'])
+    custom_log_file(config_file['custom-log']['file'], config_file['custom-log']['level'])
 
     # Handle SIGINT (Ctrl-C)
     trap "SIGINT" do
