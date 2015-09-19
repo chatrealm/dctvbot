@@ -4,8 +4,8 @@ require 'cinch/plugins/identify'
 require 'json'
 require 'net/http'
 
+require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/plugin_management'
-
 require_relative 'dctv/plugins/channel_status'
 require_relative 'dctv/plugins/check_dctv'
 require_relative 'dctv/plugins/second_screen'
@@ -39,6 +39,7 @@ class DCTVBot < Cinch::Bot
       # Load Up Plugins
       c.plugins.plugins = [
         Cinch::Plugins::Identify,
+        Cinch::Plugins::JoinMessage,
         Cinch::Plugins::PluginManagement,
         DCTV::Plugins::ChannelStatus,
         DCTV::Plugins::CheckDCTV,
