@@ -9,7 +9,7 @@ module Cinch
       # Set plugin name, help text and options
       set(
         plugin_name: 'PluginManagement',
-        help: "Loads, unloads, reloads and sets options for plugins."
+        help: "ADMIN ONLY\nRe/un/load Plugin (file_name optional)\nUsage: !plugin [load|unload|reload] <PluginName> <file_name>\nSet plugin option\nUsage: !plugin set <PluginName> <option> <value>"
       )
       # Turn on authentication for this plugin
       enable_authentication
