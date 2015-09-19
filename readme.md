@@ -2,22 +2,24 @@
 A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/cinch)  
 
 ### Status Commands
-**_Users with voice or higher can specify the `-v` option to have the reply shown in main chat._**  
+**_The `-v` option will show the reply main chat. Requires at least Voice status._**  
 
 `!now [-v]` - Display channels that are currently live via user notice.  
 `!next [-v]` - Display next scheduled show and estimated time until it starts.  
 `!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
 
 ### Second Screen Commands
-**_Restricted to users with voice or higher._**  
+**_Requires at least Voice status._**  
 
 `!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
 
-### Control Commands
-**_Restricted to users with voice or higher._**  
+### Management Commands
+**_Requires at least Operator status._**  
 
-`!turn [cleverbot|dctv|all] [on|off]` - Turns the specified set of commands on or off  
-`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets a user notice when they join the channel  
+`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.  
+`!plugin [load|unload|reload] <PluginName> <file_name>` - Un/re/loads `<PluginName>`, optionally using `<file_name>`.  
+`!plugin set <PluginName> <option> <value>` - Sets `<option>` to `<value>` for `<PluginName>`.
+`!kill <bot_nick>` - Tells bot to quit completely, you must specify correct `<bot_nick>`  
 
 ## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
