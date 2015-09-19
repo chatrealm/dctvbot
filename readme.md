@@ -8,9 +8,10 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 `!next [-v]` - Display next scheduled show and estimated time until it starts.  
 `!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
 
-### Second Screen Commands
+### Utility Commands
 **_Requires at least Voice status._**  
 
+`!poll <title> | <option>, <option>` - Requests a straw poll using `<title>` and a minimum of 2 `<option>` separated by commas  
 `!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
 
 ### Management Commands
