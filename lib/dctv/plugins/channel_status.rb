@@ -11,11 +11,6 @@ module DCTV
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      set(
-        plugin_name: 'ChannelStatus',
-        help: "Help description"
-      )
-
       match /now\s?\-?(v?)/, method: :now
       def now(m, flag=nil)
         output = ""

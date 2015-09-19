@@ -4,11 +4,6 @@ module DCTV
     class CheckDCTV
       # Cinch plugin
       include Cinch::Plugin
-      # Set plugin name, help text and options
-      set(
-        plugin_name: 'CheckDCTV',
-        help: 'Announces live/upcoming shows.'
-      )
       # Handler to respond to
       listen_to :check_dctv
 
