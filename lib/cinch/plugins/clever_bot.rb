@@ -10,7 +10,7 @@ module Cinch
 
 			def initialize(*args)
 				super
-				@cleverbot = Cleverbot.new
+				@cleverbot = Cleverbot::Client.new
 			end
 
 			def execute(m, part_one, part_two=nil)
