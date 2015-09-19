@@ -8,6 +8,4 @@ gem 'httparty', '0.13.5'
 gem 'json', '1.8.3'
 gem 'time_sentence', '1.0.1'
 gem 'activesupport', '4.2.4'
-
-#
-# gem 'twitter'
+gem 'twitter', '5.15.0'

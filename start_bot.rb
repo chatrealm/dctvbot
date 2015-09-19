@@ -7,6 +7,7 @@ require_relative 'lib/watcher'
 dctvbot = DCTVBot.new(YAML.load(File.open 'config.test.yml'))
 
 Thread.new { Watcher.new(dctvbot, :check_dctv).start }
+# TODO: Uncomment this thread before putting in production
 # Thread.new { Watcher.new(dctvbot, :check_twitter, 300).start }
 
 dctvbot.start

@@ -4,6 +4,7 @@ require 'cinch/plugins/identify'
 require 'json'
 require 'net/http'
 
+require_relative 'cinch/plugins/check_twitter'
 require_relative 'cinch/plugins/clever_bot'
 require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/plugin_management'
@@ -39,6 +40,7 @@ class DCTVBot < Cinch::Bot
 
       # Load Up Plugins
       c.plugins.plugins = [
+        Cinch::Plugins::CheckTwitter,
         Cinch::Plugins::CleverBot,
         Cinch::Plugins::Identify,
         Cinch::Plugins::JoinMessage,
@@ -56,13 +58,13 @@ class DCTVBot < Cinch::Bot
       }
     end
 
-    # Setup Twitter Endpoint
-    # twitter = Twitter::REST::Client.new do |c|
-    #   c.consumer_key        = config_file['plugins']['twitter']['consumer-key']
-    #   c.consumer_secret     = config_file['plugins']['twitter']['consumer-secret']
-    #   c.access_token        = config_file['plugins']['twitter']['access-token']
-    #   c.access_token_secret = config_file['plugins']['twitter']['access-token-secret']
-    # end
+    #Setup Twitter Endpoint
+    @twitter = Twitter::REST::Client.new do |c|
+      c.consumer_key        = config_file['plugins']['twitter']['consumer-key']
+      c.consumer_secret     = config_file['plugins']['twitter']['consumer-secret']
+      c.access_token        = config_file['plugins']['twitter']['access-token']
+      c.access_token_secret = config_file['plugins']['twitter']['access-token-secret']
+    end
 
     # Set custom Log File
     # TODO: Uncomment this before production
