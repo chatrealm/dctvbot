@@ -7,6 +7,7 @@ require 'net/http'
 require_relative 'cinch/plugins/check_twitter'
 require_relative 'cinch/plugins/clever_bot'
 require_relative 'cinch/plugins/join_message'
+require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
 require_relative 'dctv/plugins/channel_status'
 require_relative 'dctv/plugins/check_dctv'
@@ -20,7 +21,6 @@ class DCTVBot < Cinch::Bot
 
   def initialize(config_file)
     super()
-
     # Define Cinch Configuration
     configure do |c|
       # Server Info
@@ -44,6 +44,7 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::CleverBot,
         Cinch::Plugins::Identify,
         Cinch::Plugins::JoinMessage,
+        Cinch::Plugins::Kill,
         Cinch::Plugins::PluginManagement,
         DCTV::Plugins::ChannelStatus,
         DCTV::Plugins::CheckDCTV,
@@ -53,6 +54,7 @@ class DCTVBot < Cinch::Bot
       # Set Plugin Options
       c.plugins.options = {
         Cinch::Plugins::Identify => { type: :nickserv, password: config_file['bot']['password'] },
+        Cinch::Plugins::Kill => { authentication_level: config_file['authentication']['admin-level'] },
         Cinch::Plugins::PluginManagement => { authentication_level: config_file['authentication']['admin-level'] },
         DCTV::Plugins::SecondScreen => { pastebin_api_key: config_file['plugins']['second-screen']['pastebin-api'] }
       }
