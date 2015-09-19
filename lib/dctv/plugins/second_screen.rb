@@ -1,11 +1,9 @@
-# encoding: utf-8
+require 'httparty'
 
-require 'net/http'
+module DCTV
+  module Plugins
 
-module Plugins
-  module DCTV
     class SecondScreen
-
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
@@ -44,7 +42,7 @@ module Plugins
           @second_screen_list << input unless input == "clear"
         end
       end
-      
     end
+
   end
 end

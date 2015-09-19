@@ -2,15 +2,22 @@ server:
   host: chat.freenode.net
   port: 6667
 bot:
-  nick: mynick
-  user: somename
-  realname: Fake Name
+  nick: bot_nick
+  user: Cinch
+  realname: FakeName
   password: password
   channels:
-    - "#chat"
+    - '#channel'
+    - '#another_channel'
+authentication:
+  minimum-level: :v
+  admin-level: :o
+custom-log:
+  file: './log/cinch_bot.log'
+  level: :info
 plugins:
   second-screen:
-    pastebin-api-key: api-key
+    pastebin-api-key: APIKEY
   twitter:
     consumer-key: 'KEY'
     consumer-secret: 'SECRET'

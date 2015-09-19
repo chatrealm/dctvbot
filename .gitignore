@@ -83,4 +83,8 @@ $RECYCLE.BIN/
 
 # Ignore Config
 config.yml
-config.testing.yml
+config.test.yml
+config.prod.yml
+
+# Log files
+/log/*.log
