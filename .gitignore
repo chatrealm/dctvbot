@@ -87,4 +87,4 @@ config.test.yml
 config.prod.yml
 
 # Log files
-*.log
+/log/*.log

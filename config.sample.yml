@@ -13,7 +13,7 @@ authentication:
   minimum-level: :v
   admin-level: :o
 custom-log:
-  file: 'cinch_bot.log'
+  file: './log/cinch_bot.log'
   level: :info
 plugins:
   second-screen:
