@@ -9,7 +9,6 @@ module DCTV
 
       def initialize(*args)
         super
-        @@i = 0
         # Already announced channels
         @already_announced = Array.new
         # Official channel live status
@@ -24,7 +23,7 @@ module DCTV
       # Executed on event trigger
       def listen(m)
         # Update assigned channels from dctv
-        update_assignedchannels#_debug
+        update_assignedchannels
         @bot.debug "Assigned Channels from DCTV api:"
         @bot.assignedchannels.each do |channel|
           @bot.debug "#{channel['channel']}. #{channel['friendlyalias']} - #{is_online?(channel) ? 'Live' : 'Upcoming'}"
@@ -75,53 +74,6 @@ module DCTV
         def update_assignedchannels
           response = Net::HTTP.get_response(URI.parse('http://diamondclub.tv/api/channelsv2.php?v=3'))
           @bot.assignedchannels = JSON.parse(response.body)['assignedchannels']
-        end
-
-        # Updates assignedchannels from dctv api
-        def update_assignedchannels_debug
-          case @@i
-          when 2..3
-            @bot.assignedchannels = JSON.parse('[
-              {
-                "streamid": 300,
-                "channelname": "DailyTechNewsShow",
-                "friendlyalias": "DTNS",
-                "streamtype": "youtube",
-                "nowonline": "no",
-                "alerts": true,
-                "twitch_currentgame": "",
-                "twitch_yt_description": "DTNS 2584 - with Erin Carson",
-                "yt_upcoming": true,
-                "yt_liveurl": "https://www.youtube.com/watch?v=ZjNjv959uUI",
-                "imageasset": "http://diamondclub.tv/i/5f5c5ebe764eaf99143188b75a4e021a2b121883.png",
-                "imageassethd": "",
-                "urltoplayer": "http://dctv.link/1",
-                "channel": 1
-              }
-            ]')
-          when 4..5
-            @bot.assignedchannels = JSON.parse('[
-              {
-                "streamid": 300,
-                "channelname": "DailyTechNewsShow",
-                "friendlyalias": "DTNS",
-                "streamtype": "youtube",
-                "nowonline": "yes",
-                "alerts": true,
-                "twitch_currentgame": "",
-                "twitch_yt_description": "DTNS 2584 - with Erin Carson",
-                "yt_upcoming": false,
-                "yt_liveurl": "https://www.youtube.com/watch?v=ZjNjv959uUI",
-                "imageasset": "http://diamondclub.tv/i/5f5c5ebe764eaf99143188b75a4e021a2b121883.png",
-                "imageassethd": "",
-                "urltoplayer": "http://dctv.link/1",
-                "channel": 1
-              }
-            ]')
-          else
-            update_assignedchannels
-          end
-          @@i += 1
         end
 
         # Refreshes official channel live status
