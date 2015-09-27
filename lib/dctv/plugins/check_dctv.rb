@@ -4,6 +4,7 @@ module DCTV
     class CheckDCTV
       # Cinch plugin
       include Cinch::Plugin
+
       # Handler to respond to
       listen_to :check_dctv
 
@@ -49,100 +50,99 @@ module DCTV
         # Update official live status from dctv
         update_official_live
         @bot.debug "Official Live? #{@official_live}"
-
         @bot.debug "check_dctv handler complete."
       end
 
       private
 
-        # Checks if channel is official
-        def is_official?(channel)
-          channel['channel'] == 1
-        end
+      # Checks if channel is official
+      def is_official?(channel)
+        channel['channel'] == 1
+      end
 
-        # Checks if channel is online
-        def is_online?(channel)
-          channel['nowonline'] == "yes"
-        end
+      # Checks if channel is online
+      def is_online?(channel)
+        channel['nowonline'] == "yes"
+      end
 
-        # Checks if channel is upcoming
-        def is_upcoming?(channel)
-          channel['yt_upcoming']
-        end
+      # Checks if channel is upcoming
+      def is_upcoming?(channel)
+        channel['yt_upcoming']
+      end
 
-        # Updates assignedchannels from dctv api
-        def update_assignedchannels
-          response = Net::HTTP.get_response(URI.parse('http://diamondclub.tv/api/channelsv2.php?v=3'))
-          @bot.assignedchannels = JSON.parse(response.body)['assignedchannels']
-        end
+      # Updates assignedchannels from dctv api
+      def update_assignedchannels
+        response = Net::HTTP.get_response(URI.parse('http://diamondclub.tv/api/channelsv2.php?v=3'))
+        @bot.assignedchannels = JSON.parse(response.body)['assignedchannels']
+      end
 
-        # Refreshes official channel live status
-        def update_official_live
-          was_official_live = @official_live
-          @official_live = false
-          @bot.assignedchannels.each do |channel|
-            @official_live = true if is_online?(channel) && is_official?(channel)
+      # Refreshes official channel live status
+      def update_official_live
+        was_official_live = @official_live
+        @official_live = false
+        @bot.assignedchannels.each do |channel|
+          @official_live = true if is_online?(channel) && is_official?(channel)
+        end
+        update_primary_channel_topic(' <>') if was_official_live && !@official_live
+      end
+
+      # Formats channel announcement message
+      def get_announce_message(channel)
+        # Extract the info we need crom channel object
+        name        = channel['friendlyalias']
+        description = channel['twitch_yt_description']
+        url         = channel['urltoplayer']
+        upcoming    = is_upcoming?(channel)
+        # Set color formatted status
+        status = Format(:white, :red, " LIVE ")
+        status = Format(:black, :yellow, " UP NEXT ") if upcoming
+        # Piece together message from available info
+        msg  = "#{status} #{name}"
+        msg += " - #{description}" unless description.empty?
+        msg += " - #{url}" unless url.empty?
+      end
+
+      # Does channel live/upcoming announcement
+      def announce_channel(channel)
+        # Set announce message
+        output = get_announce_message(channel)
+        # Announce channel
+        @bot.primary_channel.send(output)
+        # Update topic, if channel is official
+        update_primary_channel_topic(output) if is_official?(channel)
+      end
+
+      # Updates primary channel's topic from given title, preserving existing title after first "|"
+      # Example: 'first | second | third' -> update_primary_channel_topic('apple') -> 'apple | second | third'
+      def update_primary_channel_topic(title)
+        # Get array of items between "|" characters
+        topic_array = @bot.primary_channel.topic.split("|")
+        # Remove first item
+        topic_array.shift
+        # Add new info to beginning of former title
+        new_topic = title + " |" + topic_array.join("|")
+        # Set primary channel topic
+        @bot.primary_channel.topic = new_topic
+      end
+
+      def refresh_announced_list
+        clean_announced_list(@already_announced.find_all { |announced| is_upcoming?(announced) }, true)
+        clean_announced_list(@already_announced.find_all { |announced| !is_upcoming?(announced) })
+      end
+
+      def clean_announced_list(channel_array, upcoming=false)
+        channel_array.each do |existing_ch|
+          @bot.debug "Checking to see if #{existing_ch['friendlyalias']} is still there"
+          channel = @bot.assignedchannels.find { |assigned| existing_ch['streamid'] == assigned['streamid'] }
+          @already_announced.delete(existing_ch)
+          if channel.nil? || (upcoming && !is_upcoming?(channel)) || (!upcoming && !is_online?(channel))
+            @bot.debug "Nope, removing from already announced"
+          else
+            @bot.debug "Yep, updating details"
+            @already_announced << channel
           end
-          update_primary_channel_topic(' <>') if was_official_live && !@official_live
         end
-
-        # Formats channel announcement message
-        def get_announce_message(channel)
-          # Extract the info we need crom channel object
-          name        = channel['friendlyalias']
-          description = channel['twitch_yt_description']
-          url         = channel['urltoplayer']
-          upcoming    = is_upcoming?(channel)
-          # Set color formatted status
-          status = Format(:white, :red, " LIVE ")
-          status = Format(:black, :yellow, " UP NEXT ") if upcoming
-          # Piece together message from available info
-          msg  = "#{status} #{name}"
-          msg += " - #{description}" unless description.empty?
-          msg += " - #{url}" unless url.empty?
-        end
-
-        # Does channel live/upcoming announcement
-        def announce_channel(channel)
-          # Set announce message
-          output = get_announce_message(channel)
-          # Announce channel
-          @bot.primary_channel.send(output)
-          # Update topic, if channel is official
-          update_primary_channel_topic(output) if is_official?(channel)
-        end
-
-        # Updates primary channel's topic from given title, preserving existing title after first "|"
-        # Example: 'first | second | third' -> update_primary_channel_topic('apple') -> 'apple | second | third'
-        def update_primary_channel_topic(title)
-          # Get array of items between "|" characters
-          topic_array = @bot.primary_channel.topic.split("|")
-          # Remove first item
-          topic_array.shift
-          # Add new info to beginning of former title
-          new_topic = title + " |" + topic_array.join("|")
-          # Set primary channel topic
-          @bot.primary_channel.topic = new_topic
-        end
-
-        def refresh_announced_list
-          clean_announced_list(@already_announced.find_all { |announced| is_upcoming?(announced) }, true)
-          clean_announced_list(@already_announced.find_all { |announced| !is_upcoming?(announced) })
-        end
-
-        def clean_announced_list(channel_array, upcoming=false)
-          channel_array.each do |existing_ch|
-            @bot.debug "Checking to see if #{existing_ch['friendlyalias']} is still there"
-            channel = @bot.assignedchannels.find { |assigned| existing_ch['streamid'] == assigned['streamid'] }
-            @already_announced.delete(existing_ch)
-            if channel.nil? || (upcoming && !is_upcoming?(channel)) || (!upcoming && !is_online?(channel))
-              @bot.debug "Nope, removing from already announced"
-            else
-              @bot.debug "Yep, updating details"
-              @already_announced << channel
-            end
-          end
-        end
+      end
     end
 
   end

@@ -8,7 +8,7 @@ module DCTV
       include Cinch::Extensions::Authentication
 
       enable_authentication
-      match /secs (.+)/
+      match(/secs (.+)/)
 
       def initialize(*args)
         super
@@ -23,26 +23,32 @@ module DCTV
           m.user.notice "Adding line \"#{input}\" to pastebin"
         end
 
-        if input == "on"
+        if input == "on" || input == "clear"
           @second_screen_list.clear
         elsif input == "off"
           return if @second_screen_list.empty?
           paste = ""
           @second_screen_list.each { |link| paste += "#{link}\n" }
-          url = URI.parse("http://pastebin.com/api/api_post.php")
-          params = {
-            "api_dev_key" => config[:pastebin_api_key],
-            "api_option" => "paste", # Specifies creation
-            "api_paste_code" => paste
-          }
-          result = Net::HTTP.post_form(url, params)
+          result = request_paste(paste)
           m.user.notice "Assembling Pastebin. Result: #{result.body}"
           @second_screen_list.clear
         else
-          @second_screen_list << input unless input == "clear"
+          @second_screen_list << input
         end
       end
-    end
 
+      private
+
+      def request_paste(paste)
+        url = URI.parse("http://pastebin.com/api/api_post.php")
+        params = {
+          "api_dev_key" => config[:pastebin_api_key],
+          "api_option" => "paste", # Specifies creation
+          "api_paste_code" => paste
+        }
+        Net::HTTP.post_form(url, params)
+      end
+    end
+    
   end
 end

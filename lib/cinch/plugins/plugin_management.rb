@@ -9,7 +9,7 @@ module Cinch
       # Turn on authentication for this plugin
       enable_authentication
 
-      match /plugin load (\S+)(?: (\S+))?/, method: :load_plugin
+      match(/plugin load (\S+)(?: (\S+))?/, method: :load_plugin)
       def load_plugin(m, plugin, mapping)
         mapping ||= plugin.gsub(/(.)([A-Z])/) { |_|
           $1 + "_" + $2
@@ -46,7 +46,7 @@ module Cinch
         m.user.notice "Successfully loaded #{plugin}"
       end
 
-      match /plugin unload (\S+)/, method: :unload_plugin
+      match(/plugin unload (\S+)/, method: :unload_plugin)
       def unload_plugin(m, plugin)
         begin
           plugin_class = Cinch::Plugins.const_get(plugin)
@@ -87,13 +87,13 @@ module Cinch
         m.user.notice "Successfully unloaded #{plugin}"
       end
 
-      match /plugin reload (\S+)(?: (\S+))?/, method: :reload_plugin
+      match(/plugin reload (\S+)(?: (\S+))?/, method: :reload_plugin)
       def reload_plugin(m, plugin, mapping)
         unload_plugin(m, plugin)
         load_plugin(m, plugin, mapping)
       end
 
-      match /plugin set (\S+) (\S+) (.+)$/, method: :set_option
+      match(/plugin set (\S+) (\S+) (.+)$/, method: :set_option)
       def set_option(m, plugin, option, value)
         begin
           const = Cinch::Plugins.const_get(plugin)

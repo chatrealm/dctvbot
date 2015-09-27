@@ -17,7 +17,7 @@ module Cinch
         m.user.notice @join_message if @message_active
       end
 
-      match /setjoin (.+)/
+      match(/setjoin (.+)/)
       def execute(m, input)
         return unless authenticated?(m)
         reply = "Join message is"

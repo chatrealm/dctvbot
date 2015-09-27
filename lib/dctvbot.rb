@@ -18,6 +18,7 @@ require_relative 'dctv/plugins/second_screen'
 class DCTVBot < Cinch::Bot
   # Assigned channels (from dctv api)
   attr_accessor :assignedchannels
+
   # Twitter Endpoint
   attr_accessor :twitter
 
@@ -28,18 +29,15 @@ class DCTVBot < Cinch::Bot
       # Server Info
       c.server  = config_file['server']['host']
       c.port    = config_file['server']['port']
-
       # Bot User Info
       c.nick      = config_file['bot']['nick']
       c.user      = config_file['bot']['user']
       c.realname  = config_file['bot']['realname']
       c.channels  = config_file['bot']['channels']
-
       # Authentication Plugin Settings
       c.authentication          = Cinch::Configuration::Authentication.new
       c.authentication.strategy = :channel_status
       c.authentication.level    = config_file['authentication']['minimum-level']
-
       # Load Up Plugins
       c.plugins.plugins = [
         Cinch::Plugins::CheckTwitter,
@@ -53,7 +51,6 @@ class DCTVBot < Cinch::Bot
         DCTV::Plugins::CheckDCTV,
         DCTV::Plugins::SecondScreen
       ]
-
       # Set Plugin Options
       c.plugins.options = {
         Cinch::Plugins::Identify => { type: :nickserv, password: config_file['bot']['password'] },
