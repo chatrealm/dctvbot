@@ -6,8 +6,6 @@ module Cinch
     class GoogleIt
       include Cinch::Plugin
 
-      set :help, '!google [mode] <term> - Returns top hit on google when searching for <term>. Optional [mode] can be one of blog, book, image, local, news, patent, or video.'
-
       match /google (\w+)\s?(.*)/
 
       def execute(m, mode, query)

@@ -1,7 +1,7 @@
 require 'cinch'
 require 'cinch/extensions/authentication'
 require 'cinch/plugins/identify'
-require 'json'
+# require 'json'
 require 'net/http'
 
 require_relative 'cinch/plugins/check_twitter'
@@ -13,6 +13,7 @@ require_relative 'cinch/plugins/plugin_management'
 require_relative 'cinch/plugins/straw_poll'
 require_relative 'cinch/plugins/urban_dict'
 require_relative 'cinch/plugins/wikipedia'
+require_relative 'cinch/plugins/wolfram'
 
 require_relative 'dctv/plugins/channel_status'
 require_relative 'dctv/plugins/check_dctv'
@@ -32,15 +33,18 @@ class DCTVBot < Cinch::Bot
       # Server Info
       c.server  = config_file['server']['host']
       c.port    = config_file['server']['port']
+
       # Bot User Info
       c.nick      = config_file['bot']['nick']
       c.user      = config_file['bot']['user']
       c.realname  = config_file['bot']['realname']
       c.channels  = config_file['bot']['channels']
+
       # Authentication Plugin Settings
       c.authentication          = Cinch::Configuration::Authentication.new
       c.authentication.strategy = :channel_status
       c.authentication.level    = config_file['authentication']['minimum-level']
+
       # Load Up Plugins
       c.plugins.plugins = [
         Cinch::Plugins::CheckTwitter,
@@ -53,11 +57,13 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::StrawPoll,
         Cinch::Plugins::UrbanDict,
         Cinch::Plugins::Wikipedia,
+        Cinch::Plugins::Wolfram,
 
         DCTV::Plugins::ChannelStatus,
         DCTV::Plugins::CheckDCTV,
         DCTV::Plugins::SecondScreen
       ]
+
       # Set Plugin Options
       c.plugins.options = {
         Cinch::Plugins::Identify => {
@@ -74,6 +80,9 @@ class DCTVBot < Cinch::Bot
           max_length: 300
         },
         Cinch::Plugins::Wikipedia => {
+          max_length: 300
+        },
+        Cinch::Plugins::Wolfram => {
           max_length: 300
         },
 

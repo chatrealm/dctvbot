@@ -72,6 +72,8 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
+    wolfram-alpha (0.3.1)
+      nokogiri
 
 PLATFORMS
   ruby
@@ -88,3 +90,4 @@ DEPENDENCIES
   json (= 1.8.3)
   time_sentence (= 1.0.1)
   twitter (= 5.15.0)
+  wolfram-alpha (= 0.3.1)
