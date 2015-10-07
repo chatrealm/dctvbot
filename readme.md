@@ -6,6 +6,13 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 
 `!now [-v]` - Display channels that are currently live via user notice.<br>`!next [-v]` - Display next scheduled show and estimated time until it starts.<br>`!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
 
+## Search Commands
+
+`!google [mode] <term>` - Returns top hit on google when searching for `<term>`. Optional `[mode]` can be one of blog, book, image, local, news, patent, or video.  
+`!wiki <term>` - Searches Wikipedia for `<term>`.  
+`!wolfram <term>` - Attempts to answer your `<term>` using Wolfram Alpha.  
+`!urban <term>` - Returns result of Urban Dictionary search for `<term>`.  
+
 ## Utility Commands
 **_Requires at least Voice status._**  
 
@@ -14,7 +21,8 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 ## Management Commands
 **_Requires at least Operator status._**  
 
-`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.<br>`!plugin [load|unload|reload] <PluginName> <file_name>` - Un/re/loads `<PluginName>`, optionally using `<file_name>`.<br>`!plugin set <PluginName> <option> <value>` - Sets `<option>` to `<value>` for `<PluginName>`. `!kill <bot_nick>` - Tells bot to quit completely, you must specify correct `<bot_nick>`  
+`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.<br>`!plugin [load|unload|reload] <PluginName> <file_name>` - Un/re/loads `<PluginName>`, optionally using `<file_name>`.<br>`!plugin set <PluginName> <option> <value>` - Sets `<option>` to `<value>` for `<PluginName>`.  
+`!kill <bot_nick>` - Tells bot to quit completely, you must specify correct `<bot_nick>`  
 
 ## Live Announcements
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
