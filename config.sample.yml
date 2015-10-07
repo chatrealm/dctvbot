@@ -16,6 +16,8 @@ custom-log:
   file: './log/cinch_bot.log'
   level: :info
 plugins:
+  google:
+    api: api-key
   second-screen:
     pastebin-api-key: APIKEY
   twitter:
@@ -23,3 +25,5 @@ plugins:
     consumer-secret: 'SECRET'
     access-token: 'TOKEN'
     access-token-secret: 'TOKENSECRET'
+  wolfram:
+    api: api-key
