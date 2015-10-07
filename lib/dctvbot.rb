@@ -10,6 +10,7 @@ require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
 require_relative 'cinch/plugins/straw_poll'
+require_relative 'cinch/plugins/urban_dict'
 require_relative 'cinch/plugins/wikipedia'
 
 require_relative 'dctv/plugins/channel_status'
@@ -48,6 +49,7 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::Kill,
         Cinch::Plugins::PluginManagement,
         Cinch::Plugins::StrawPoll,
+        Cinch::Plugins::UrbanDict,
         Cinch::Plugins::Wikipedia,
 
         DCTV::Plugins::ChannelStatus,
@@ -60,9 +62,22 @@ class DCTVBot < Cinch::Bot
           type: :nickserv,
           password: config_file['bot']['password']
         },
-        Cinch::Plugins::Kill => { authentication_level: config_file['authentication']['admin-level'] },
-        Cinch::Plugins::PluginManagement => { authentication_level: config_file['authentication']['admin-level'] },
-        DCTV::Plugins::SecondScreen => { pastebin_api_key: config_file['plugins']['second-screen']['pastebin-api'] }
+        Cinch::Plugins::Kill => {
+          authentication_level: config_file['authentication']['admin-level']
+        },
+        Cinch::Plugins::PluginManagement => {
+          authentication_level: config_file['authentication']['admin-level']
+        },
+        Cinch::Plugins::UrbanDict => {
+          max_length: 300
+        },
+        Cinch::Plugins::Wikipedia => {
+          max_length: 300
+        },
+
+        DCTV::Plugins::SecondScreen => {
+          pastebin_api_key: config_file['plugins']['second-screen']['pastebin-api']
+        }
       }
     end
 
