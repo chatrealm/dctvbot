@@ -38,7 +38,7 @@ module DCTV
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
-      matc(/schedule\s?\-?(v?)/, method: :schedule)
+      match(/schedule\s?\-?(v?)/, method: :schedule)
       def schedule(m, flag=nil)
         entries = get_calendar_entries
         output =  "Here are the scheduled shows for the next 48 hours:"

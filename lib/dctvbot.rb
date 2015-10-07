@@ -10,6 +10,7 @@ require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
 require_relative 'cinch/plugins/straw_poll'
+require_relative 'cinch/plugins/wikipedia'
 
 require_relative 'dctv/plugins/channel_status'
 require_relative 'dctv/plugins/check_dctv'
@@ -47,13 +48,18 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::Kill,
         Cinch::Plugins::PluginManagement,
         Cinch::Plugins::StrawPoll,
+        Cinch::Plugins::Wikipedia,
+
         DCTV::Plugins::ChannelStatus,
         DCTV::Plugins::CheckDCTV,
         DCTV::Plugins::SecondScreen
       ]
       # Set Plugin Options
       c.plugins.options = {
-        Cinch::Plugins::Identify => { type: :nickserv, password: config_file['bot']['password'] },
+        Cinch::Plugins::Identify => {
+          type: :nickserv,
+          password: config_file['bot']['password']
+        },
         Cinch::Plugins::Kill => { authentication_level: config_file['authentication']['admin-level'] },
         Cinch::Plugins::PluginManagement => { authentication_level: config_file['authentication']['admin-level'] },
         DCTV::Plugins::SecondScreen => { pastebin_api_key: config_file['plugins']['second-screen']['pastebin-api'] }
