@@ -70,8 +70,8 @@ class DCTVBot < Cinch::Bot
           type: :nickserv,
           password: config_file['bot']['password']
         },
-        Plugins::GoogleIt => {
-          google_api_key: config['plugins']['google']['api']
+        Cinch::Plugins::GoogleIt => {
+          google_api_key: config_file['plugins']['google']['api']
         },
         Cinch::Plugins::Kill => {
           authentication_level: config_file['authentication']['admin-level']
@@ -87,7 +87,7 @@ class DCTVBot < Cinch::Bot
         },
         Cinch::Plugins::Wolfram => {
           max_length: 300,
-          wolfram_api_key: config['plugins']['wolfram']['api']
+          wolfram_api_key: config_file['plugins']['wolfram']['api']
         },
 
         DCTV::Plugins::SecondScreen => {
