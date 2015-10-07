@@ -6,6 +6,7 @@ require 'net/http'
 
 require_relative 'cinch/plugins/check_twitter'
 require_relative 'cinch/plugins/clever_bot'
+require_relative 'cinch/plugins/google_it'
 require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
@@ -44,6 +45,7 @@ class DCTVBot < Cinch::Bot
       c.plugins.plugins = [
         Cinch::Plugins::CheckTwitter,
         Cinch::Plugins::CleverBot,
+        Cinch::Plugins::GoogleIt,
         Cinch::Plugins::Identify,
         Cinch::Plugins::JoinMessage,
         Cinch::Plugins::Kill,

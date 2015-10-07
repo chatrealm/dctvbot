@@ -28,6 +28,8 @@ GEM
     equalizer (0.0.10)
     faraday (0.9.1)
       multipart-post (>= 1.2, < 3)
+    google-search (1.0.3)
+      json
     http (0.9.6)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
@@ -81,6 +83,7 @@ DEPENDENCIES
   cinch-identify (= 1.7.0)
   cinch-toolbox (= 1.1.4)
   cleverbot!
+  google-search (= 1.0.3)
   httparty (= 0.13.5)
   json (= 1.8.3)
   time_sentence (= 1.0.1)
