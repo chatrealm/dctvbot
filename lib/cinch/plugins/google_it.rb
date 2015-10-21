@@ -33,6 +33,7 @@ module Cinch
           search = Google::Search::Web.new(:query => query, :api_key => config[:google_api_key])
         end
         result = search.all_items.first
+        # TODO: check for missing title/uri
         m.reply "#{CGI.unescape_html(result.title)}\n#{result.uri}"
       end
     end
