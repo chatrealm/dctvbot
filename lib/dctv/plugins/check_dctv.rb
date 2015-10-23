@@ -1,3 +1,5 @@
+require 'json'
+
 module DCTV
   module Plugins
 
@@ -25,17 +27,17 @@ module DCTV
       def listen(m)
         # Update assigned channels from dctv
         update_assignedchannels
-        @bot.debug "Assigned Channels from DCTV api:"
-        @bot.assignedchannels.each do |channel|
-          @bot.debug "#{channel['channel']}. #{channel['friendlyalias']} - #{is_online?(channel) ? 'Live' : 'Upcoming'}"
-        end
+        # @bot.debug "Assigned Channels from DCTV api:"
+        # @bot.assignedchannels.each do |channel|
+        #   @bot.debug "#{channel['channel']}. #{channel['friendlyalias']} - #{is_online?(channel) ? 'Live' : 'Upcoming'}"
+        # end
 
         # Clean already announced list of upcoming and live channels when their status has changed
         refresh_announced_list
-        @bot.debug "Already Live Channels:"
-        @already_announced.each do |channel|
-          @bot.debug "#{channel['channel']}. #{channel['friendlyalias']} - #{is_online?(channel) ? 'Live' : 'Upcoming'}"
-        end
+        # @bot.debug "Already Live Channels:"
+        # @already_announced.each do |channel|
+        #   @bot.debug "#{channel['channel']}. #{channel['friendlyalias']} - #{is_online?(channel) ? 'Live' : 'Upcoming'}"
+        # end
 
         # Check all currently assigned channels
         @bot.assignedchannels.each do |channel|
@@ -49,8 +51,8 @@ module DCTV
 
         # Update official live status from dctv
         update_official_live
-        @bot.debug "Official Live? #{@official_live}"
-        @bot.debug "check_dctv handler complete."
+        # @bot.debug "Official Live? #{@official_live}"
+        # @bot.debug "check_dctv handler complete."
       end
 
       private
@@ -132,13 +134,13 @@ module DCTV
 
       def clean_announced_list(channel_array, upcoming=false)
         channel_array.each do |existing_ch|
-          @bot.debug "Checking to see if #{existing_ch['friendlyalias']} is still there"
+          # @bot.debug "Checking to see if #{existing_ch['friendlyalias']} is still there"
           channel = @bot.assignedchannels.find { |assigned| existing_ch['streamid'] == assigned['streamid'] }
           @already_announced.delete(existing_ch)
           if channel.nil? || (upcoming && !is_upcoming?(channel)) || (!upcoming && !is_online?(channel))
-            @bot.debug "Nope, removing from already announced"
+            # @bot.debug "Nope, removing from already announced"
           else
-            @bot.debug "Yep, updating details"
+            # @bot.debug "Yep, updating details"
             @already_announced << channel
           end
         end
