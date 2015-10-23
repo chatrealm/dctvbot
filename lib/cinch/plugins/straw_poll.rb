@@ -18,7 +18,10 @@ module Cinch
         options << "pol pot" if mode == "pol"
         response = request_poll(title.strip, options)
         unless response['id'].nil?
-          @bot.primary_channel.send "#{Format(:white, :blue, " VOTE ")} #{title.strip} https://strawpoll.me/#{response['id']}"
+          3.times do
+            @bot.primary_channel.send "#{Format(:white, :blue, " VOTE ")} #{title.strip} https://strawpoll.me/#{response['id']}"
+            sleep 60
+          end
         else
           m.user.notice "Error: #{response['error']}"
         end
