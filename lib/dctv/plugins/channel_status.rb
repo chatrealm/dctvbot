@@ -1,13 +1,12 @@
 require 'active_support'
 require 'active_support/time'
 require 'cgi'
-require 'rexml/document'
+require 'json'
 require 'time_sentence'
 
 module DCTV
   module Plugins
     class ChannelStatus
-      include REXML
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
@@ -29,12 +28,12 @@ module DCTV
       match(/next\s?\-?(v?)/, method: :next)
       def next(m, flag=nil)
         entry = nil
-        get_calendar_entries(3).each do |e|
-          next if e['time'] == 0 || e['time'] < Time.new
+        get_calendar_entries.each do |e|
+          next if e['start']['dateTime'] === nil
           entry = e
           break
         end
-        output = "Next scheduled show: #{CGI.unescape_html entry['title']} (#{time_until(entry['time'])})"
+        output = "Next scheduled show: #{CGI.unescape_html(entry['summary'])} (#{time_until(entry['start']['dateTime'])})"
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
@@ -43,10 +42,8 @@ module DCTV
         entries = get_calendar_entries
         output =  "Here are the scheduled shows for the next 48 hours:"
         entries.each do |entry|
-          if entry["time"] == 0 || entry["time"] - 48.hours < Time.new
-            output += "\n#{CGI.unescape_html entry["title"]}"
-            output += " - #{time_is_link(entry["time"], true)}" unless entry["time"] == 0
-          end
+          output += "\n#{CGI.unescape_html(entry['summary'])}"
+          output += " - #{time_is_link(entry['start']['dateTime'], true)}" if entry['start']['date'] === nil
         end
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
@@ -64,32 +61,18 @@ module DCTV
         return differenceInSeconds.seconds.to_time_sentence
       end
 
-      def get_calendar_entries(num_entries=10)
-        xml = get_calendar_xml(num_entries)
-        parse_calendar_xml(xml)
-      end
-
-      def get_calendar_xml(num_entries=10)
-        uri = URI.parse("http://www.google.com/calendar/feeds/a5jeb9t5etasrbl6dt5htkv4to%40group.calendar.google.com/public/basic")
-        params = { orderby: "starttime", singleevents:"true", sortorder: "ascending", futureevents: "true", ctz: "US/Eastern", 'max-results' => "#{num_entries}" }
+      def get_calendar_entries
+        uri = URI.parse('https://www.googleapis.com/calendar/v3/calendars/a5jeb9t5etasrbl6dt5htkv4to%40group.calendar.google.com/events')
+        params = {
+          key: config[:google_api_key],
+          singleEvents: true,
+          orderBy: 'startTime',
+          timeMin: DateTime.now,
+          timeMax: DateTime.now + 48.hours
+        }
         uri.query = URI.encode_www_form(params)
         response = Net::HTTP.get_response(uri)
-        Document.new(response.body)
-      end
-
-      def parse_calendar_xml(xml)
-        response = Array.new
-        xml.elements.each('feed/entry') do |entry|
-          calendar_item = Hash.new
-          entry.elements.each('title') { |title| calendar_item['title'] = title.text }
-          entry.elements.each('content') do |content|
-            content.text =~ /when:\s(.+)\sto/i
-            calendar_item['time'] = Time.parse("#{$1} EDT")
-            calendar_item['time'] = 0 if $1 == nil
-          end
-          response << calendar_item
-        end
-        return response
+        JSON.parse(response.body)['items']
       end
 
     end

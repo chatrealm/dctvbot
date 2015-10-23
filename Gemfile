@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'cinch', '2.2.6'
+gem 'cinch', '2.2.7'
 gem 'cinch-authentication', '0.1.1'
 gem 'cinch-identify', '1.7.0'
 gem 'cinch-toolbox', '1.1.4'

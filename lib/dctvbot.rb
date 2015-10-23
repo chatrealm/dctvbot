@@ -1,8 +1,6 @@
 require 'cinch'
 require 'cinch/extensions/authentication'
 require 'cinch/plugins/identify'
-# require 'json'
-require 'net/http'
 
 require_relative 'cinch/plugins/check_twitter'
 require_relative 'cinch/plugins/clever_bot'
@@ -90,6 +88,9 @@ class DCTVBot < Cinch::Bot
           wolfram_api_key: config_file['plugins']['wolfram']['api']
         },
 
+        DCTV::Plugins::ChannelStatus => {
+          google_api_key:  config_file['plugins']['google']['api']
+        },
         DCTV::Plugins::SecondScreen => {
           pastebin_api_key: config_file['plugins']['second-screen']['pastebin-api']
         }
