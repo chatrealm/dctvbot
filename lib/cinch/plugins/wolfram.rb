@@ -18,24 +18,30 @@ module Cinch
         m.reply search(query)
       end
 
+      #reinterpret
       def search(query)
-        wolfram = WolframAlpha::Client.new(config[:wolfram_api_key], options = { :timeout => 30 })
-        response = wolfram.query query
+        wolfram = WolframAlpha::Client.new(
+          config[:wolfram_api_key],
+          options = {
+            format: 'plaintext',
+            ignorecase: true,
+            reinterpret: true
+        })
+        response = wolfram.query(query)
         input = response["Input"] # Get the input interpretation pod.
-        # result = response.find { |pod| pod.title == "Result" }
-        result = response.pods[1] # unless result
+        result = response.find { |pod| pod.title == "Result" }
+        result = response.pods[1] unless result
         output = ""
         if result
           result.subpods.each do |subpod|
-            output += "#{subpod.plaintext} "
+            output += subpod.plaintext
           end
-          output = Cinch::Toolbox.truncate(output.strip, @max_length)
           reply = "#{input.subpods[0].plaintext}\n"
-          reply += output.gsub("  ", " ][ ")
-          reply += "\nMore Info: https://www.wolframalpha.com/input/?i=#{query.gsub(" ","+")}"
+          reply += Cinch::Toolbox.truncate(output.strip, @max_length).gsub("  ", ", ")
         else
-          "Sorry, I've no idea. Does this help? https://www.wolframalpha.com/input/?i=#{query.gsub(" ","+")}"
+          reply = "Sorry, I've no idea. Does this help?"
         end
+        reply += " https://www.wolframalpha.com/input/?i=#{query.gsub(" ","+")}"
       end
     end
 
