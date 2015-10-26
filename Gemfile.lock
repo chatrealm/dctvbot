@@ -1,8 +1,9 @@
 GIT
-  remote: https://github.com/jalada/cleverbot.git
-  revision: 75717384e88739eea1d8b8af8635f9dfa74309ad
+  remote: https://github.com/sapslaj/cleverbot.git
+  revision: 1ca80c8b838ce2b2e87d5d0b0e573129a74e250b
   specs:
     cleverbot (0.2.0)
+      hashie
       httparty (>= 0.8.1, < 1.0)
 
 GEM
@@ -30,6 +31,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     google-search (1.0.3)
       json
+    hashie (3.4.3)
     http (0.9.8)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
