@@ -6,7 +6,6 @@ module Cinch
 
     class Wolfram
       include Cinch::Plugin
-
       match(/wolfram (.+)/)
 
       def initialize(*args)
@@ -18,7 +17,6 @@ module Cinch
         m.reply search(query)
       end
 
-      #reinterpret
       def search(query)
         wolfram = WolframAlpha::Client.new(
           config[:wolfram_api_key],
@@ -27,21 +25,24 @@ module Cinch
             ignorecase: true,
             reinterpret: true
         })
-        response = wolfram.query(query)
-        input = response["Input"] # Get the input interpretation pod.
+        reply = format_reply(wolfram.query(query))
+        reply += " https://www.wolframalpha.com/input/?i=#{query.gsub(" ","+")}"
+      end
+
+      def format_reply(response)
         result = response.find { |pod| pod.title == "Result" }
         result = response.pods[1] unless result
-        output = ""
         if result
+          output = ""
           result.subpods.each do |subpod|
             output += subpod.plaintext
           end
-          reply = "#{input.subpods[0].plaintext}\n"
-          reply += Cinch::Toolbox.truncate(output.strip, @max_length).gsub("  ", ", ")
-        else
-          reply = "Sorry, I've no idea. Does this help?"
+          output = output.strip.gsub("  ", ", ")
+          reply = "#{response["Input"].subpods[0].plaintext}\n"
+          reply += Cinch::Toolbox.truncate(output, @max_length)
+          return reply
         end
-        reply += " https://www.wolframalpha.com/input/?i=#{query.gsub(" ","+")}"
+        return "Sorry, I've no idea. Does this help?"
       end
     end
 
