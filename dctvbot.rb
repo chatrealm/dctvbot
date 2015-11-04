@@ -30,7 +30,7 @@ require_relative 'lib/dctv/plugins/second_screen'
 
 require_relative 'lib/watcher'
 
-config_file = YAML.load(File.open 'config.test.yml')
+config_file = YAML.load(File.open 'config.yml')
 
 dctvbot = Cinch::Bot.new do
   # Define Cinch Configuration
