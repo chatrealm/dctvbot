@@ -2,9 +2,12 @@ require 'cinch'
 require 'cinch/extensions/authentication'
 require 'cinch/plugins/identify'
 
+module Cinch::Plugin::ClassMethods attr_accessor :help_msg end
+
 require_relative 'cinch/plugins/check_twitter'
 require_relative 'cinch/plugins/clever_bot'
 require_relative 'cinch/plugins/google_it'
+require_relative 'cinch/plugins/help'
 require_relative 'cinch/plugins/join_message'
 require_relative 'cinch/plugins/kill'
 require_relative 'cinch/plugins/plugin_management'
@@ -26,6 +29,7 @@ class DCTVBot < Cinch::Bot
 
   def initialize(config_file)
     super()
+
     # Define Cinch Configuration
     configure do |c|
       # Server Info
@@ -48,6 +52,7 @@ class DCTVBot < Cinch::Bot
         Cinch::Plugins::CheckTwitter,
         Cinch::Plugins::CleverBot,
         Cinch::Plugins::GoogleIt,
+        Cinch::Plugins::Help,
         Cinch::Plugins::Identify,
         Cinch::Plugins::JoinMessage,
         Cinch::Plugins::Kill,
