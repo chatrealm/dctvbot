@@ -4,8 +4,6 @@ module Cinch
     class Help
       include Cinch::Plugin
 
-      set :help_msg, "helphelphelp"
-
       match /help$/, method: :general_help_message
       def general_help_message(m)
         list = []
