@@ -6,7 +6,10 @@ module Cinch
 
     class Wolfram
       include Cinch::Plugin
-      match(/wolfram (.+)/)
+
+      set :help_msg, "!wolfram <term> - Attempts to answer your <term> using Wolfram Alpha."
+
+      match /wolfram (.+)/
 
       def initialize(*args)
         super

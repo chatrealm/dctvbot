@@ -10,7 +10,10 @@ module DCTV
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      match(/now\s?\-?(v?)/, method: :now)
+      set :plugin_name, "dctvstatus"
+      set :help_msg, "!now [-v] - Display channels that are currently live via user notice.\n!next [-v] - Display next scheduled show and estimated time until it starts.\n!schedule [-v] - Display scheduled shows for the next 48 hours via user notice."
+
+      match /now\s?\-?(v?)/, method: :now
       def now(m, flag=nil)
         output = ""
         @bot.assignedchannels.sort_by!{ |c| c['channel'] }.each do |channel|
@@ -25,7 +28,7 @@ module DCTV
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
-      match(/next\s?\-?(v?)/, method: :next)
+      match /next\s?\-?(v?)/, method: :next
       def next(m, flag=nil)
         entry = nil
         get_calendar_entries.each do |e|
@@ -37,7 +40,7 @@ module DCTV
         flag == "v" && authenticated?(m) ? m.reply(output) : m.user.notice(output)
       end
 
-      match(/schedule\s?\-?(v?)/, method: :schedule)
+      match /schedule\s?\-?(v?)/, method: :schedule
       def schedule(m, flag=nil)
         entries = get_calendar_entries
         output =  "Here are the scheduled shows for the next 48 hours:"

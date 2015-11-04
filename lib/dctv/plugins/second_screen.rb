@@ -7,8 +7,10 @@ module DCTV
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
+      set :help_msg, "!secs [on|off|clear|<url>] - Executes Second Screen command or sets to <url>. Automatically generates a pastebin of links sent to the second screen between on and off commands."
+
       enable_authentication
-      match(/secs (.+)/)
+      match /secs (.+)/
 
       def initialize(*args)
         super
@@ -49,6 +51,6 @@ module DCTV
         Net::HTTP.post_form(url, params)
       end
     end
-    
+
   end
 end

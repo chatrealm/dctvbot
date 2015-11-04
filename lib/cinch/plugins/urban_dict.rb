@@ -6,7 +6,10 @@ module Cinch
     class UrbanDict
       include Cinch::Plugin
 
-      match(/urban (.+)/)
+      set :plugin_name, "urbandictionary"
+      set :help_msg, "!urban <term> - Returns result of Urban Dictionary search for <term>."
+
+      match /urban (.+)/
 
       def initialize(*args)
         super

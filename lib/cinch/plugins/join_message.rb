@@ -5,6 +5,8 @@ module Cinch
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
+      set :help_msg, "!setjoin [on|off|status|<message>] - Turns on/off, displays status of, or sets message on channel join to <message>."
+
       def initialize(*args)
         super
         @join_message = "Welcome to Chatrealm!"
@@ -17,7 +19,7 @@ module Cinch
         m.user.notice @join_message if @message_active
       end
 
-      match(/setjoin (.+)/)
+      match /setjoin (.+)/
       def execute(m, input)
         return unless authenticated?(m)
         reply = "Join message is"

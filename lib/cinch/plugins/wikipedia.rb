@@ -8,7 +8,9 @@ module Cinch
     class Wikipedia
       include Cinch::Plugin
 
-      match(/wiki(?:pedia)? (.+)/i)
+      set :help_msg, "!wiki <term> - Searches Wikipedia for <term>."
+
+      match /wiki(?:pedia)? (.+)/i
 
       def initialize(*args)
         super

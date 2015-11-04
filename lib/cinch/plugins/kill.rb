@@ -5,6 +5,8 @@ module Cinch
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
+      set :help_msg, "!kill <bot_nick> - Tells bot to quit completely, you must specify correct <bot_nick>."
+
       enable_authentication
 
       match lambda { |m| /kill #{m.bot.nick}/ }

@@ -9,9 +9,11 @@ module Cinch
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
+      set :help_msg, "!poll <title> | <option>, <option> - Requests a straw poll using <title> and a minimum of 2 <option> separated by commas."
+
       enable_authentication
 
-      match(/(poll?)\s(.+)\|(.+)/)
+      match /(poll?)\s(.+)\|(.+)/
 
       def execute(m, mode, title, options_string)
         options = options_string.split(",").collect { |o| o = o.strip }
