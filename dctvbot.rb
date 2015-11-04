@@ -115,16 +115,14 @@ dctvbot = Cinch::Bot.new do
 
   # Handle SIGINT (Ctrl-C)
   trap "SIGINT" do
-    debug "Caught SIGINT, quitting..."
-    # watcher_threads.each { |t| t.kill }
-    dctvbot.quit
+    bot.debug "Caught SIGINT, quitting..."
+    bot.quit
   end
 
   # Handle SIGTERM (Kill Command)
   trap "SIGTERM" do
-    debug "Caught SIGTERM, quitting..."
-    # watcher_threads.each { |t| t.kill }
-    dctvbot.quit
+    bot.debug "Caught SIGTERM, quitting..."
+    bot.quit
   end
 end
 
