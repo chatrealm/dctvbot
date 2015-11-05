@@ -17,7 +17,7 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.3.8)
     buftok (0.2.0)
-    cinch (2.3.0)
+    cinch (2.3.1)
     cinch-authentication (0.1.1)
       cinch (~> 2.0)
     cinch-identify (1.7.0)
@@ -82,7 +82,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (= 4.2.4)
-  cinch (= 2.3.0)
+  cinch (= 2.3.1)
   cinch-authentication (= 0.1.1)
   cinch-identify (= 1.7.0)
   cinch-toolbox (= 1.1.4)
