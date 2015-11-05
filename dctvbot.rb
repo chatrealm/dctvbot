@@ -34,7 +34,7 @@ require_relative 'lib/watcher'
 mutex = Mutex.new
 quit_signalled = ConditionVariable.new
 signal_received = nil
-config_file = YAML.load(File.open 'config.test.yml')
+config_file = YAML.load(File.open 'config.yml')
 
 bot = Cinch::Bot.new do
   # Define Cinch Configuration
