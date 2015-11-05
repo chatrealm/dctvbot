@@ -1,7 +1,8 @@
-require 'yaml'
 require 'cinch'
 require 'cinch/extensions/authentication'
 require 'cinch/plugins/identify'
+require 'thread'
+require 'yaml'
 
 module Cinch::Plugin::ClassMethods
   attr_accessor :help_msg
@@ -30,9 +31,12 @@ require_relative 'lib/dctv/plugins/second_screen'
 
 require_relative 'lib/watcher'
 
-config_file = YAML.load(File.open 'config.yml')
+mutex = Mutex.new
+quit_signalled = ConditionVariable.new
+signal_received = nil
+config_file = YAML.load(File.open 'config.test.yml')
 
-dctvbot = Cinch::Bot.new do
+bot = Cinch::Bot.new do
   # Define Cinch Configuration
   configure do |c|
     # Server Info
@@ -112,23 +116,26 @@ dctvbot = Cinch::Bot.new do
     c.access_token        = config_file['plugins']['twitter']['access-token']
     c.access_token_secret = config_file['plugins']['twitter']['access-token-secret']
   end
-
-  # Handle SIGINT (Ctrl-C)
-  trap "SIGINT" do
-    bot.debug "Caught SIGINT, quitting..."
-    bot.quit
-  end
-
-  # Handle SIGTERM (Kill Command)
-  trap "SIGTERM" do
-    bot.debug "Caught SIGTERM, quitting..."
-    bot.quit
-  end
 end
 
 # Start watcher threads
-Thread.new { Watcher.new(dctvbot, :check_dctv).start }
-Thread.new { Watcher.new(dctvbot, :check_twitter, 300).start }
+Thread.new { Watcher.new(bot, :check_dctv).start }
+Thread.new { Watcher.new(bot, :check_twitter, 300).start }
+
+# Handle signals QUIT (Ctrl-\), INT (Ctrl-C), and TERM (Kill Command)
+%w[QUIT INT TERM].each do |signal_name|
+  Signal.trap(signal_name) do |signal_number|
+    signal_received = signal_number
+    quit_signalled.signal
+  end
+end
+
+Thread.new do
+  mutex.synchronize do
+    quit_signalled.wait(mutex) until signal_received
+    bot.quit "Shutdown signal received #{Signal.signame(signal_received)}"
+  end
+end
 
 # Fire up bot
-dctvbot.start
+bot.start
