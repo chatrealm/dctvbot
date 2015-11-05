@@ -109,7 +109,7 @@ module DCTV
         # Set announce message
         output = get_announce_message(channel)
         # Announce channel
-        @bot.primary_channel.send(output)
+        Channel(@bot.channels.first).send(output)
         # Update topic, if channel is official
         update_primary_channel_topic(output) if is_official?(channel)
       end
@@ -118,13 +118,13 @@ module DCTV
       # Example: 'first | second | third' -> update_primary_channel_topic('apple') -> 'apple | second | third'
       def update_primary_channel_topic(title)
         # Get array of items between "|" characters
-        topic_array = @bot.primary_channel.topic.split("|")
+        topic_array = Channel(@bot.channels.first).topic.split("|")
         # Remove first item
         topic_array.shift
         # Add new info to beginning of former title
         new_topic = title + " |" + topic_array.join("|")
         # Set primary channel topic
-        @bot.primary_channel.topic = new_topic
+        Channel(@bot.channels.first).topic = new_topic
       end
 
       def refresh_announced_list

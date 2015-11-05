@@ -21,7 +21,7 @@ module Cinch
         response = request_poll(title.strip, options)
         unless response['id'].nil?
           3.times do
-            @bot.primary_channel.send "#{Format(:white, :blue, " VOTE ")} #{title.strip} https://strawpoll.me/#{response['id']}"
+            Channel(@bot.channels.first).send "#{Format(:white, :blue, " VOTE ")} #{title.strip} https://strawpoll.me/#{response['id']}"
             sleep 60
           end
         else
