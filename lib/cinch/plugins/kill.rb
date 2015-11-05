@@ -9,7 +9,7 @@ module Cinch
 
       enable_authentication
 
-      match lambda { |m| /kill #{m.bot.nick}/ }
+      match lambda { |m| /kill #{m.bot.nick}$/ }
 
       def execute(m)
         @bot.debug "Executing quit command requested by #{m.user.name}"
