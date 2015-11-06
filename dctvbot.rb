@@ -4,13 +4,14 @@ require 'cinch/plugins/identify'
 require 'thread'
 require 'yaml'
 
-module Cinch::Plugin::ClassMethods
-  attr_accessor :help_msg
-end
-
-class Cinch::Bot
-  attr_accessor :assignedchannels
-  attr_accessor :twitter
+module Cinch
+  module Plugin::ClassMethods
+    attr_accessor :help_msg
+  end
+  class Bot
+    attr_accessor :assignedchannels
+    attr_accessor :twitter
+  end
 end
 
 require_relative 'lib/cinch/plugins/check_twitter'
@@ -48,8 +49,6 @@ bot = Cinch::Bot.new do
     c.user      = config_file['bot']['user']
     c.realname  = config_file['bot']['realname']
     c.channels  = config_file['bot']['channels']
-    c.modes     = ["B"]
-
     # Authentication Plugin Settings
     c.authentication          = Cinch::Configuration::Authentication.new
     c.authentication.strategy = :channel_status
@@ -109,6 +108,8 @@ bot = Cinch::Bot.new do
       }
     }
   end
+
+  on :connect do bot.set_mode "B" end
 
   # Set Twitter Endpoint
   @twitter = Twitter::REST::Client.new do |c|
