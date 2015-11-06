@@ -35,7 +35,7 @@ require_relative 'lib/watcher'
 mutex = Mutex.new
 quit_signalled = ConditionVariable.new
 signal_received = nil
-config_file = YAML.load(File.open 'config.test.yml')
+config_file = YAML.load(File.open 'config.yml')
 
 bot = Cinch::Bot.new do
   # Define Cinch Configuration
@@ -49,7 +49,7 @@ bot = Cinch::Bot.new do
     c.user        = config_file['bot']['user']
     c.realname    = config_file['bot']['realname']
     c.channels    = config_file['bot']['channels']
-    c.delay_joins = 5
+    c.delay_joins = 10
 
     # Authentication Plugin Settings
     c.authentication          = Cinch::Configuration::Authentication.new
