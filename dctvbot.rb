@@ -48,6 +48,7 @@ bot = Cinch::Bot.new do
     c.user      = config_file['bot']['user']
     c.realname  = config_file['bot']['realname']
     c.channels  = config_file['bot']['channels']
+    c.delay_joins = 60
 
     # Authentication Plugin Settings
     c.authentication          = Cinch::Configuration::Authentication.new
