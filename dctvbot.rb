@@ -111,6 +111,7 @@ bot = Cinch::Bot.new do
     }
   end
 
+  # Set "bot mode" (+B)
   on :connect do bot.set_mode "B" end
 
   # Set Twitter Endpoint
@@ -120,6 +121,12 @@ bot = Cinch::Bot.new do
     c.access_token        = config_file['plugins']['twitter']['access-token']
     c.access_token_secret = config_file['plugins']['twitter']['access-token-secret']
   end
+
+  # Set custom Log File
+  file = open(config_file['custom-log']['file'], 'a')
+  file.sync = true # Write buffered data immediately
+  @loggers << Cinch::Logger::FormattedLogger.new(file)
+  @loggers.first.level = config_file['custom-log']['level'] # Set log level
 end
 
 # Start watcher threads
