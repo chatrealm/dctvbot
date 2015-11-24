@@ -7,7 +7,10 @@ module Cinch
     class Wolfram
       include Cinch::Plugin
 
-      set :help_msg, "!wolfram <term> - Attempts to answer your <term> using Wolfram Alpha."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !wolfram <term>
+          Attempts to answer your <term> using Wolfram Alpha.
+        HELP
 
       match /wolfram (.+)/
 

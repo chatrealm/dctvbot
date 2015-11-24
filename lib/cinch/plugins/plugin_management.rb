@@ -7,7 +7,12 @@ module Cinch
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      set :help_msg, "!plugin [load|unload|reload] <PluginName> <file_name> - Un/re/loads <PluginName>, optionally using <file_name>.\n!plugin set <PluginName> <option> <value> - Sets <option> to <value> for <PluginName>."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !plugin [load|unload|reload] <PluginName> <file_name>
+          Un/re/loads <PluginName>, optionally using <file_name>.
+        !plugin set <PluginName> <option> <value>
+          Sets <option> to <value> for <PluginName>.
+        HELP
 
       # Turn on authentication for this plugin
       enable_authentication

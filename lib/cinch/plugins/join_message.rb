@@ -5,7 +5,10 @@ module Cinch
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      set :help_msg, "!setjoin [on|off|status|<message>] - Turns on/off, displays status of, or sets message on channel join to <message>."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !setjoin [on|off|status|<message>]
+          Turns on/off, displays status of, or sets message on channel join to <message>.
+        HELP
 
       def initialize(*args)
         super

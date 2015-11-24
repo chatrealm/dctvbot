@@ -10,7 +10,7 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 `!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
 :lock:**_The `-v` option will show the reply main chat._**  
 <br>
-`!help <plugin>` - Displays general help or `<plugin>` help, if specified  
+`!halp <plugin>` - Displays general help or `<plugin>` help, if specified  
 <br>
 `!google [mode] <term>` - Returns top hit on google when searching for `<term>`. Optional `[mode]` can be one of blog, book, image, local, news, patent, or video.  
 `!wiki <term>` - Searches Wikipedia for `<term>`.  

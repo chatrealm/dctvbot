@@ -7,7 +7,10 @@ module DCTV
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      set :help_msg, "!secs [on|off|clear|<url>] - Executes Second Screen command or sets to <url>. Automatically generates a pastebin of links sent to the second screen between on and off commands."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !secs [on|off|clear|<url>]
+          Executes Second Screen command or sets to <url>. Automatically generates a pastebin of links sent to the second screen between on and off commands.
+        HELP
 
       enable_authentication
       match /secs (.+)/

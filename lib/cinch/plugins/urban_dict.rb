@@ -7,7 +7,10 @@ module Cinch
       include Cinch::Plugin
 
       set :plugin_name, "urbandictionary"
-      set :help_msg, "!urban <term> - Returns result of Urban Dictionary search for <term>."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !urban <term>
+          Returns result of Urban Dictionary search for <term>.
+        HELP
 
       match /urban (.+)/
 

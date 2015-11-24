@@ -7,7 +7,10 @@ module Cinch
       include Cinch::Plugin
 
       set :plugin_name, "google"
-      set :help_msg, "!google [mode] <term> - Returns top hit on google when searching for <term>. Optional [mode] can be one of blog, book, image, local, news, patent, or video."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !google [mode] <term>
+          Returns top hit on google when searching for <term>. Optional [mode] can be one of blog, book, image, local, news, patent, or video.
+        HELP
 
       match /google (\w+)\s?(.*)/
 

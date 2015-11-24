@@ -4,20 +4,15 @@ require 'cinch/plugins/identify'
 require 'thread'
 require 'yaml'
 
-module Cinch
-  module Plugin::ClassMethods
-    attr_accessor :help_msg
-  end
-  class Bot
-    attr_accessor :assignedchannels
-    attr_accessor :twitter
-  end
+class Cinch::Bot
+  attr_accessor :assignedchannels
+  attr_accessor :twitter
 end
 
 require_relative 'lib/cinch/plugins/check_twitter'
 require_relative 'lib/cinch/plugins/clever_bot'
 require_relative 'lib/cinch/plugins/google_it'
-require_relative 'lib/cinch/plugins/help'
+require_relative 'lib/cinch/plugins/halp'
 require_relative 'lib/cinch/plugins/join_message'
 require_relative 'lib/cinch/plugins/kill'
 require_relative 'lib/cinch/plugins/plugin_management'
@@ -61,7 +56,7 @@ bot = Cinch::Bot.new do
       Cinch::Plugins::CheckTwitter,
       Cinch::Plugins::CleverBot,
       Cinch::Plugins::GoogleIt,
-      Cinch::Plugins::Help,
+      Cinch::Plugins::Halp,
       Cinch::Plugins::Identify,
       Cinch::Plugins::JoinMessage,
       Cinch::Plugins::Kill,

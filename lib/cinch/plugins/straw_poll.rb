@@ -9,7 +9,10 @@ module Cinch
       include Cinch::Plugin
       include Cinch::Extensions::Authentication
 
-      set :help_msg, "!poll <title> | <option>, <option> - Requests a straw poll using <title> and a minimum of 2 <option> separated by commas."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !poll <title> | <option>, <option>...
+          Requests a straw poll using <title> and a minimum of 2 <option> separated by commas.
+        HELP
 
       enable_authentication
 

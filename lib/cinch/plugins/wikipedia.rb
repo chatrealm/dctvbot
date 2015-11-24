@@ -8,7 +8,10 @@ module Cinch
     class Wikipedia
       include Cinch::Plugin
 
-      set :help_msg, "!wiki <term> - Searches Wikipedia for <term>."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !wiki <term>
+          Searches Wikipedia for <term>.
+        HELP
 
       match /wiki(?:pedia)? (.+)/i
 

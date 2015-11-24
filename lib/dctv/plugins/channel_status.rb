@@ -11,7 +11,14 @@ module DCTV
       include Cinch::Extensions::Authentication
 
       set :plugin_name, "dctvstatus"
-      set :help_msg, "!now [-v] - Display channels that are currently live via user notice.\n!next [-v] - Display next scheduled show and estimated time until it starts.\n!schedule [-v] - Display scheduled shows for the next 48 hours via user notice."
+      set :help, <<-HELP.gsub(/^ {8}/, '')
+        !now
+          Displays channels that are currently live via user notice.
+        !next
+          Displays next scheduled show and estimated time until it starts.
+        !schedule
+          Displays scheduled shows for the next 48 hours via user notice.
+        HELP
 
       match /now\s?\-?(v?)/, method: :now
       def now(m, flag=nil)
