@@ -23,9 +23,7 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 :closed_lock_with_key:`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.  
 :closed_lock_with_key:`!plugin [load|unload|reload] <PluginName> <file_name>` - Un/re/loads `<PluginName>`, optionally using `<file_name>`.  
 :closed_lock_with_key:`!plugin set <PluginName> <option> <value>` - Sets `<option>` to `<value>` for `<PluginName>`.  
-`:closed_lock_with_key:!kill <bot_nick>` - Tells bot to quit completely, you must specify correct `<bot_nick>`
-
----
+:closed_lock_with_key:`!kill <bot_nick>` - Tells bot to quit completely, you must specify correct `<bot_nick>`  
 
 **Live Announcements**  
 dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
@@ -40,3 +38,6 @@ Mentioning dctvbot in chat will trigger a response from [cleverbot.com](https://
 <br>
 **Twitter Integration**  
 The cleverbot integration extends to twitter for replies to mentions of [@dctvbot](https://twitter.com/dctvbot)
+
+## Support
+Like my code? Want to support my coffee habit? http://tinnvec.com/support
