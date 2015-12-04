@@ -22,6 +22,10 @@ GEM
       cinch (~> 2.0)
     cinch-identify (1.7.0)
       cinch (~> 2.0)
+    cinch-strawpoll (0.0.9)
+      cinch (~> 2.3.1, >= 2.3.1)
+      cinch-authentication (~> 0.1.1)
+      json (~> 1.8.3, >= 1.8.3)
     cinch-toolbox (1.1.4)
       nokogiri (~> 1.6.0)
     domain_name (0.5.25)
@@ -85,6 +89,7 @@ DEPENDENCIES
   cinch (= 2.3.1)
   cinch-authentication (= 0.1.1)
   cinch-identify (= 1.7.0)
+  cinch-strawpoll (= 0.0.9)
   cinch-toolbox (= 1.1.4)
   cleverbot!
   google-search (= 1.0.3)

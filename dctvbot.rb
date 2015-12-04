@@ -1,6 +1,7 @@
 require 'cinch'
 require 'cinch/extensions/authentication'
 require 'cinch/plugins/identify'
+require 'cinch/plugins/strawpoll'
 require 'thread'
 require 'yaml'
 
@@ -16,7 +17,6 @@ require_relative 'lib/cinch/plugins/halp'
 require_relative 'lib/cinch/plugins/join_message'
 require_relative 'lib/cinch/plugins/kill'
 require_relative 'lib/cinch/plugins/plugin_management'
-require_relative 'lib/cinch/plugins/straw_poll'
 require_relative 'lib/cinch/plugins/urban_dict'
 require_relative 'lib/cinch/plugins/wikipedia'
 require_relative 'lib/cinch/plugins/wolfram'
@@ -30,7 +30,7 @@ require_relative 'lib/watcher'
 mutex = Mutex.new
 quit_signalled = ConditionVariable.new
 signal_received = nil
-config_file = YAML.load(File.open 'config.yml')
+config_file = YAML.load(File.open 'config.test.yml')
 
 bot = Cinch::Bot.new do
   # Define Cinch Configuration
@@ -61,7 +61,7 @@ bot = Cinch::Bot.new do
       Cinch::Plugins::JoinMessage,
       Cinch::Plugins::Kill,
       Cinch::Plugins::PluginManagement,
-      Cinch::Plugins::StrawPoll,
+      Cinch::Plugins::Strawpoll,
       Cinch::Plugins::UrbanDict,
       Cinch::Plugins::Wikipedia,
       Cinch::Plugins::Wolfram,
@@ -86,14 +86,19 @@ bot = Cinch::Bot.new do
       Cinch::Plugins::PluginManagement => {
         authentication_level: config_file['authentication']['admin-level']
       },
+      Cinch::Plugins::Strawpoll => {
+        repeat_time: config_file['plugins']['strawpoll']['repeat_time'],
+        repeat_count: config_file['plugins']['strawpoll']['repeat_count'],
+        allow_pol: config_file['plugins']['strawpoll']['allow_pol']
+      },
       Cinch::Plugins::UrbanDict => {
-        max_length: 300
+        max_length: config_file['plugins']['urban_dict']['max_length']
       },
       Cinch::Plugins::Wikipedia => {
-        max_length: 300
+        max_length: config_file['plugins']['wikipedia']['max_length']
       },
       Cinch::Plugins::Wolfram => {
-        max_length: 300,
+        max_length: config_file['plugins']['wolfram']['max_length'],
         wolfram_api_key: config_file['plugins']['wolfram']['api']
       },
 

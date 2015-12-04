@@ -4,7 +4,7 @@ module Cinch
     class Halp
       include Cinch::Plugin
 
-      match /halp$/, method: :general_help_message
+      match /h[ae]lp$/, method: :general_help_message
       def general_help_message(m)
         list = []
         @bot.plugins.each do |p|
@@ -14,7 +14,7 @@ module Cinch
         m.user.notice "Currently loaded plugins for #{@bot.nick}: #{list.to_sentence}.\nTo view help for a plugin use !halp `<plugin name>`\nAdditional info: https://github.com/tinnvec/dctvbot"
       end
 
-      match /halp (.+)$/, method: :plugin_help_message
+      match /h[ae]lp (.+)$/, method: :plugin_help_message
       def plugin_help_message(m, term)
         list = {}
         @bot.plugins.each do |p|

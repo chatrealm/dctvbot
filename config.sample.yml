@@ -20,10 +20,19 @@ plugins:
     api: api-key
   second-screen:
     pastebin-api-key: APIKEY
+  strawpoll:
+    repeat_time: 60
+    repeat_count: 3
+    allow_pol: true
   twitter:
     consumer-key: 'KEY'
     consumer-secret: 'SECRET'
     access-token: 'TOKEN'
     access-token-secret: 'TOKENSECRET'
+  urban_dict:
+    max_length: 300
+  wikipedia:
+    max_length: 300
   wolfram:
     api: api-key
+    max_length: 300
