@@ -1,5 +1,9 @@
-# file: lib/service/service.rb
+# file: lib/services/service.rb
 
-class Services::Service
+module Services
+
     # Service base
+    class Service
+    end
+
 end

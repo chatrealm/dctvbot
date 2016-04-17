@@ -2,7 +2,7 @@
 
 require 'test_helper'
 require 'yaml'
-require 'service/twitter'
+require 'services/twitter'
 
 class ServicesTwitterTest < Minitest::Test
 
