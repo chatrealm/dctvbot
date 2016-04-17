@@ -1,11 +1,10 @@
 irc:
-    nick: bot_nick
     
+    nick: 'bot_nick'
 # server:
 #   host: chat.freenode.net
 #   port: 6667
 # bot:
-#   nick: bot_nick
 #   user: Cinch
 #   realname: FakeName
 #   password: password
