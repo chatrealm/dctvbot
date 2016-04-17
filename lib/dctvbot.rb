@@ -1,11 +1,17 @@
 # file: lib/dctvbot.rb
 
+require 'yaml'
+
 class Dctvbot
     # public properties
 
+    # read-only properties
+    attr_reader :config
+
     # public methods
 
-    def initialize
+    def initialize(config_file)
+        @config = YAML.load(File.open config_file)
     end
 
     # private methods

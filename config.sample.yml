@@ -1,6 +1,6 @@
-
-
-
+irc:
+    nick: bot_nick
+    
 # server:
 #   host: chat.freenode.net
 #   port: 6667
