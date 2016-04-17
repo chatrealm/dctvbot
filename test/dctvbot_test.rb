@@ -24,4 +24,12 @@ class DctvbotTest < Minitest::Test
 
     end
 
+    # make sure twitter client is good
+    def test_twitter_client_availability
+
+        # check if client is expected type
+        assert_kind_of Twitter::REST::Client, @dctvbot.twitter.client
+
+    end
+
 end
