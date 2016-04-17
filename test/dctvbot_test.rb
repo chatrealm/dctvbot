@@ -1,6 +1,8 @@
 # file: test/dctvbot_test.rb
 
-require_relative 'test_helper'
+require 'test_helper'
+
+require 'dctvbot'
 
 class DctvbotTest < Minitest::Test
 
