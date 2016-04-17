@@ -1,7 +1,7 @@
 # file: test/twitter_service_test.rb
 
-require 'yaml'
 require 'test_helper'
+require 'yaml'
 require 'twitter_service'
 
 class TwitterServiceTest < Minitest::Test
