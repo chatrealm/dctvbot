@@ -5,9 +5,10 @@ require 'dctvbot'
 
 class DctvbotTest < Minitest::Test
 
-    def test_initialize_loads_config_from_supplied_config_file
+    def test_initialize_loads_config_from_supplied_yaml_file
         dctvbot = Dctvbot.new('config.test.yml')
-        assert_equal(dctvbot.config[:irc][:nick], 'testbot')
+        result = dctvbot.config['irc']['nick']
+        assert_equal(result, 'testbot', "Expected 'testbot', got '#{result}'")
     end
 
 end
