@@ -2,6 +2,7 @@
 
 require 'yaml'
 require 'test_helper'
+require 'twitter_service'
 
 class TwitterServiceTest < Minitest::Test
 
@@ -12,4 +13,19 @@ class TwitterServiceTest < Minitest::Test
         @config = YAML.load(File.open 'config.test.yml')
 
     end
+
+    # test to make sure client property is correct type
+    def test_client_is_twitter_client
+
+        twitter_service = TwitterService.new(
+            @config['twitter']['consumer-key'],
+            @config['twitter']['consumer-secret'],
+            @config['twitter']['access-token'],
+            @config['twitter']['access-token-secret']
+        )
+
+        assert_kind_of Twitter::REST::Client, twitter_service.client
+
+    end
+
 end
