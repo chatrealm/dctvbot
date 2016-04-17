@@ -5,18 +5,23 @@ require 'dctvbot'
 
 class DctvbotTest < Minitest::Test
 
+    # setup method
     def setup
+
+        # instance variable for dctvbot
         @dctvbot = Dctvbot.new('config.test.yml')
+
     end
 
+    # make sure initialize loads config correctly
     def test_initialize_loads_config_from_supplied_yaml_file
-        dctvbot = Dctvbot.new('config.test.yml')
-        result = dctvbot.config['irc']['nick']
-        assert_equal(result, 'testbot', "Expected 'testbot', got '#{result}'")
-    end
 
-    def test_twitter_service_is_twitter_service
-        assert_is_kind_of TwitterService, @dctvbot.twitter_service
+        # get sample from config
+        result = @dctvbot.config['irc']['nick']
+
+        # check if it's what was expected
+        assert_equal(result, 'testbot', "Expected 'testbot', got '#{result}'")
+
     end
 
 end
