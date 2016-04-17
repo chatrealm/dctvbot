@@ -4,6 +4,7 @@ require 'test_helper'
 require 'dctvbot'
 
 class DctvbotTest < Minitest::Test
+
     def setup
         @dctvbot = Dctvbot.new('config.test.yml')
     end
