@@ -6,6 +6,10 @@ class Dctvbot
 
     # public methods
 
+    def initialize
+        @nick = '';
+    end
+
     def set_option(property, value)
         # sets supplied property to supplied value
         instance_variable_set("@#{property}", value)
