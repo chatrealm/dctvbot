@@ -1,4 +1,7 @@
 # Gemfile
 source 'https://rubygems.org'
 
-gem 'minitest'
+group :test do
+    gem 'minitest'
+    gem 'minitest-reporters'
+end

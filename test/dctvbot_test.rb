@@ -1,6 +1,6 @@
 # file: test/dctvbot_test.rb
 
-require 'minitest/autorun'
+require_relative 'test_helper'
 
 class DctvbotTest < Minitest::Test
 
