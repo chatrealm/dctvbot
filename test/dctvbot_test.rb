@@ -3,5 +3,11 @@
 require 'minitest/autorun'
 
 class DctvbotTest < Minitest::Test
-    # TODO: Write tests
+
+    def test_set_option_sets_property
+        dctvbot = Dctvbot.new
+        dctvbot.set_option(:nick, 'dctvbot')
+        assert dctvbot.nick == 'dctvbot'
+    end
+
 end
