@@ -15,4 +15,8 @@ class DctvbotTest < Minitest::Test
         assert_equal(result, 'testbot', "Expected 'testbot', got '#{result}'")
     end
 
+    def test_twitter_service_is_twitter_service
+        assert_is_kind_of TwitterService, @dctvbot.twitter_service
+    end
+
 end
