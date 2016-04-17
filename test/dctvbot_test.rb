@@ -14,7 +14,7 @@ class DctvbotTest < Minitest::Test
     end
 
     # make sure initialize loads config correctly
-    def test_initialize_loads_config_from_supplied_yaml_file
+    def test_config_property_is_loaded_correctly
 
         # get sample from config
         result = @dctvbot.config['irc']['nick']
@@ -25,10 +25,10 @@ class DctvbotTest < Minitest::Test
     end
 
     # make sure twitter client is good
-    def test_twitter_client_availability
+    def test_twitter_property_is_twitter_service
 
         # check if client is expected type
-        assert_kind_of Twitter::REST::Client, @dctvbot.twitter.client
+        assert_kind_of Services::Twitter, @dctvbot.twitter
 
     end
 
