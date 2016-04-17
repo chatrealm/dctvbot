@@ -1,6 +1,11 @@
 irc:
-    
     nick: 'bot_nick'
+twitter:
+    consumer-key: 'KEY'
+    consumer-secret: 'SECRET'
+    access-token: 'TOKEN'
+    access-token-secret: 'TOKENSECRET'
+
 # server:
 #   host: chat.freenode.net
 #   port: 6667
@@ -26,11 +31,6 @@ irc:
 #     repeat_time: 60
 #     repeat_count: 3
 #     allow_pol: true
-#   twitter:
-#     consumer-key: 'KEY'
-#     consumer-secret: 'SECRET'
-#     access-token: 'TOKEN'
-#     access-token-secret: 'TOKENSECRET'
 #   urban_dict:
 #     max_length: 300
 #   wikipedia:
