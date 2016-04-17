@@ -11,7 +11,10 @@ class Dctvbot
     end
 
     def set_option(property, value)
-        # sets supplied property to supplied value
+        # raise an error if the property doesn't exist
+        raise "Property does not exist." unless instance_variable_defined? "@#{property}"
+
+        # set supplied property to supplied value
         instance_variable_set("@#{property}", value)
     end
 
