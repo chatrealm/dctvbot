@@ -9,11 +9,8 @@ gem 'cinch'         # for IRC
 # Cinch plugins
 gem 'cinch-identify'
 
-
 # gem 'discordrb'   # for Discord
 # gem 'twitter'     # for...uh...Twitter
-
-
 
 group :test do
     gem 'minitest'

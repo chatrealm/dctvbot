@@ -6,8 +6,8 @@ require 'cinch/plugins/identify'
 module Services
 	class Irc
 
-		def initialize
-			configure_bot
+		def initialize(settings)
+			configure_bot(settings)
 		end
 
 		def start
@@ -22,18 +22,18 @@ module Services
 
 			attr_accessor :bot
 
-			def configure_bot
+			def configure_bot(settings)
 				@bot  = Cinch::Bot.new do
 					configure do |c|
 						# Server Info
-						c.server  = 'irc.chatrealm.net'
-						c.port    = '6667'
+						c.server  = settings[:server]
+						c.port    = settings[:port]
 
 						# Bot User Info
-						c.nick        = 'testbot'
-						c.user        = 'Cinch'
-						c.realname    = 'Test Bot'
-						c.channels    = ['#testbot']
+						c.nick        = settings[:nick]
+						c.user        = settings[:user]
+						c.realname    = settings[:realname]
+						c.channels    = settings[:channels]
 						# c.delay_joins = 60
 
 						# Load Up Plugins
@@ -45,7 +45,7 @@ module Services
 						c.plugins.options = {
 							Cinch::Plugins::Identify => {
 					          type: :nickserv,
-					          password: 'testeeng'
+					          password: settings[:password]
 					        }
 						}
 					end

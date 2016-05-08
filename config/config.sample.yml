@@ -1,0 +1,11 @@
+# file: config/config.sample.yml
+
+:irc:
+    :server:    ''
+    :port:      ''
+    :nick:      ''
+    :password:  ''
+    :user:      ''
+    :realname:  ''
+    :channels:
+        - '#'
