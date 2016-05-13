@@ -2,18 +2,16 @@
 
 source 'https://rubygems.org'
 
-# gem 'megahal'
-
-gem 'cinch'         # for IRC
-
+gem 'cinch'         # IRC
 # Cinch plugins
 gem 'cinch-identify'
+gem 'cinch-authentication'
 
-# gem 'discordrb'   # for Discord
-# gem 'twitter'     # for...uh...Twitter
+# gem 'discordrb'   # Discord
+# gem 'twitter'     # Twitter
 
 group :test do
+    gem 'rake'
     gem 'minitest'
     gem 'minitest-reporters'
-    gem 'rake'
 end

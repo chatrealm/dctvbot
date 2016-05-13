@@ -6,12 +6,11 @@ require_relative 'services/irc'
 
 class Dctvbot
 
-	def initialize
+	def initialize(config_file)
 		# load config
-		@config = load_config_file 'config/config.test.yml'
+		@config = load_config_file(config_file)
 
-		# initialize services
-		@irc = Services::Irc.new(@config[:irc])
+		@irc = Irc.new(@config[:irc])
 	end
 
 	def load_config_file(file)
@@ -22,11 +21,12 @@ class Dctvbot
 		@irc.start
 	end
 
-	def shutdown(message="")
+	def shutdown(message='Shutting down')
 		@irc.shutdown(message)
 	end
 
 	private
 
-		attr_accessor :irc, :config
+		attr_accessor :config, :irc
+
 end

@@ -4,6 +4,8 @@ GEM
     ansi (1.5.0)
     builder (3.2.2)
     cinch (2.3.2)
+    cinch-authentication (0.1.1)
+      cinch (~> 2.0)
     cinch-identify (1.7.0)
       cinch (~> 2.0)
     minitest (5.8.4)
@@ -20,6 +22,7 @@ PLATFORMS
 
 DEPENDENCIES
   cinch
+  cinch-authentication
   cinch-identify
   minitest
   minitest-reporters

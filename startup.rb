@@ -1,11 +1,12 @@
-# file: startup.rb
+#!/usr/bin/env ruby
 
 require_relative 'lib/dctvbot'
+
+dctvbot = Dctvbot.new('config/config.test.yml')
 
 mutex = Mutex.new
 quit_signalled = ConditionVariable.new
 signal_received = nil
-dctvbot = Dctvbot.new
 
 # Handle signals QUIT (Ctrl-\), INT (Ctrl-C), and TERM (Kill Command)
 %w[QUIT INT TERM].each do |signal_name|
