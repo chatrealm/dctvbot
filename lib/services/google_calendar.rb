@@ -1,28 +1,28 @@
 # file lib/services/google_calendar.rb
 
+require 'active_support/time'
 require 'httparty'
 
 module Services
 	class GoogleCalendar
 		include HTTParty
 
-		base_uri 'googleapis.com/calendar/v3/calendars'
+		base_uri 'https://www.googleapis.com/calendar/v3/calendars'
 
 		def initialize(api_key)
 			@api_key = api_key
 		end
 
 		def get_calendar(calendar_id, options={})
-			result = get_calendar_entries('a5jeb9t5etasrbl6dt5htkv4to@group.calendar.google.com')
-			return result
+			return get_calendar_entries(calendar_id, options)
 		end
 
 		private
 
 			attr_accessor :api_key
 
-			def self.get_calendar_entries(calendar_id, options={})
-				options = {
+			def get_calendar_entries(calendar_id, options={})
+				defaults = {
 					query: {
 						key: @api_key,
 		    			singleEvents: true,
@@ -31,6 +31,7 @@ module Services
 		    			timeMax: DateTime.now + 48.hours
 					}
 				}
+				options = defaults.merge(options)
 				response = self.class.get("/#{calendar_id}/events", options)
 				return JSON.parse(response.body)['items']
 			end

@@ -7,6 +7,11 @@ gem 'cinch'         # IRC
 gem 'cinch-identify'
 gem 'cinch-authentication'
 
+gem 'activesupport'
+gem 'cleverbot_io'
+gem 'httparty'
+gem 'time_sentence'
+
 # gem 'discordrb'   # Discord
 # gem 'twitter'     # Twitter
 

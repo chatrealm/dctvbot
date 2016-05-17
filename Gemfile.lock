@@ -1,6 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (4.2.6)
+      i18n (~> 0.7)
+      json (~> 1.7, >= 1.7.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
     ansi (1.5.0)
     builder (3.2.2)
     cinch (2.3.2)
@@ -8,25 +14,44 @@ GEM
       cinch (~> 2.0)
     cinch-identify (1.7.0)
       cinch (~> 2.0)
-    minitest (5.8.4)
+    cleverbot_io (1.2.2)
+      httpclient (~> 2.8)
+      oj (~> 2.15)
+    httparty (0.13.7)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
+    httpclient (2.8.0)
+    i18n (0.7.0)
+    json (1.8.3)
+    minitest (5.9.0)
     minitest-reporters (1.1.9)
       ansi
       builder
       minitest (>= 5.0)
       ruby-progressbar
+    multi_xml (0.5.5)
+    oj (2.15.0)
     rake (11.1.2)
-    ruby-progressbar (1.8.0)
+    ruby-progressbar (1.8.1)
+    thread_safe (0.3.5)
+    time_sentence (1.0.1)
+    tzinfo (1.2.2)
+      thread_safe (~> 0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
   cinch
   cinch-authentication
   cinch-identify
+  cleverbot_io
+  httparty
   minitest
   minitest-reporters
   rake
+  time_sentence
 
 BUNDLED WITH
-   1.11.2
+   1.12.3

@@ -1,5 +1,6 @@
 # file: lib/services/dctv_api.rb
 
+require 'active_support/time'
 require 'httparty'
 
 module Services
@@ -8,14 +9,14 @@ module Services
 
 		base_uri 'diamondclub.tv/api'
 
-		CHANNELS_MAX_AGE = 10.seconds
-		STATUS_MAX_AGE = 15.minutes
+		CHANNELS_MAX_AGE = 5.seconds.to_i
+		STATUS_MAX_AGE = 10.minutes.to_i
 
 		def initialize
-			@current_channels = nil
+			@current_channels = (Time.now - 30.seconds).to_i
 			@last_channels_update = 0
 
-			@current_status = nil
+			@current_status = (Time.now - 30.seconds).to_i
 			@last_status_update = 0
 		end
 
@@ -39,7 +40,7 @@ module Services
 			attr_accessor :current_channels, :current_status, :last_channels_update, :last_status_update
 
 			def update_current_channels
-				if Time.now - @last_channels_update > CHANNELS_MAX_AGE
+				if (Time.now - @last_channels_update).to_i > CHANNELS_MAX_AGE
 					response = self.class.get('/channelsv2.php')
 					@current_channels = JSON.parse(response.body)['assignedchannels']
 					@last_channels_update = Time.now
@@ -47,7 +48,7 @@ module Services
 			end
 
 			def update_current_status
-				if Time.now - @last_status_update > STATUS_MAX_AGE
+				if (Time.now - @last_status_update).to_i > STATUS_MAX_AGE
 					response = self.class.get('/statusv2.php')
 					@current_status = JSON.parse(response.body)['livestreams']
 					@last_status_update = Time.now
