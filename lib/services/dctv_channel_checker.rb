@@ -30,25 +30,38 @@ module Services
 			def run
 				channels_to_announce = Array.new
 				former_channels = @current_channels
+				was_official_live = @official_live
+
+				@official_live = false
 				@current_channels = @dctv_api.get_current_channels
 
 				@current_channels.each do |current_channel|
-					matched_former_channels = former_channels.select { |former_channel| current_channel['streamid'] == former_channel['streamid'] }
-					if matched_former_channels.any?
-						next unless ChannelHelper.is_upcoming?(matched_former_channels.first) && ChannelHelper.is_live?(current_channel)
+					if ChannelHelper.is_live?(current_channel) && ChannelHelper.is_official?(current_channel)
+						@official_live = true
 					end
+
+					matched_former_channel = former_channels.find { |former_channel| current_channel['streamid'] == former_channel['streamid'] }
+
+					if !matched_former_channel.nil?
+						was_upcoming_now_live = ChannelHelper.is_upcoming?(matched_former_channel) && ChannelHelper.is_live?(current_channel)
+						next unless was_upcoming_now_live
+					end
+
 					channels_to_announce << current_channel
 				end
 
-				official_channels_to_announce = channels_to_announce.select { |channel_to_announce| ChannelHelper.is_official?(channel_to_announce) }
+				official_channel_to_announce = channels_to_announce.find { |channel_to_announce| ChannelHelper.is_official?(channel_to_announce) }
 
-				if official_channels_to_announce.any?
-					message = format_irc_announce_message_for_channel(official_channels_to_announce.first)
+				if !official_channel_to_announce.nil?
+					message = format_irc_announce_message_for_channel(official_channel_to_announce)
 					@cinch_bot.handlers.dispatch(:update_topic, nil, @cinch_bot.channels.first, message)
 				end
 
-				update_official_live
 				return if @official_live
+
+				if was_official_live && !@official_live
+					@cinch_bot.handlers.dispatch(:update_topic, nil, @cinch_bot.channels.first, ' <>')
+				end
 
 				channels_to_announce.each do |channel_to_announce|
 					message = format_irc_announce_message_for_channel(channel_to_announce)
@@ -69,16 +82,6 @@ module Services
 				msg += " - #{description}" unless description.empty?
 				msg += " - #{url}" unless url.empty?
 				return msg
-			end
-
-			def update_official_live
-				was_official_live = @official_live
-				@official_live = false
-				@current_channels.each do |current_channel|
-					@official_live = true if ChannelHelper.is_live?(current_channel) && ChannelHelper.is_official?(current_channel)
-				end
-				@cinch_bot.handlers.dispatch(:update_topic, nil, @cinch_bot.channels.first, ' <>') if was_official_live && !@official_live
-				return @official_live
 			end
 	end
 end

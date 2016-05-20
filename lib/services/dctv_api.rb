@@ -13,11 +13,8 @@ module Services
 		STATUS_MAX_AGE = 10.minutes.to_i
 
 		def initialize
-			@current_channels = (Time.now - 30.seconds).to_i
-			@last_channels_update = 0
-
-			@current_status = (Time.now - 30.seconds).to_i
-			@last_status_update = 0
+			@current_channels, @current_status = Array.new
+			@last_channels_update, @last_status_update = (Time.now - 30.seconds).to_i
 		end
 
 		def get_current_channels
