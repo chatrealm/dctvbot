@@ -1,0 +1,20 @@
+# file: config/config.sample.yml
+
+:irc:
+    :server:        ''
+    :port:          ''
+    :nick:          ''
+    :password:      ''
+    :user:          ''
+    :realname:      ''
+    :delay_joins:   0
+    :channels:
+        - '#'
+    default_topic:  ''
+
+:cleverbot_io:
+    :api_user:  ''
+    :api_key:   ''
+
+:google:
+    :api_key:   ''
