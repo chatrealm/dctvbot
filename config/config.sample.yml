@@ -10,7 +10,7 @@
     :delay_joins:   0
     :channels:
         - '#'
-    default_topic:  ''
+    :default_topic:  ''
 
 :cleverbot_io:
     :api_user:  ''
