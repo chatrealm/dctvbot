@@ -6,11 +6,8 @@ module Cinch
             include Cinch::Plugin
             include Cinch::Extensions::Authentication
 
-            # DEFAULT_ANNOUNCEMENT = "#{Format(:white, :blue, " VOTE ")} FOR TITLES AT http://showbot.tv"
-
-            # match(/t announce (\d+)$/,  method: :set_title_vote_announcement_timer, group: :titles)
-            match(/t reset$/i,           method: :reset_title_list,                  group: :titles)
-            match(/t (.+)/,             method: :suggest_title,                     group: :titles)
+            match(/t reset$/i,  method: :reset_title_list,  group: :titles)
+            match(/t (.+)/,     method: :suggest_title,     group: :titles)
 
             def initialize(*args)
                 super
@@ -26,11 +23,6 @@ module Cinch
                 return unless authenticated?(m)
                 response = @dctv_api.reset_title_suggestions
                 m.user.notice response
-            end
-
-            def set_title_vote_announcement_timer(m, time)
-                return unless authenticated?(m)
-                # TODO: Voting announcements
             end
 
             private

@@ -17,14 +17,14 @@ module Cinch
             listen_to :set_topic, method: :set_topic
             listen_to :update_topic, method: :update_topic
 
-			match(/topic reset$/,		method: :reset_topic,		group: :topic)
-			match(/topic default (.*)/,	method: :set_default_topic,	group: :topic)
-			match(/topic (.*)/,			method: :change_topic,		group: :topic)
+            match(/topic reset$/,       method: :reset_topic,       group: :topic)
+            match(/topic default (.*)/, method: :set_default_topic, group: :topic)
+            match(/topic (.*)/,         method: :change_topic,      group: :topic)
 
-			def initialize(*args)
-				super
-				@default_topic = config[:default_topic]
-			end
+            def initialize(*args)
+                super
+                @default_topic = config[:default_topic]
+            end
 
             def set_topic(m, channel, new_topic)
                 Channel(channel).topic = new_topic
@@ -35,22 +35,22 @@ module Cinch
                 set_topic(m, channel, new_topic)
             end
 
-			def reset_topic(m)
-				set_topic(m, m.channel, @default_topic)
-			end
+            def reset_topic(m)
+                set_topic(m, m.channel, @default_topic)
+            end
 
-			def set_default_topic(m, new_default)
-				@default_topic = new_default
-				reset_topic(m)
-			end
+            def set_default_topic(m, new_default)
+                @default_topic = new_default
+                reset_topic(m)
+            end
 
-			def change_topic(m, new_data)
-				update_topic(m, m.channel, new_data)
-			end
+            def change_topic(m, new_data)
+                update_topic(m, m.channel, new_data)
+            end
 
-			private
+            private
 
-				attr_accessor :default_topic
+                attr_accessor :default_topic
         end
 
     end
