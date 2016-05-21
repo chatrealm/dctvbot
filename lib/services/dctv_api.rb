@@ -41,10 +41,10 @@ module Services
             return result
         end
 
-		def reset_title_suggestions
-			result = reset_titles_request
-			return result
-		end
+        def reset_title_suggestions
+            result = reset_titles_request
+            return result
+        end
 
         private
 
@@ -73,7 +73,7 @@ module Services
                     response = self.class.get('/secondscreen.php', options)
                     response = "Command Sent. Response: #{response}"
                 else
-                    response = "Invalid Selection"
+                    response = 'Invalid Selection'
                 end
                 return response
             end
@@ -89,11 +89,11 @@ module Services
                 return response
             end
 
-			def reset_titles_request
-				options = { query: { reset: 'yes' } }
-				response = self.class.get('/titlevotedo.php', options)
-				return response
-			end
+            def reset_titles_request
+                options = { query: { reset: 'yes' } }
+                response = self.class.get('/titlevotedo.php', options)
+                return response
+            end
     end
 end
 

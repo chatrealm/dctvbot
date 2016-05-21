@@ -104,7 +104,7 @@ module Cinch
                     return
                 end
                 @bot.config.plugins.options[const][option.to_sym] = eval(value)
-                m.user.notice "Successfuly set option."
+                m.user.notice 'Successfuly set option.'
             end
         end
 
