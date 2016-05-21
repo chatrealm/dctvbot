@@ -33,4 +33,4 @@ Sample live announcement:
 ![Live Announcement](https://dl.dropboxusercontent.com/u/18589646/dctvbot_announce_live.png)  
 
 [irc-chatrealm-link]: http://irc.chatrealm.net
-[irc-chatrealm-badge]: https://img.shields.io/badge/irc-chatrealm-blue.svg
+[irc-chatrealm-badge]: https://img.shields.io/badge/irc-chatrealm-orange.svg
