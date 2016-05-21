@@ -2,7 +2,7 @@
 
 require_relative 'lib/dctvbot'
 
-dctvbot = Dctvbot.new('config/config.test.yml')
+dctvbot = Dctvbot.new('config/config.yml')
 
 mutex = Mutex.new
 quit_signalled = ConditionVariable.new
