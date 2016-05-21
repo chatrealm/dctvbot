@@ -10,9 +10,14 @@ A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/c
 _The `-v` option will show the reply main chat._
 
 ###### Utility
+`!t <suggestion>` - Suggest a title for [Showbot](http://showbot.tv)  
+`!t reset` - Reset title suggestions on [Showbot](http://showbot.tv)  
 `!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
 ~~`!poll <title> | <option>, <option>` - Requests a straw poll using `<title>` and a minimum of 2 `<option>` separated by commas~~ SOON&trade;  
 ~~`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.~~ SOON&trade;  
+`!topic <info>` - Replace first portion of topic with `<info>`  
+`!topic reset` - Resets the entire topic to default  
+`!topic default <topic>` - Sets a new default topic
 
 ###### Maintenence
 `!plugin [load|unload|reload] <PluginName> <file_name>` - Un/re/loads `<PluginName>`, optionally using `<file_name>`.  

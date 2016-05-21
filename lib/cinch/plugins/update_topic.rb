@@ -1,4 +1,4 @@
-# file: lib/cinch/plugins/topic_updater.rb
+# file: lib/cinch/plugins/update_topic.rb
 
 require 'cinch'
 require 'cinch/extensions/authentication'
@@ -8,7 +8,7 @@ require_relative '../../helpers/message_helper'
 module Cinch
     module Plugins
 
-        class TopicUpdater
+        class UpdateTopic
             include Cinch::Plugin
             include Cinch::Extensions::Authentication
 
@@ -17,7 +17,7 @@ module Cinch
             listen_to :set_topic, method: :set_topic
             listen_to :update_topic, method: :update_topic
 
-			match(/topic reset/,		method: :reset_topic,		group: :topic)
+			match(/topic reset$/,		method: :reset_topic,		group: :topic)
 			match(/topic default (.*)/,	method: :set_default_topic,	group: :topic)
 			match(/topic (.*)/,			method: :change_topic,		group: :topic)
 

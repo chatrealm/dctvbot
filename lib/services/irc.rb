@@ -8,10 +8,11 @@ require_relative '../cinch/plugins/announcer'
 require_relative '../cinch/plugins/dctv_calendar'
 require_relative '../cinch/plugins/dctv_second_screen'
 require_relative '../cinch/plugins/dctv_status'
+require_relative '../cinch/plugins/dctv_title_suggest'
 require_relative '../cinch/plugins/kill'
 require_relative '../cinch/plugins/personality'
 require_relative '../cinch/plugins/plugin_management'
-require_relative '../cinch/plugins/topic_updater'
+require_relative '../cinch/plugins/update_topic'
 
 module Services
 	class Irc
@@ -42,11 +43,12 @@ module Services
 						Cinch::Plugins::DctvCalendar,
 						Cinch::Plugins::DctvSecondScreen,
 						Cinch::Plugins::DctvStatus,
+						Cinch::Plugins::DctvTitleSuggest,
 						Cinch::Plugins::Identify,
 						Cinch::Plugins::Kill,
 						Cinch::Plugins::Personality,
 						Cinch::Plugins::PluginManagement,
-						Cinch::Plugins::TopicUpdater
+						Cinch::Plugins::UpdateTopic
 					]
 
 					# Set Plugin Options
@@ -60,6 +62,10 @@ module Services
 						Cinch::Plugins::DctvStatus => {
 							dctv_api: dctv_api
 						},
+						Cinch::Plugins::DctvTitleSuggest => {
+							authentication_level: :h,
+							dctv_api: dctv_api
+						},
 						Cinch::Plugins::Identify => {
 							type: :nickserv,
 							password: irc_settings[:password]
@@ -67,7 +73,7 @@ module Services
 						Cinch::Plugins::Personality => {
 							cleverbot: cleverbot
 						},
-						Cinch::Plugins::TopicUpdater => {
+						Cinch::Plugins::UpdateTopic => {
 							authentication_level: :h,
 							default_topic: irc_settings[:default_topic]
 						}
