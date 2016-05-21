@@ -13,7 +13,10 @@ module Services
         CHANNELS_MAX_AGE = 5.seconds.to_i
         STATUS_MAX_AGE = 10.minutes.to_i
 
-        def initialize
+        def initialize(secs_pro, title_salt)
+            @secs_pro = secs_pro
+            @title_salt = title_salt
+
             @current_channels, @current_status = Array.new
             @last_channels_update, @last_status_update = (Time.now - 30.seconds).to_i
         end
@@ -45,7 +48,8 @@ module Services
 
         private
 
-            attr_accessor :current_channels, :current_status, :last_channels_update, :last_status_update
+            attr_accessor :current_channels, :current_status,
+                :last_channels_update, :last_status_update, :secs_pro, :title_salt
 
             def update_current_channels
                 if (Time.now - @last_channels_update).to_i > CHANNELS_MAX_AGE
@@ -65,7 +69,7 @@ module Services
 
             def second_screen_request(input, user_name)
                 if input =~ /^http/ || input == 'on' || input == 'off' || input == 'clear'
-                    options = { query: { url: input, pro: '4938827', user: user_name }}
+                    options = { query: { url: input, pro: @secs_pro, user: user_name }}
                     response = self.class.get('/secondscreen.php', options)
                     response = "Command Sent. Response: #{response}"
                 else
@@ -75,7 +79,7 @@ module Services
             end
 
             def title_suggestion_request(title, user_name)
-                titlehash = Digest::MD5.hexdigest("#{user_name}r2nja80wtj093#{title}")
+                titlehash = Digest::MD5.hexdigest("#{user_name}#{@title_salt}#{title}")
                 options = { query: {
                     title: title,
                     username: user_name,

@@ -18,3 +18,7 @@
 
 :google:
     :api_key:   ''
+
+:dctv_api:
+    :secs_pro:      ''
+    :title_salt:    ''

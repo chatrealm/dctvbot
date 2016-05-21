@@ -22,7 +22,7 @@ class Dctvbot
 		@google_calendar = Services::GoogleCalendar.new(config[:google][:api_key])
 
 		# dctv api instance
-		@dctv_api = Services::DctvApi.new
+		@dctv_api = Services::DctvApi.new(config[:dctv_api][:secs_pro], config[:dctv_api][:title_salt])
 
 		# irc (cinch) instance
 		@irc = Services::Irc.new(config[:irc], @cleverbot, @google_calendar, @dctv_api)
