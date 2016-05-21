@@ -4,8 +4,9 @@ source 'https://rubygems.org'
 
 gem 'cinch'         # IRC
 # Cinch plugins
-gem 'cinch-identify'
 gem 'cinch-authentication'
+gem 'cinch-identify'
+gem 'cinch-strawpoll'
 
 gem 'activesupport'
 gem 'cleverbot_io'

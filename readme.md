@@ -13,7 +13,7 @@ _The `-v` option will show the reply main chat._
 `!t <suggestion>` - Suggest a title for [Showbot](http://showbot.tv)  
 `!t reset` - Reset title suggestions on [Showbot](http://showbot.tv)  
 `!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
-~~`!poll <title> | <option>, <option>` - Requests a straw poll using `<title>` and a minimum of 2 `<option>` separated by commas~~ SOON&trade;  
+`!poll <title> | <choice>, <choice>` - Requests a straw poll using `<title>` and a minimum of 2 `<choice>` separated by commas  
 ~~`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.~~ SOON&trade;  
 `!topic <info>` - Replace first portion of topic with `<info>`  
 `!topic reset` - Resets the entire topic to default  

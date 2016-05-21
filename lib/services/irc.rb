@@ -3,6 +3,7 @@
 require 'cinch'
 require 'cinch/extensions/authentication'
 require 'cinch/plugins/identify'
+require 'cinch/plugins/strawpoll'
 
 require_relative '../cinch/plugins/announcer'
 require_relative '../cinch/plugins/dctv_calendar'
@@ -48,6 +49,7 @@ module Services
                         Cinch::Plugins::Kill,
                         Cinch::Plugins::Personality,
                         Cinch::Plugins::PluginManagement,
+                        Cinch::Plugins::Strawpoll,
                         Cinch::Plugins::UpdateTopic
                     ]
 
@@ -72,6 +74,11 @@ module Services
                         },
                         Cinch::Plugins::Personality => {
                             cleverbot: cleverbot
+                        },
+                        Cinch::Plugins::Strawpoll => {
+                            repeat_time: 90,
+                            repeat_count: 4,
+                            allow_pol: true
                         },
                         Cinch::Plugins::UpdateTopic => {
                             authentication_level: :h,
