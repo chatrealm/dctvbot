@@ -3,27 +3,25 @@
 require 'cinch'
 
 module Cinch
-    module Plugins
+  module Plugins
+    class Personality
+      include Cinch::Plugin
 
-        class Personality
-            include Cinch::Plugin
+      match ->(m) { /(.*\s?)@?#{m.bot.nick}[:,]?(\s*.*)/i }, use_prefix: false
 
-            match lambda { |m| /(.*\s?)@?#{m.bot.nick}[:,]?(\s*.*)/i }, use_prefix: false
+      def initialize(*args)
+        super
+        @cleverbot = config[:cleverbot]
+      end
 
-            def initialize(*args)
-                super
-                @cleverbot = config[:cleverbot]
-            end
+      def execute(m, part_one, part_two = nil)
+        response = @cleverbot.say "#{part_one.strip} #{part_two.strip}"
+        m.reply(CGI.unescape_html(response), true)
+      end
 
-            def execute(m, part_one, part_two=nil)
-                response = @cleverbot.say "#{part_one.strip} #{part_two.strip}"
-                m.reply(CGI.unescape_html(response), true)
-            end
+      private
 
-            private
-
-                attr_accessor :cleverbot
-        end
-
+      attr_accessor :cleverbot
     end
+  end
 end

@@ -4,5 +4,4 @@ require 'test_helper'
 require 'dctvbot'
 
 class DctvbotTest < Minitest::Test
-
 end

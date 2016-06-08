@@ -2,22 +2,23 @@
 
 source 'https://rubygems.org'
 
-gem 'cinch'         # IRC
+gem 'activesupport'
+gem 'cinch'
+gem 'cleverbot_io'
+gem 'httparty'
+gem 'time_sentence'
+
 # Cinch plugins
 gem 'cinch-authentication'
 gem 'cinch-identify'
 gem 'cinch-strawpoll'
 
-gem 'activesupport'
-gem 'cleverbot_io'
-gem 'httparty'
-gem 'time_sentence'
-
-# gem 'discordrb'   # Discord
-# gem 'twitter'     # Twitter
-
 group :test do
-    gem 'rake'
-    gem 'minitest'
-    gem 'minitest-reporters'
+  gem 'rake'
+  gem 'minitest'
+  gem 'minitest-reporters'
+end
+
+group :development do
+  gem 'rubocop'
 end
