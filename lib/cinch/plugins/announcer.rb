@@ -3,17 +3,15 @@
 require 'cinch'
 
 module Cinch
-    module Plugins
+  module Plugins
+    class Announcer
+      include Cinch::Plugin
 
-        class Announcer
-            include Cinch::Plugin
+      listen_to :make_announcement
 
-            listen_to :make_announcement
-
-            def listen(m, channel, announcement)
-                Channel(channel).send(announcement)
-            end
-        end
-
+      def listen(_m, channel, announcement)
+        Channel(channel).send(announcement)
+      end
     end
+  end
 end
