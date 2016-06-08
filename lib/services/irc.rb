@@ -43,7 +43,6 @@ module Services
             Cinch::Plugins::DctvCalendar,
             Cinch::Plugins::DctvSecondScreen,
             Cinch::Plugins::DctvStatus,
-            Cinch::Plugins::DctvTitleSuggest,
             Cinch::Plugins::Identify,
             Cinch::Plugins::Kill,
             Cinch::Plugins::Personality,
@@ -61,10 +60,6 @@ module Services
               dctv_api: dctv_api
             },
             Cinch::Plugins::DctvStatus => {
-              dctv_api: dctv_api
-            },
-            Cinch::Plugins::DctvTitleSuggest => {
-              authentication_level: :h,
               dctv_api: dctv_api
             },
             Cinch::Plugins::Identify => {
