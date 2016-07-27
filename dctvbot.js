@@ -1,20 +1,30 @@
 var irc = require('irc');
 
 var config = {
-	// Server config
-	server: {
-		host: 'irc.chatrealm.net',
-		channels: [ '#testbot' ]
-	},
 	// Bot config
 	bot: {
-		nick: 'testbot'
-	}
+		nick: 'testbot',
+		userName: 'node',
+		realName: 'node bot'
+	},
+	// Server config
+	server: {
+		address: 'irc.chatrealm.net',
+		port: 6667,
+		channels: [ '#testbot' ]
+	},
+	// General config
 };
 
 // IRC Client
 var client = new irc.Client(
-	config.server.host,
+	config.server.address,
 	config.bot.nick,
-	{ channels: config.server.channels }
+	{
+		userName: config.bot.userName,
+		realName: config.bot.realName,
+		port: config.server.port,
+		debug: true,
+		channels: config.server.channels
+	}
 );
