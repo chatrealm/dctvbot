@@ -1,20 +1,6 @@
 var irc = require('irc');
 
-var config = {
-	// Bot config
-	bot: {
-		nick: 'testbot',
-		userName: 'node',
-		realName: 'node bot'
-	},
-	// Server config
-	server: {
-		address: 'irc.chatrealm.net',
-		port: 6667,
-		channels: [ '#testbot' ]
-	},
-	// General config
-};
+var config = require('./config/config');
 
 // IRC Client
 var client = new irc.Client(
