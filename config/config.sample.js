@@ -13,3 +13,6 @@ config.server = {
 	port:		6667,
 	channels:	[ '#channel' ]
 };
+
+// Commands config
+config.prefix =	'!';
