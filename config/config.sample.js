@@ -11,5 +11,9 @@ export default {
         channels: ['#channel']
     },
 
-    prefix: '!'
+    prefix: '!',
+
+    google: {
+        apiKey: ''
+    }
 };
