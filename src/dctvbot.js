@@ -43,15 +43,26 @@ function processCommand(text, nick, to) {
                     replyMsg = '';
                     for (var i = 0; i < channels.length; i++) {
                         let ch = channels[i];
-                        replyMsg += `\nChannel ${ch.channel}:` +
-                            ` ${ch.friendlyalias}`;
+                        replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias}`;
                     }
                 }
                 client.notice(replyTo, replyMsg);
             });
             break;
         case 'next':
-            console.log(getGoogleCalendar('a5jeb9t5etasrbl6dt5htkv4to@group.calendar.google.com'));
+            getGoogleCalendar('a5jeb9t5etasrbl6dt5htkv4to@group.calendar.google.com', function(events) {
+                let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${events[0].start.dateTime}`;
+                client.notice(replyTo, replyMsg);
+            });
+            break;
+        case 'schedule':
+            getGoogleCalendar('a5jeb9t5etasrbl6dt5htkv4to@group.calendar.google.com', function(events) {
+                let replyMsg = 'Scheduled Shows for the Next 48 hours:';
+                for (let i = 0; i < events.length; i++) {
+                    replyMsg += `\n${events[i].summary} - ${events[i].start.dateTime}`;
+                }
+                client.notice(replyTo, replyMsg);
+            });
             break;
         default:
             console.log('default');
@@ -73,10 +84,15 @@ function getUrlContents(url, callback) {
 }
 
 function getGoogleCalendar(id, callback) {
-    let now = Date.now();
-    let url = 'https://www.googleapis.com/calendar/v3/calendars' +
+    let now = new Date();
+    let later = new Date();
+    later.setDate(later.getDate() + 2);
+
+    let url = `https://www.googleapis.com/calendar/v3/calendars/${id}/events` +
         `?key=${config.google.apiKey}&singleEvents=true&orderBy=startTime` +
-        `&timeMin=${now}&timeMax=${now + (2 * 24 * 60 * 60)}` +
-        `${id}/events`;
-    return getUrlContents(url);
+        `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}`;
+    getUrlContents(url, function(response) {
+        let result = JSON.parse(response);
+        callback(result.items);
+    });
 }
