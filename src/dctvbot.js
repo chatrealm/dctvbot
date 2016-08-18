@@ -20,10 +20,15 @@ client.addListener('message', function(nick, to, text, message) {
     }
 });
 
+/**
+ * Processes incomming commands
+ *
+ * @param {string} text - message text
+ * @param {string} nick - nick of the sender
+ * @param {string} to - message recipient
+ */
 function processCommand(text, nick, to) {
     let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
-    // let statusUrl = 'http://diamondclub.tv/api/statusv2.php';
-
     let cmd = text;
 
     let replyTo = to;
@@ -69,6 +74,19 @@ function processCommand(text, nick, to) {
     }
 }
 
+/**
+ * Callback for handling url response
+ *
+ * @callback urlCallback
+ * @param {string} body
+ */
+
+/**
+ * Gets contents of a URL
+ *
+ * @param {string} url - url to getDate
+ * @param {urlCallback} callback - callback to run
+ */
 function getUrlContents(url, callback) {
     request(url, function(error, response, body) {
         if (!error && response.statusCode === 200) {
@@ -83,6 +101,19 @@ function getUrlContents(url, callback) {
     });
 }
 
+/**
+ * Callback for handling google calendar items result
+ *
+ * @callback calendarEventsCallback
+ * @param {JSON[]} entities
+ */
+
+/**
+ * Gets google calendar items
+ *
+ * @param {string} id - google calendar id
+ * @param {calendarEventsCallback} callback - callback to run
+ */
 function getGoogleCalendar(id, callback) {
     let now = new Date();
     let later = new Date();

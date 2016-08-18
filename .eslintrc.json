@@ -4,7 +4,7 @@
         "indent": ["error", 4, {
             "SwitchCase": 1
         }],
-        "require-jsdoc": 0,
-        "linebreak-style": 0
+        "linebreak-style": 0,
+        "max-len": "off"
     }
 }
