@@ -28,7 +28,6 @@ client.addListener('message', function(nick, to, text, message) {
  * @param {string} to - message recipient
  */
 function processCommand(text, nick, to) {
-    let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
     let cmd = text;
 
     let replyTo = to;
@@ -40,11 +39,9 @@ function processCommand(text, nick, to) {
 
     switch (cmd) {
         case 'now':
-            getUrlContents(channelsUrl, function(response) {
+            getDctvLiveChannels(function(channels) {
                 let replyMsg = 'Nothing is live';
-                let channels = JSON.parse(response).assignedchannels;
-
-                if (channels.length !== null && channels.length > 0) {
+                if (channels.length > 0) {
                     replyMsg = '';
                     for (var i = 0; i < channels.length; i++) {
                         let ch = channels[i];
@@ -83,6 +80,12 @@ function processCommand(text, nick, to) {
  * Gets DCTV live channels
  * @param {dctvLiveChannels} callback - callback to run
  */
+function getDctvLiveChannels(callback) {
+    let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
+    getUrlContents(channelsUrl, function(response) {
+        callback(JSON.parse(response).assignedchannels);
+    });
+}
 
 /**
  * Gets contents of a URL
