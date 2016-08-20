@@ -55,13 +55,13 @@ function processCommand(text, nick, to) {
             });
             break;
         case 'next':
-            getGoogleCalendar('a5jeb9t5etasrbl6dt5htkv4to@group.calendar.google.com', function(events) {
+            getGoogleCalendar(config.google.calendarId, function(events) {
                 let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${events[0].start.dateTime}`;
                 client.notice(replyTo, replyMsg);
             });
             break;
         case 'schedule':
-            getGoogleCalendar('a5jeb9t5etasrbl6dt5htkv4to@group.calendar.google.com', function(events) {
+            getGoogleCalendar(config.google.calendarId, function(events) {
                 let replyMsg = 'Scheduled Shows for the Next 48 hours:';
                 for (let i = 0; i < events.length; i++) {
                     replyMsg += `\n${events[i].summary} - ${events[i].start.dateTime}`;
