@@ -75,17 +75,19 @@ function processCommand(text, nick, to) {
 }
 
 /**
- * Callback for handling url response
- *
- * @callback urlCallback
- * @param {string} body
+ * Responds to commands
+ * @param {string} replyTo - message target
+ * @param {string} replyMsg - message to send
+ */
+/**
+ * Gets DCTV live channels
+ * @param {dctvLiveChannels} callback - callback to run
  */
 
 /**
  * Gets contents of a URL
- *
  * @param {string} url - url to getDate
- * @param {urlCallback} callback - callback to run
+ * @param {urlContents} callback - callback to run
  */
 function getUrlContents(url, callback) {
     request(url, function(error, response, body) {
@@ -102,17 +104,9 @@ function getUrlContents(url, callback) {
 }
 
 /**
- * Callback for handling google calendar items result
- *
- * @callback calendarEventsCallback
- * @param {JSON[]} entities
- */
-
-/**
  * Gets google calendar items
- *
  * @param {string} id - google calendar id
- * @param {calendarEventsCallback} callback - callback to run
+ * @param {calendarEvents} callback - callback to run
  */
 function getGoogleCalendar(id, callback) {
     let now = new Date();
@@ -127,3 +121,23 @@ function getGoogleCalendar(id, callback) {
         callback(result.items);
     });
 }
+
+// Additional documentation
+
+/**
+ * Callback for handling url response
+ * @callback urlContents
+ * @param {string} body
+ */
+
+/**
+ * Callback for handling google calendar items result
+ * @callback calendarEvents
+ * @param {Object[]} entities
+ */
+
+/**
+ * Callback for handling DCTV live channels
+ * @callback dctvLiveChannels
+ * @param {Object[]} channels
+ */
