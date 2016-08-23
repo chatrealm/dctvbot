@@ -125,9 +125,12 @@ client.addListener('message', function(nick, to, text, message) {
 let liveChannels = "-1";
 
 function newlyLive(ch) {
-    return !liveChannels.find(function(liveCh) {
+    if (liveChannels.find(function(liveCh) {
         return ch.streamid === liveCh.streamId;
-    });
+    })) {
+        return false;
+    }
+    return true;
 }
 
 let currentTopic = '';
