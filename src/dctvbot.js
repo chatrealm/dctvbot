@@ -185,7 +185,8 @@ function scanForChannelUpdates() {
 
             let newLive = liveChannels.find(function(liveCh) {
                 let res = prevChannels.find(function(prevCh) {
-                    return liveCh.streamid === prevCh.streamid;
+                    return (liveCh.streamid === prevCh.streamid &&
+                        liveCh.yt_upcoming === prevCh.yt_upcoming);
                 });
                 return typeof res === 'undefined';
             });
