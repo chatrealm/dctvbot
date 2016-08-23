@@ -125,9 +125,10 @@ client.addListener('message', function(nick, to, text, message) {
 let liveChannels = "-1";
 
 function newlyLive(ch) {
-    if (liveChannels.find(function(liveCh) {
+    let found = liveChannels.find(function(liveCh) {
         return ch.streamid === liveCh.streamId;
-    })) {
+    });
+    if (found !== 'undefined') {
         return false;
     }
     return true;
@@ -147,11 +148,12 @@ function updateTopic(newText) {
     client.send('TOPIC', config.server.channels[0], topicArray.join(separator));
 }
 
+let firstRun = false;
+
 /**
  * Scans DCTV for channel updates to relay to the IRC channel
  */
 function scanForChannelUpdates() {
-    let firstRun = false;
     if (liveChannels === "-1") {
         firstRun = true;
         liveChannels = [];
@@ -159,6 +161,7 @@ function scanForChannelUpdates() {
 
     getDctvLiveChannels(function(channels) {
         let prevChannels = liveChannels;
+        liveChannels = [];
         for (let i = 0; i < channels.length; i++) {
             let ch = channels[i];
             if (ch.nowonline === 'yes' || ch.yt_upcoming) {
@@ -182,7 +185,7 @@ function scanForChannelUpdates() {
             const upcomingAlert = colors.black.bgyellow(' UPCOMING ');
             let newLive = prevChannels.find(newlyLive);
 
-            if (newLive) {
+            if (newLive !== 'undefined') {
                 let msg = newLive.yt_upcoming ? upcomingAlert : liveAlert;
                 msg += ` ${newLive.friendlyalias}`;
                 if (newLive.twitch_yt_description !== '') {
