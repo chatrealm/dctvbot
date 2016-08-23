@@ -1,15 +1,14 @@
 export default {
-
     // Bot config
     bot: {
-        nick: 'nick',
-        userName: 'user name',
-        realName: 'real name'
+        nick: '',
+        userName: '',
+        realName: ''
     },
 
     // Server config
     server: {
-        address: 'host.address',
+        address: 'irs.server.com',
         port: 6667,
         channels: ['#channel']
     },
@@ -22,5 +21,4 @@ export default {
         apiKey: '',
         calendarId: ''
     }
-
 };
