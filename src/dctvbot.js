@@ -137,6 +137,19 @@ function updateTopic(newText) {
     client.send('TOPIC', config.server.channels[0], topicArray.join(separator));
 }
 
+function announceNewLiveChannel(ch, officialLive) {
+    let msg = ch.yt_upcoming ? colors.black.bgyellow(' NEXT ') : colors.white.bgred(' LIVE ');
+    msg += ` ${ch.friendlyalias}`;
+    if (ch.twitch_yt_description !== '') {
+        msg += ` - ${ch.twitch_yt_description}`;
+    }
+    if (ch.channel === 1) {
+        updateTopic(msg);
+    } else if (!officialLive) {
+        client.say(config.server.channels[0], msg);
+    }
+}
+
 let firstRun = false;
 
 /**
@@ -183,16 +196,7 @@ function scanForChannelUpdates() {
             });
 
             if (typeof newLive !== 'undefined') {
-                let msg = newLive.yt_upcoming ? colors.black.bgyellow(' UPCOMING ') : colors.white.bgred(' LIVE ');
-                msg += ` ${newLive.friendlyalias}`;
-                if (newLive.twitch_yt_description !== '') {
-                    msg += ` - ${newLive.twitch_yt_description}`;
-                }
-                if (newLive.channel === 1) {
-                    updateTopic(msg);
-                } else {
-                    client.say(config.server.channels[0], msg);
-                }
+                announceNewLiveChannel(newLive, officialLive);
             }
         }
 
