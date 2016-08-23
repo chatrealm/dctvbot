@@ -170,21 +170,20 @@ function scanForChannelUpdates() {
                 updateTopic(' <>');
             }
 
-            const liveAlert = colors.white.bgred(' LIVE ');
-            const upcomingAlert = colors.black.bgyellow(' UPCOMING ');
+            
 
             let newLive = liveChannels.find(function(liveCh) {
                 let res = prevChannels.find(function(prevCh) {
                     return liveCh.streamid === prevCh.streamid;
                 });
-                if (res !== 'undefined') {
+                if (typeof res !== 'undefined') {
                     return false;
                 }
                 return true;
             });
 
-            if (newLive !== 'undefined') {
-                let msg = newLive.yt_upcoming ? upcomingAlert : liveAlert;
+            if (typeof newLive !== 'undefined') {
+                let msg = newLive.yt_upcoming ? colors.black.bgyellow(' UPCOMING ') : colors.white.bgred(' LIVE ');
                 msg += ` ${newLive.friendlyalias}`;
                 if (newLive.twitch_yt_description !== '') {
                     msg += ` - ${newLive.twitch_yt_description}`;
