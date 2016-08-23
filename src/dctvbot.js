@@ -1,4 +1,5 @@
 import irc from 'irc';
+import colors from 'irc-colors';
 import request from 'request';
 import config from './config/config';
 
@@ -121,10 +122,27 @@ client.addListener('message', function(nick, to, text, message) {
     }
 });
 
-/**
- * @type {string|Channel[]}
- */
 let liveChannels = "-1";
+
+function newlyLive(ch) {
+    return !liveChannels.find(function(liveCh) {
+        return ch.streamid === liveCh.streamId;
+    });
+}
+
+let currentTopic = '';
+
+// Listen for topic changes
+client.addListener('topic', function(channel, topic, nick, message) {
+    currentTopic = topic;
+});
+
+function updateTopic(newText) {
+    const separator = ' | ';
+    let topicArray = currentTopic.split(separator);
+    topicArray[0] = newText;
+    client.send('TOPIC', config.server.channels[0], topicArray.join(separator));
+}
 
 /**
  * Scans DCTV for channel updates to relay to the IRC channel
@@ -137,17 +155,42 @@ function scanForChannelUpdates() {
     }
 
     getDctvLiveChannels(function(channels) {
+        let prevChannels = liveChannels;
         for (let i = 0; i < channels.length; i++) {
             let ch = channels[i];
-            if (ch.nowonline === 'yes') {
+            if (ch.nowonline === 'yes' || ch.yt_upcoming) {
                 liveChannels.push(ch);
-                console.log(ch);
             }
         }
 
         if (!firstRun) {
-            // TODO: Announce new live channels
-            // TODO: Update topic as appropriate
+            let officialLive = false;
+            for (let i = 0; i < liveChannels.length; i++) {
+                if (liveChannels[i].channel === 1) {
+                    officialLive = true;
+                }
+            }
+
+            if (!officialLive && !currentTopic.startsWith(' <>')) {
+                updateTopic(' <>');
+            }
+
+            const liveAlert = colors.white.bgred(' LIVE ');
+            const upcomingAlert = colors.black.bgyellow(' UPCOMING ');
+            let newLive = prevChannels.find(newlyLive);
+
+            if (newLive) {
+                let msg = newLive.yt_upcoming ? upcomingAlert : liveAlert;
+                msg += ` ${newLive.friendlyalias}`;
+                if (newLive.twitch_yt_description !== '') {
+                    msg += ` - ${newLive.twitch_yt_description}`;
+                }
+                if (newLive.channel === 1) {
+                    updateTopic(msg);
+                } else {
+                    client.say(config.server.channels[0], msg);
+                }
+            }
         }
 
         firstRun = false;
