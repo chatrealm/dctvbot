@@ -183,16 +183,11 @@ function scanForChannelUpdates() {
                 updateTopic(' <>');
             }
 
-            
-
             let newLive = liveChannels.find(function(liveCh) {
                 let res = prevChannels.find(function(prevCh) {
                     return liveCh.streamid === prevCh.streamid;
                 });
-                if (typeof res !== 'undefined') {
-                    return false;
-                }
-                return true;
+                return typeof res === 'undefined';
             });
 
             if (typeof newLive !== 'undefined') {
