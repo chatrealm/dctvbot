@@ -174,9 +174,13 @@ function scanForChannelUpdates() {
             const upcomingAlert = colors.black.bgyellow(' UPCOMING ');
 
             let newLive = liveChannels.find(function(liveCh) {
-                return prevChannels.find(function(prevCh) {
+                let res = prevChannels.find(function(prevCh) {
                     return liveCh.streamid === prevCh.streamid;
                 });
+                if (res !== 'undefined') {
+                    return false;
+                }
+                return true;
             });
 
             if (newLive !== 'undefined') {
