@@ -122,14 +122,7 @@ client.addListener('message', function(nick, to, text, message) {
     }
 });
 
-let liveChannels = "-1";
-
-function newlyLive(ch) {
-    return liveChannels.find(function(liveCh) {
-        return ch.streamid === liveCh.streamId;
-    });
-}
-
+let liveChannels = '-1';
 let currentTopic = '';
 
 // Listen for topic changes
@@ -179,7 +172,12 @@ function scanForChannelUpdates() {
 
             const liveAlert = colors.white.bgred(' LIVE ');
             const upcomingAlert = colors.black.bgyellow(' UPCOMING ');
-            let newLive = prevChannels.find(newlyLive);
+
+            let newLive = liveChannels.find(function(liveCh) {
+                return prevChannels.find(function(prevCh) {
+                    return liveCh.streamid === prevCh.streamid;
+                });
+            });
 
             if (newLive !== 'undefined') {
                 let msg = newLive.yt_upcoming ? upcomingAlert : liveAlert;
