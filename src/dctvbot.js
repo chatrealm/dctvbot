@@ -3,54 +3,9 @@ import colors from 'irc-colors';
 import request from 'request';
 import config from './config/config';
 
-/**
- * Gets contents of a URL
- * @param {string} url - url to getDate
- * @param {function(string): void} callback - Callback for handling url response
- */
-function getUrlContents(url, callback) {
-    request(url, function(error, response, body) {
-        if (!error && response.statusCode === 200) {
-            if (body === null) {
-                console.error(`Error: ${response}`);
-            } else {
-                callback(body);
-            }
-        } else {
-            console.error(`Error: ${error}`);
-        }
-    });
-}
-
-/**
- * Gets DCTV live channels
- * @param {function(Channel[]): void} callback - Callback for handling DCTV live channels
- */
-function getDctvLiveChannels(callback) {
-    let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
-    getUrlContents(channelsUrl, function(response) {
-        callback(JSON.parse(response).assignedchannels);
-    });
-}
-
-/**
- * Gets google calendar items
- * @param {string} id - google calendar id
- * @param {function(Object[]): void} callback - Callback for handling google calendar items result
- */
-function getGoogleCalendar(id, callback) {
-    let now = new Date();
-    let later = new Date();
-    later.setDate(later.getDate() + 2);
-
-    let url = `https://www.googleapis.com/calendar/v3/calendars/${id}/events` +
-        `?key=${config.google.apiKey}&singleEvents=true&orderBy=startTime` +
-        `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}`;
-    getUrlContents(url, function(response) {
-        let result = JSON.parse(response);
-        callback(result.items);
-    });
-}
+let liveChannels = '-1';
+let currentTopic = '';
+let firstRun = false;
 
 // IRC Client
 let client = new irc.Client(config.server.address, config.bot.nick, {
@@ -60,6 +15,22 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
     debug: true,
     channels: config.server.channels
 });
+
+// Listen for messages
+client.addListener('message', function(nick, to, text, message) {
+    if (text.startsWith('!') || to === client.nick) {
+        processCommand(text, nick, to);
+    } else {
+        // console.log('not a command');
+    }
+});
+
+// Listen for topic changes
+client.addListener('topic', function(channel, topic, nick, message) {
+    currentTopic = topic;
+});
+
+setInterval(scanForChannelUpdates, 5000);
 
 /**
  * Processes incoming commands
@@ -113,44 +84,54 @@ function processCommand(text, nick, to) {
     }
 }
 
-// Listen for messages
-client.addListener('message', function(nick, to, text, message) {
-    if (text.startsWith('!') || to === client.nick) {
-        processCommand(text, nick, to);
-    } else {
-        // console.log('not a command');
-    }
-});
-
-let liveChannels = '-1';
-let currentTopic = '';
-
-// Listen for topic changes
-client.addListener('topic', function(channel, topic, nick, message) {
-    currentTopic = topic;
-});
-
-function updateTopic(newText) {
-    const separator = ' | ';
-    let topicArray = currentTopic.split(separator);
-    topicArray[0] = newText;
-    client.send('TOPIC', config.server.channels[0], topicArray.join(separator));
+/**
+ * Gets DCTV live channels
+ * @param {function(Channel[]): void} callback - Callback for handling DCTV live channels
+ */
+function getDctvLiveChannels(callback) {
+    let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
+    getUrlContents(channelsUrl, function(response) {
+        callback(JSON.parse(response).assignedchannels);
+    });
 }
 
-function announceNewLiveChannel(ch, officialLive) {
-    let msg = ch.yt_upcoming ? colors.black.bgyellow(' NEXT ') : colors.white.bgred(' LIVE ');
-    msg += ` ${ch.friendlyalias}`;
-    if (ch.twitch_yt_description !== '') {
-        msg += ` - ${ch.twitch_yt_description}`;
-    }
-    if (ch.channel === 1) {
-        updateTopic(msg);
-    } else if (!officialLive) {
-        client.say(config.server.channels[0], msg);
-    }
+/**
+ * Gets google calendar items
+ * @param {string} id - google calendar id
+ * @param {function(Object[]): void} callback - Callback for handling google calendar items result
+ */
+function getGoogleCalendar(id, callback) {
+    let now = new Date();
+    let later = new Date();
+    later.setDate(later.getDate() + 2);
+
+    let url = `https://www.googleapis.com/calendar/v3/calendars/${id}/events` +
+        `?key=${config.google.apiKey}&singleEvents=true&orderBy=startTime` +
+        `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}`;
+    getUrlContents(url, function(response) {
+        let result = JSON.parse(response);
+        callback(result.items);
+    });
 }
 
-let firstRun = false;
+/**
+ * Gets contents of a URL
+ * @param {string} url - url to getDate
+ * @param {function(string): void} callback - Callback for handling url response
+ */
+function getUrlContents(url, callback) {
+    request(url, function(error, response, body) {
+        if (!error && response.statusCode === 200) {
+            if (body === null) {
+                console.error(`Error: ${response}`);
+            } else {
+                callback(body);
+            }
+        } else {
+            console.error(`Error: ${error}`);
+        }
+    });
+}
 
 /**
  * Scans DCTV for channel updates to relay to the IRC channel
@@ -200,7 +181,34 @@ function scanForChannelUpdates() {
     });
 }
 
-setInterval(scanForChannelUpdates, 5000);
+/**
+ * Makes channel announcement
+ * @param {Channel} ch - channel to announce
+ * @param {boolean} officialLive - is an official show live?
+ */
+function announceNewLiveChannel(ch, officialLive) {
+    let msg = ch.yt_upcoming ? colors.black.bgyellow(' NEXT ') : colors.white.bgred(' LIVE ');
+    msg += ` ${ch.friendlyalias}`;
+    if (ch.twitch_yt_description !== '') {
+        msg += ` - ${ch.twitch_yt_description}`;
+    }
+    if (ch.channel === 1) {
+        updateTopic(msg);
+    } else if (!officialLive) {
+        client.say(config.server.channels[0], msg);
+    }
+}
+
+/**
+ * Updates first portion of topic with new info
+ * @param {string} newText - New text for first section of topic
+ */
+function updateTopic(newText) {
+    const separator = ' | ';
+    let topicArray = currentTopic.split(separator);
+    topicArray[0] = newText;
+    client.send('TOPIC', config.server.channels[0], topicArray.join(separator));
+}
 
 // Additional documentation
 
