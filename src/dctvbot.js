@@ -90,7 +90,7 @@ function processCommand(cmd, channel, nick, replyTo) {
                     replyMsg = '';
                     for (var i = 0; i < channels.length; i++) {
                         let ch = channels[i];
-                        replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias}`;
+                        replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias} - ${ch.urltoplayer}`;
                     }
                 }
                 replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
@@ -244,6 +244,8 @@ function announceNewLiveChannel(ch, ircChannel) {
     if (ch.twitch_yt_description !== '') {
         msg += ` - ${ch.twitch_yt_description}`;
     }
+
+    msg += ` - ${ch.urltoplayer}`;
 
     if (ch.channel === 1) {
         updateTopic(msg, ircChannel);
