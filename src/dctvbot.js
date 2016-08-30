@@ -1,6 +1,7 @@
 import irc from 'irc';
 import colors from 'irc-colors';
 import request from 'request';
+import moment from 'moment-timezone';
 import config from './config/config';
 
 let liveDctvChannels = '-1';
@@ -97,8 +98,7 @@ function processCommand(cmd, channel, nick, replyTo) {
             break;
         case 'next':
             getGoogleCalendar(config.google.calendarId, function(events) {
-                // TODO: time sentance representation
-                let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${events[0].start.dateTime}`;
+                let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${moment().to(events[0].start.dateTime)}`;
                 replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
             });
             break;
@@ -106,8 +106,9 @@ function processCommand(cmd, channel, nick, replyTo) {
             getGoogleCalendar(config.google.calendarId, function(events) {
                 let replyMsg = 'Scheduled Shows for the Next 48 hours:';
                 for (let i = 0; i < events.length; i++) {
-                    // TODO: time.is date/time link
-                    replyMsg += `\n${events[i].summary} - ${events[i].start.dateTime}`;
+                    let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
+                    let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
+                    replyMsg += `\n${events[i].summary} - ${timeIsLink}`;
                 }
                 replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
             });
