@@ -3,9 +3,11 @@ import colors from 'irc-colors';
 import request from 'request';
 import config from './config/config';
 
-let liveChannels = '-1';
+let liveDctvChannels = '-1';
 let currentTopic = '';
 let firstRun = false;
+let officialLive = false;
+let ircChannelsNicks = [];
 
 // IRC Client
 let client = new irc.Client(config.server.address, config.bot.nick, {
@@ -16,10 +18,10 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
     channels: config.server.channels
 });
 
-// Listen for messages
-client.addListener('message', function(nick, to, text, message) {
+// Listen for messages in channels
+client.addListener('message#', function(nick, to, text, message) {
     if (text.startsWith('!')) {
-        processCommand(text.slice(1).trim(), to);
+        processCommand(text.slice(1).trim(), to, nick, to);
     } else {
         // console.log('not a command');
     }
@@ -27,7 +29,7 @@ client.addListener('message', function(nick, to, text, message) {
 
 // Listen for PMs
 client.addListener('pm', function(nick, text, message) {
-   processCommand(text, nick)
+    processCommand(text, null, nick, nick);
 });
 
 // Listen for topic changes
@@ -35,14 +37,50 @@ client.addListener('topic', function(channel, topic, nick, message) {
     currentTopic = topic;
 });
 
+// Listen for name list events
+client.addListener('names', function(channel, nicks) {
+    ircChannelsNicks[channel] = nicks;
+});
+
 setInterval(scanForChannelUpdates, 5000);
+
+/**
+ * Checks for 'admin' privelage
+ * @param {string} nick - nick of requestor
+ * @param {string} channel - channel permissions were requested in
+ * @return {boolean} - do they have the power?
+ */
+function hasThePower(nick, channel) {
+    let adminModes = ['~', '@', '%', '+'];
+    let userModes = ircChannelsNicks[channel][nick];
+
+    for (let i = 0; i < adminModes.length; i++) {
+        if (userModes.indexOf(adminModes[i]) > -1) {
+            return true;
+        }
+    }
+    return false;
+}
 
 /**
  * Processes incoming commands
  * @param {string} cmd - command text
+ * @param {string} channel - channel the command was sent to (null if pm)
+ * @param {string} nick - nick that sent command
  * @param {string} replyTo - reply target
  */
-function processCommand(cmd, replyTo) {
+function processCommand(cmd, channel, nick, replyTo) {
+    let cmdParts = cmd.split(' ');
+    if (cmdParts.length > 1) {
+        cmd = cmdParts[0];
+    }
+
+    let wantLoud = cmdParts[1] === 'v';
+    if (wantLoud) {
+        // Update nicks in channel
+        client.send('NAMES', channel);
+    }
+
     switch (cmd) {
         case 'now':
             getDctvLiveChannels(function(channels) {
@@ -54,14 +92,14 @@ function processCommand(cmd, replyTo) {
                         replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias}`;
                     }
                 }
-                client.notice(replyTo, replyMsg);
+                replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
             });
             break;
         case 'next':
             getGoogleCalendar(config.google.calendarId, function(events) {
                 // TODO: time sentance representation
                 let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${events[0].start.dateTime}`;
-                client.notice(replyTo, replyMsg);
+                replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
             });
             break;
         case 'schedule':
@@ -71,11 +109,27 @@ function processCommand(cmd, replyTo) {
                     // TODO: time.is date/time link
                     replyMsg += `\n${events[i].summary} - ${events[i].start.dateTime}`;
                 }
-                client.notice(replyTo, replyMsg);
+                replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
             });
             break;
         default:
             console.log('default');
+    }
+}
+
+/**
+ * Appropriately replies to a command
+ * @param {string} msg - message to send
+ * @param {string} target - reply target
+ * @param {string} channel - channel command was in
+ * @param {string} nick - nick of user that sent command
+ * @param {boolean} requestLoud - if user wants to not use notice in channel
+ */
+function replyToCommand(msg, target, channel, nick, requestLoud) {
+    if (channel === null || (requestLoud && hasThePower(nick, channel))) {
+        client.say(target, msg);
+    } else {
+        client.notice(target, msg);
     }
 }
 
@@ -132,34 +186,35 @@ function getUrlContents(url, callback) {
  * Scans DCTV for channel updates to relay to the IRC channel
  */
 function scanForChannelUpdates() {
-    if (liveChannels === "-1") {
+    if (liveDctvChannels === '-1') {
         firstRun = true;
-        liveChannels = [];
+        liveDctvChannels = [];
     }
 
     getDctvLiveChannels(function(channels) {
-        let prevChannels = liveChannels;
-        liveChannels = [];
+        let prevChannels = liveDctvChannels;
+        liveDctvChannels = [];
         for (let i = 0; i < channels.length; i++) {
             let ch = channels[i];
             if (ch.nowonline === 'yes' || ch.yt_upcoming) {
-                liveChannels.push(ch);
+                liveDctvChannels.push(ch);
             }
         }
 
         if (!firstRun) {
-            let officialLive = false;
-            for (let i = 0; i < liveChannels.length; i++) {
-                if (liveChannels[i].channel === 1) {
+            let wasOfficialLive = officialLive;
+            officialLive = false;
+            for (let i = 0; i < liveDctvChannels.length; i++) {
+                if (liveDctvChannels[i].channel === 1) {
                     officialLive = true;
                 }
             }
 
-            if (!officialLive && !currentTopic.startsWith(' <>')) {
-                updateTopic(' <>');
+            if (wasOfficialLive && !officialLive) { // && !currentTopic.startsWith(' <>')
+                updateTopic(' <>', config.server.channels[0]);
             }
 
-            let newLive = liveChannels.find(function(liveCh) {
+            let newLive = liveDctvChannels.find(function(liveCh) {
                 let res = prevChannels.find(function(prevCh) {
                     return (liveCh.streamid === prevCh.streamid &&
                         liveCh.yt_upcoming === prevCh.yt_upcoming);
@@ -168,7 +223,7 @@ function scanForChannelUpdates() {
             });
 
             if (typeof newLive !== 'undefined') {
-                announceNewLiveChannel(newLive, officialLive);
+                announceNewLiveChannel(newLive, config.server.channels[0]);
             }
         }
 
@@ -179,30 +234,33 @@ function scanForChannelUpdates() {
 /**
  * Makes channel announcement
  * @param {Channel} ch - channel to announce
- * @param {boolean} officialLive - is an official show live?
+ * @param {string} ircChannel - irc channel to make announcement in
  */
-function announceNewLiveChannel(ch, officialLive) {
+function announceNewLiveChannel(ch, ircChannel) {
     let msg = ch.yt_upcoming ? colors.black.bgyellow(' NEXT ') : colors.white.bgred(' LIVE ');
     msg += ` ${ch.friendlyalias}`;
+
     if (ch.twitch_yt_description !== '') {
         msg += ` - ${ch.twitch_yt_description}`;
     }
+
     if (ch.channel === 1) {
-        updateTopic(msg);
+        updateTopic(msg, ircChannel);
     } else if (!officialLive) {
-        client.say(config.server.channels[0], msg);
+        client.say(ircChannel, msg);
     }
 }
 
 /**
  * Updates first portion of topic with new info
  * @param {string} newText - New text for first section of topic
+ * @param {string} ircChannel - irc channel to update topic in
  */
-function updateTopic(newText) {
+function updateTopic(newText, ircChannel) {
     const separator = ' | ';
     let topicArray = currentTopic.split(separator);
     topicArray[0] = newText;
-    client.send('TOPIC', config.server.channels[0], topicArray.join(separator));
+    client.send('TOPIC', ircChannel, topicArray.join(separator));
 }
 
 // Additional documentation
