@@ -3,7 +3,8 @@ export default {
     bot: {
         nick: '',
         userName: '',
-        realName: ''
+        realName: '',
+        password: ''
     },
 
     // Server config

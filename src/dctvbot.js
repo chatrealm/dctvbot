@@ -19,6 +19,13 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
     channels: config.server.channels
 });
 
+// Listen for registered events
+client.addListener('registered', function(message) {
+    if (config.bot.password) {
+        client.say('NickServ', `IDENTIFY ${config.bot.password}`);
+    }
+});
+
 // Listen for messages in channels
 client.addListener('message#', function(nick, to, text, message) {
     if (text.startsWith('!')) {
