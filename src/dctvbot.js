@@ -18,11 +18,16 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
 
 // Listen for messages
 client.addListener('message', function(nick, to, text, message) {
-    if (text.startsWith('!') || to === client.nick) {
-        processCommand(text, nick, to);
+    if (text.startsWith('!')) {
+        processCommand(text.slice(1).trim(), to);
     } else {
         // console.log('not a command');
     }
+});
+
+// Listen for PMs
+client.addListener('pm', function(nick, text, message) {
+   processCommand(text, nick)
 });
 
 // Listen for topic changes
@@ -34,20 +39,10 @@ setInterval(scanForChannelUpdates, 5000);
 
 /**
  * Processes incoming commands
- * @param {string} text - message text
- * @param {string} nick - nick of the sender
- * @param {string} to - message recipient
+ * @param {string} cmd - command text
+ * @param {string} replyTo - reply target
  */
-function processCommand(text, nick, to) {
-    let cmd = text;
-
-    let replyTo = to;
-    if (to === client.nick) {
-        replyTo = nick;
-    } else {
-        cmd = cmd.slice(1).trim();
-    }
-
+function processCommand(cmd, replyTo) {
     switch (cmd) {
         case 'now':
             getDctvLiveChannels(function(channels) {
