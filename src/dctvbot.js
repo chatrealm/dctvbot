@@ -28,7 +28,7 @@ client.addListener('registered', function(message) {
 
 // Listen for messages in channels
 client.addListener('message#', function(nick, to, text, message) {
-    if (text.startsWith('!')) {
+    if (text.startsWith(config.prefix)) {
         processCommand(text.slice(1).trim(), to, nick);
     } else {
         // console.log('not a command');
