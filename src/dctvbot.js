@@ -57,10 +57,11 @@ client.addListener('names', function(channel, nicks) {
     ircChannelsNicks[channel] = nicks;
 });
 
+// Scan DCTV API every 5 sec
 setInterval(scanForChannelUpdates, 5000);
 
 /**
- * Checks for 'admin' privelage
+ * Checks for 'admin' privelage, hard coded to voiced or better for now
  * @param {string} nick - nick of requestor
  * @param {string} channel - channel permissions were requested in
  * @return {boolean} - do they have the power?
