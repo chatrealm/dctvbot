@@ -45,6 +45,13 @@ client.addListener('topic', function(channel, topic, nick, message) {
     currentTopic = topic;
 });
 
+// Ask for names update for all channels every 60 sec
+setInterval(function() {
+    for (let i = 0; i < config.server.channels.length; i++) {
+        client.send('NAMES', config.server.channels[i]);
+    }
+}, 60000);
+
 // Listen for name list events
 client.addListener('names', function(channel, nicks) {
     ircChannelsNicks[channel] = nicks;
@@ -84,10 +91,6 @@ function processCommand(cmd, channel, nick, replyTo) {
     }
 
     let wantLoud = cmdParts[1] === 'v';
-    if (wantLoud) {
-        // Update nicks in channel
-        client.send('NAMES', channel);
-    }
 
     switch (cmd) {
         case 'now':
