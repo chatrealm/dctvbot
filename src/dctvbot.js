@@ -29,7 +29,7 @@ client.addListener('registered', function(message) {
 // Listen for messages in channels
 client.addListener('message#', function(nick, to, text, message) {
     if (text.startsWith('!')) {
-        processCommand(text.slice(1).trim(), to, nick, to);
+        processCommand(text.slice(1).trim(), to, nick);
     } else {
         // console.log('not a command');
     }
@@ -37,7 +37,7 @@ client.addListener('message#', function(nick, to, text, message) {
 
 // Listen for PMs
 client.addListener('pm', function(nick, text, message) {
-    processCommand(text, null, nick, nick);
+    processCommand(text, null, nick);
 });
 
 // Listen for topic changes
@@ -82,14 +82,12 @@ function hasThePower(nick, channel) {
  * @param {string} cmd - command text
  * @param {string} channel - channel the command was sent to (null if pm)
  * @param {string} nick - nick that sent command
- * @param {string} replyTo - reply target
  */
-function processCommand(cmd, channel, nick, replyTo) {
+function processCommand(cmd, channel, nick) {
     let cmdParts = cmd.split(' ');
     if (cmdParts.length > 1) {
         cmd = cmdParts[0];
     }
-
     let wantLoud = cmdParts[1] === 'v';
 
     switch (cmd) {
@@ -103,13 +101,13 @@ function processCommand(cmd, channel, nick, replyTo) {
                         replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias} - ${ch.urltoplayer}`;
                     }
                 }
-                replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
+                replyToCommand(replyMsg, channel, nick, wantLoud);
             });
             break;
         case 'next':
             getGoogleCalendar(config.google.calendarId, function(events) {
                 let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${moment().to(events[0].start.dateTime)}`;
-                replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
+                replyToCommand(replyMsg, channel, nick, wantLoud);
             });
             break;
         case 'schedule':
@@ -120,7 +118,7 @@ function processCommand(cmd, channel, nick, replyTo) {
                     let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
                     replyMsg += `\n${events[i].summary} - ${timeIsLink}`;
                 }
-                replyToCommand(replyMsg, replyTo, channel, nick, wantLoud);
+                replyToCommand(replyMsg, channel, nick, wantLoud);
             });
             break;
         default:
@@ -131,16 +129,17 @@ function processCommand(cmd, channel, nick, replyTo) {
 /**
  * Appropriately replies to a command
  * @param {string} msg - message to send
- * @param {string} target - reply target
  * @param {string} channel - channel command was in
  * @param {string} nick - nick of user that sent command
  * @param {boolean} requestLoud - if user wants to not use notice in channel
  */
-function replyToCommand(msg, target, channel, nick, requestLoud) {
-    if (channel === null || (requestLoud && hasThePower(nick, channel))) {
-        client.say(target, msg);
+function replyToCommand(msg, channel, nick, requestLoud) {
+    if (channel === null) {
+        client.say(nick, msg);
+    } else if (requestLoud && hasThePower(nick, channel)) {
+        client.say(channel, msg);
     } else {
-        client.notice(target, msg);
+        client.notice(nick, msg);
     }
 }
 
