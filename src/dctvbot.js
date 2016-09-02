@@ -20,14 +20,14 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
 });
 
 // Listen for registered events
-client.addListener('registered', function(message) {
+client.addListener('registered', message => {
     if (config.bot.password) {
         client.say('NickServ', `IDENTIFY ${config.bot.password}`);
     }
 });
 
 // Listen for messages in channels
-client.addListener('message#', function(nick, to, text, message) {
+client.addListener('message#', (nick, to, text, message) => {
     if (text.startsWith(config.prefix)) {
         processCommand(text.slice(1).trim(), to, nick);
     } else {
@@ -36,24 +36,24 @@ client.addListener('message#', function(nick, to, text, message) {
 });
 
 // Listen for PMs
-client.addListener('pm', function(nick, text, message) {
+client.addListener('pm', (nick, text, message) => {
     processCommand(text, null, nick);
 });
 
 // Listen for topic changes
-client.addListener('topic', function(channel, topic, nick, message) {
+client.addListener('topic', (channel, topic, nick, message) => {
     currentTopic = topic;
 });
 
 // Ask for names update for all channels every 60 sec
-setInterval(function() {
+setInterval(() => {
     for (let i = 0; i < config.server.channels.length; i++) {
         client.send('NAMES', config.server.channels[i]);
     }
 }, 60000);
 
 // Listen for name list events
-client.addListener('names', function(channel, nicks) {
+client.addListener('names', (channel, nicks) => {
     ircChannelsNicks[channel] = nicks;
 });
 
@@ -93,7 +93,7 @@ function processCommand(cmd, channel, nick) {
 
     switch (cmd) {
         case 'now':
-            getDctvLiveChannels(function(channels) {
+            getDctvLiveChannels(channels => {
                 let replyMsg = 'Nothing is live';
                 if (channels.length > 0) {
                     replyMsg = '';
@@ -106,13 +106,13 @@ function processCommand(cmd, channel, nick) {
             });
             break;
         case 'next':
-            getGoogleCalendar(config.google.calendarId, function(events) {
+            getGoogleCalendar(config.google.calendarId, events => {
                 let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${moment().to(events[0].start.dateTime)}`;
                 replyToCommand(replyMsg, channel, nick, wantLoud);
             });
             break;
         case 'schedule':
-            getGoogleCalendar(config.google.calendarId, function(events) {
+            getGoogleCalendar(config.google.calendarId, events => {
                 let replyMsg = 'Scheduled Shows for the Next 48 hours:';
                 for (let i = 0; i < events.length; i++) {
                     let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
@@ -150,7 +150,7 @@ function replyToCommand(msg, channel, nick, requestLoud) {
  */
 function getDctvLiveChannels(callback) {
     let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
-    getUrlContents(channelsUrl, function(response) {
+    getUrlContents(channelsUrl, response => {
         callback(JSON.parse(response).assignedchannels);
     });
 }
@@ -168,7 +168,7 @@ function getGoogleCalendar(id, callback) {
     let url = `https://www.googleapis.com/calendar/v3/calendars/${id}/events` +
         `?key=${config.google.apiKey}&singleEvents=true&orderBy=startTime` +
         `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}`;
-    getUrlContents(url, function(response) {
+    getUrlContents(url, response => {
         let result = JSON.parse(response);
         callback(result.items);
     });
@@ -180,7 +180,7 @@ function getGoogleCalendar(id, callback) {
  * @param {function(string): void} callback - Callback for handling url response
  */
 function getUrlContents(url, callback) {
-    request(url, function(error, response, body) {
+    request(url, (error, response, body) => {
         if (!error && response.statusCode === 200) {
             if (body === null) {
                 console.error(`Error: ${response}`);
@@ -202,7 +202,7 @@ function scanForChannelUpdates() {
         liveDctvChannels = [];
     }
 
-    getDctvLiveChannels(function(channels) {
+    getDctvLiveChannels(channels => {
         let prevChannels = liveDctvChannels;
         liveDctvChannels = [];
         for (let i = 0; i < channels.length; i++) {
@@ -225,8 +225,8 @@ function scanForChannelUpdates() {
                 updateTopic(' <>', config.server.channels[0]);
             }
 
-            let newLive = liveDctvChannels.find(function(liveCh) {
-                let res = prevChannels.find(function(prevCh) {
+            let newLive = liveDctvChannels.find(liveCh => {
+                let res = prevChannels.find(prevCh => {
                     return (liveCh.streamid === prevCh.streamid &&
                         liveCh.yt_upcoming === prevCh.yt_upcoming);
                 });
