@@ -2,6 +2,8 @@ import irc from 'irc';
 import colors from 'irc-colors';
 import request from 'request';
 import moment from 'moment-timezone';
+
+import googleCalendar from './services/google-calendar';
 import dctvApi from './services/dctv-api';
 
 import config from './config/config';
@@ -110,13 +112,13 @@ function processCommand(cmd, channel, nick) {
             replyToCommand(replyMsg, channel, nick, wantLoud);
             break;
         case 'next':
-            getGoogleCalendar(config.google.calendarId, events => {
+            googleCalendar.getFromConfig(events => {
                 let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${moment().to(events[0].start.dateTime)}`;
                 replyToCommand(replyMsg, channel, nick, wantLoud);
             });
             break;
         case 'schedule':
-            getGoogleCalendar(config.google.calendarId, events => {
+            googleCalendar.getFromConfig(events => {
                 let replyMsg = 'Scheduled Shows for the Next 48 hours:';
                 for (let i = 0; i < events.length; i++) {
                     let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
@@ -146,46 +148,6 @@ function replyToCommand(msg, channel, nick, requestLoud) {
     } else {
         client.notice(nick, msg);
     }
-}
-
-/**
-
-/**
- * Gets google calendar items
- * @param {string} id - google calendar id
- * @param {function(Object[]): void} callback - Callback for handling google calendar items result
- */
-function getGoogleCalendar(id, callback) {
-    let now = new Date();
-    let later = new Date();
-    later.setDate(later.getDate() + 2);
-
-    let url = `https://www.googleapis.com/calendar/v3/calendars/${id}/events` +
-        `?key=${config.google.apiKey}&singleEvents=true&orderBy=startTime` +
-        `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}`;
-    getUrlContents(url, response => {
-        let result = JSON.parse(response);
-        callback(result.items);
-    });
-}
-
-/**
- * Gets contents of a URL
- * @param {string} url - url to getDate
- * @param {function(string): void} callback - Callback for handling url response
- */
-function getUrlContents(url, callback) {
-    request(url, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-            if (body === null) {
-                console.error(`Error: ${response}`);
-            } else {
-                callback(body);
-            }
-        } else {
-            console.error(`Error: ${error}`);
-        }
-    });
 }
 
 /**
