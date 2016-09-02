@@ -25,10 +25,10 @@ Sample live announcement:
 git clone https://github.com/chatrealm/dctvbot.git
 cd dctvbot
 
-# Copy sample config file
-cp config/config.sample.js config/config.js
+# Rename sample config file
+mv src/config/config.sample.js src/config/config.js
 
-# MAKE SURE TO EDIT config/config.js WITH DESIRED SETTINGS
+# MAKE SURE TO EDIT src/config/config.js WITH DESIRED SETTINGS
 
 # Install required node modules
 npm install
