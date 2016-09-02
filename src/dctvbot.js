@@ -2,11 +2,12 @@ import irc from 'irc';
 import colors from 'irc-colors';
 import request from 'request';
 import moment from 'moment-timezone';
+import dctvApi from './services/dctv-api';
+
 import config from './config/config';
 
-let liveDctvChannels = '-1';
+let currentDctvChannels = '-1';
 let currentTopic = '';
-let firstRun = false;
 let officialLive = false;
 let ircChannelsNicks = [];
 
@@ -57,8 +58,11 @@ client.addListener('names', (channel, nicks) => {
     ircChannelsNicks[channel] = nicks;
 });
 
-// Scan DCTV API every 5 sec
-setInterval(scanForChannelUpdates, 5000);
+// Update DCTV Live Channels every 5 sec
+setInterval(dctvApi.updateLiveChannels, 5000);
+
+// Check live announcements every 3 sec
+setInterval(checkForLiveAnnouncements, 3000);
 
 /**
  * Checks for 'admin' privelage, hard coded to voiced or better for now
@@ -91,19 +95,19 @@ function processCommand(cmd, channel, nick) {
     }
     let wantLoud = cmdParts[1] === 'v';
 
+    let replyMsg = '';
+
     switch (cmd) {
         case 'now':
-            getDctvLiveChannels(channels => {
-                let replyMsg = 'Nothing is live';
-                if (channels.length > 0) {
-                    replyMsg = '';
-                    for (var i = 0; i < channels.length; i++) {
-                        let ch = channels[i];
-                        replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias} - ${ch.urltoplayer}`;
-                    }
+            replyMsg = 'Nothing is live';
+            if (dctvApi.liveChannels.length > 0) {
+                replyMsg = '';
+                for (var i = 0; i < dctvApi.liveChannels.length; i++) {
+                    let ch = dctvApi.liveChannels[i];
+                    replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias} - ${ch.urltoplayer}`;
                 }
-                replyToCommand(replyMsg, channel, nick, wantLoud);
-            });
+            }
+            replyToCommand(replyMsg, channel, nick, wantLoud);
             break;
         case 'next':
             getGoogleCalendar(config.google.calendarId, events => {
@@ -145,15 +149,6 @@ function replyToCommand(msg, channel, nick, requestLoud) {
 }
 
 /**
- * Gets DCTV live channels
- * @param {function(Channel[]): void} callback - Callback for handling DCTV live channels
- */
-function getDctvLiveChannels(callback) {
-    let channelsUrl = 'http://diamondclub.tv/api/channelsv2.php';
-    getUrlContents(channelsUrl, response => {
-        callback(JSON.parse(response).assignedchannels);
-    });
-}
 
 /**
  * Gets google calendar items
@@ -196,50 +191,48 @@ function getUrlContents(url, callback) {
 /**
  * Scans DCTV for channel updates to relay to the IRC channel
  */
-function scanForChannelUpdates() {
-    if (liveDctvChannels === '-1') {
+function checkForLiveAnnouncements() {
+    let firstRun = false;
+
+    if (currentDctvChannels === '-1') {
         firstRun = true;
-        liveDctvChannels = [];
+        currentDctvChannels = [];
     }
 
-    getDctvLiveChannels(channels => {
-        let prevChannels = liveDctvChannels;
-        liveDctvChannels = [];
-        for (let i = 0; i < channels.length; i++) {
-            let ch = channels[i];
-            if (ch.nowonline === 'yes' || ch.yt_upcoming) {
-                liveDctvChannels.push(ch);
+    let prevDctvChannels = currentDctvChannels;
+    currentDctvChannels = [];
+    for (let i = 0; i < dctvApi.liveChannels.length; i++) {
+        let ch = dctvApi.liveChannels[i];
+        if (ch.nowonline === 'yes' || ch.yt_upcoming) {
+            currentDctvChannels.push(ch);
+        }
+    }
+
+    if (!firstRun) {
+        let wasOfficialLive = officialLive;
+        officialLive = false;
+        for (let i = 0; i < currentDctvChannels.length; i++) {
+            if (currentDctvChannels[i].channel === 1) {
+                officialLive = true;
             }
         }
 
-        if (!firstRun) {
-            let wasOfficialLive = officialLive;
-            officialLive = false;
-            for (let i = 0; i < liveDctvChannels.length; i++) {
-                if (liveDctvChannels[i].channel === 1) {
-                    officialLive = true;
-                }
-            }
+        if (wasOfficialLive && !officialLive) { // && !currentTopic.startsWith(' <>')
+            updateTopic(' <>', config.server.channels[0]);
+        }
 
-            if (wasOfficialLive && !officialLive) { // && !currentTopic.startsWith(' <>')
-                updateTopic(' <>', config.server.channels[0]);
-            }
-
-            let newLive = liveDctvChannels.find(liveCh => {
-                let res = prevChannels.find(prevCh => {
-                    return (liveCh.streamid === prevCh.streamid &&
-                        liveCh.yt_upcoming === prevCh.yt_upcoming);
-                });
-                return typeof res === 'undefined';
+        let newLive = currentDctvChannels.find(liveCh => {
+            let res = prevDctvChannels.find(prevCh => {
+                return (liveCh.streamid === prevCh.streamid &&
+                    liveCh.yt_upcoming === prevCh.yt_upcoming);
             });
+            return typeof res === 'undefined';
+        });
 
-            if (typeof newLive !== 'undefined') {
-                announceNewLiveChannel(newLive, config.server.channels[0]);
-            }
+        if (typeof newLive !== 'undefined') {
+            announceNewLiveChannel(newLive, config.server.channels[0]);
         }
-
-        firstRun = false;
-    });
+    }
 }
 
 /**
@@ -275,25 +268,3 @@ function updateTopic(newText, ircChannel) {
     topicArray[0] = newText;
     client.send('TOPIC', ircChannel, topicArray.join(separator));
 }
-
-// Additional documentation
-
-/**
- * DCTV Channel Object, response from api
- * @typedef Channel
- * @type {object}
- * @property {number} streamid - Unique ID of stream
- * @property {string} channelname - Channel name
- * @property {string} friendlyalias - Display name for channel
- * @property {string} streamtype - Stream type indicator, one of: "twitch", "rtmp-hls", "youtube", or "override"
- * @property {string} nowonline - Online status, one of: "yes" or "no"
- * @property {boolean} alerts - Indicator for if a channel wants alerts when going live
- * @property {string} twitch_currentgame - If {@link streamtype} is "twitch", this will contain the game the user has set
- * @property {string} twitch_yt_description - If {@link streamtype} is either "twitch" or "youtube", this will contain the description the user has set
- * @property {boolean} yt_upcoming - If {@link streamtype} is "youtube", this will contain the 'upcoming' status of a live broadcast
- * @property {string} yt_liveurl - If {@link streamtype} is "youtube", this will contain a youtube url to the live stream
- * @property {string} imageasset - Url to SD image for channel
- * @property {string} imageassethd - Url to HD image for channel
- * @property {string} urltoplayer - Url to DCTV channel
- * @property {number} channel - The channel's number
- */
