@@ -101,7 +101,7 @@ function processCommand(cmd, channel, nick) {
     if (cmdParts.length > 1) {
         cmd = cmdParts[0];
     }
-    let wantLoud = cmdParts[1] === 'v';
+    let wantLoud = /\-?v/g.test(cmdParts[1]);
 
     let replyMsg = '';
 
