@@ -1,6 +1,6 @@
 {
   "name": "dctvbot",
-  "version": "0.9.0",
+  "version": "1.5.0",
   "description": "IRC bot for diamondclub.tv chat",
   "main": "dctvbot.js",
   "scripts": {
