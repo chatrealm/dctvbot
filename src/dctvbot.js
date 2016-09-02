@@ -40,7 +40,7 @@ client.addListener('message#', (nick, to, text, message) => {
 
 // Listen for PMs
 client.addListener('pm', (nick, text, message) => {
-    processCommand(text, null, nick);
+    processCommand(text.trim(), null, nick);
 });
 
 // Listen for topic changes
@@ -73,7 +73,7 @@ setInterval(checkForLiveAnnouncements, 3000);
  * @return {boolean} - do they have the power?
  */
 function hasThePower(nick, channel) {
-    let adminModes = ['~', '@', '%', '+'];
+    const adminModes = ['~', '@', '%', '+'];
     let userModes = ircChannelsNicks[channel][nick];
 
     for (let i = 0; i < adminModes.length; i++) {
