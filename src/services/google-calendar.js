@@ -4,7 +4,8 @@ import config from '../config/config';
 export default {
     getFromConfig(callback) {
         let now = new Date();
-        let later = new Date().setDate(now.getDate() + 2);
+        let later = new Date();
+        later.setDate(now.getDate() + 2);
 
         let url = 'https://www.googleapis.com/calendar/v3/calendars' +
             `/${config.google.calendarId}/events?key=${config.google.apiKey}` +
@@ -15,7 +16,7 @@ export default {
                 if (body === null) {
                     console.error(`Error: ${response}`);
                 } else {
-                    callback(response.items);
+                    callback(JSON.parse(body).items);
                 }
             } else {
                 console.error(`Error: ${error}`);
