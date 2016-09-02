@@ -1,6 +1,5 @@
 import irc from 'irc';
 import colors from 'irc-colors';
-import request from 'request';
 import moment from 'moment-timezone';
 
 import googleCalendar from './services/google-calendar';
