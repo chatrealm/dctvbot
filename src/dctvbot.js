@@ -1,6 +1,7 @@
 import irc from 'irc';
 import colors from 'irc-colors';
 import moment from 'moment-timezone';
+import Cleverbot from 'cleverbot-node';
 
 import googleCalendar from './services/google-calendar';
 import dctvApi from './services/dctv-api';
@@ -11,6 +12,7 @@ let currentDctvChannels = '-1';
 let currentTopic = '';
 let officialLive = false;
 let ircChannelsNicks = [];
+let cleverbot = new Cleverbot();
 
 // IRC Client
 let client = new irc.Client(config.server.address, config.bot.nick, {
@@ -32,8 +34,13 @@ client.addListener('registered', message => {
 client.addListener('message#', (nick, to, text, message) => {
     if (text.startsWith(config.prefix)) {
         processCommand(text.slice(1).trim(), to, nick);
-    } else {
-        // console.log('not a command');
+    } else if (text.startsWith(config.bot.nick)) {
+        Cleverbot.prepare(() => {
+            let msg = text.replace(new RegExp(`${nick}[:\,]?\s?`, 'g'), '');
+            cleverbot.write(msg, response => {
+                client.say(to, `${nick}: ${response.message}`);
+            });
+        });
     }
 });
 
