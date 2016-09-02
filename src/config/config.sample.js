@@ -21,5 +21,9 @@ export default {
     google: {
         apiKey: '',
         calendarId: ''
+    },
+
+    dctv: {
+        apiSecsPro: ''
     }
 };

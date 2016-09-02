@@ -127,6 +127,17 @@ function processCommand(cmd, channel, nick) {
                 replyToCommand(replyMsg, channel, nick, wantLoud);
             });
             break;
+        case 'secs':
+            if (hasThePower(nick, channel)) {
+                if (typeof cmdParts[1] !== 'undefined') {
+                    dctvApi.secondScreenRequest(cmdParts[1], nick, response => {
+                        replyToCommand(response, channel, nick);
+                    });
+                }
+            } else {
+                replyToCommand('You have insufficient priveleges.', channel, nick);
+            }
+            break;
         default:
             console.log('default');
     }

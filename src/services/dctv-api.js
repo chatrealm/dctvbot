@@ -1,6 +1,9 @@
 import request from 'request';
+import config from '../config/config';
 
-const CHANNELS_URL = 'http://diamondclub.tv/api/channelsv2.php';
+const BASE_URL = 'http://diamondclub.tv/api';
+const CHANNELS_URL = `${BASE_URL}/channelsv2.php`;
+const SECOND_SCREEN_URL = `${BASE_URL}/secondscreen.php`;
 
 export default {
     liveChannels: [],
@@ -16,6 +19,24 @@ export default {
                 console.error(`Error: ${error}`);
             }
         });
+    },
+    secondScreenRequest(input, nick, callback) {
+        const KNOWN_COMMANDS = ['on', 'off', 'clear'];
+        if (input.startsWith('http') || KNOWN_COMMANDS.indexOf(input) !== -1) {
+            request(`${SECOND_SCREEN_URL}?url=${input}&user=${nick}&pro=${config.dctv.apiSecsPro}`, (error, response, body) => {
+                if (!error && response.statusCode === 200) {
+                    if (body === null) {
+                        console.error(`Error: ${response}`);
+                    } else {
+                        callback(`Command Sent. Response: ${body}`);
+                    }
+                } else {
+                    console.error(`Error: ${error}`);
+                }
+            });
+        } else {
+            callback('Invalid Selection');
+        }
     }
 };
 
