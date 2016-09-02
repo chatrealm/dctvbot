@@ -19,7 +19,7 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
     userName: config.bot.userName,
     realName: config.bot.realName,
     port: config.server.port,
-    debug: true,
+    // debug: true,
     channels: config.server.channels
 });
 
