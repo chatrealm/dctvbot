@@ -139,7 +139,7 @@ function processCommand(cmd, channel, nick) {
  * @param {string} nick - nick of user that sent command
  * @param {boolean} requestLoud - if user wants to not use notice in channel
  */
-function replyToCommand(msg, channel, nick, requestLoud) {
+function replyToCommand(msg, channel, nick, requestLoud = false) {
     if (channel === null) {
         client.say(nick, msg);
     } else if (requestLoud && hasThePower(nick, channel)) {
