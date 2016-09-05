@@ -73,7 +73,6 @@ client.addListener('names', (channel, nicks) => {
 // });
 
 setInterval(dctvApi.updateLiveChannels, 5000, assigned => {
-    console.log(assigned);
     assignedDctvChannels = assigned;
 });
 
