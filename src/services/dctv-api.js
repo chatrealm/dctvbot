@@ -6,20 +6,20 @@ const CHANNELS_URL = `${BASE_URL}/channelsv2.php`;
 const SECOND_SCREEN_URL = `${BASE_URL}/secondscreen.php`;
 
 export default {
-    liveChannels: [],
-    updateLiveChannels() {
+    updateLiveChannels(callback) {
         request(CHANNELS_URL, (error, response, body) => {
             if (!error && response.statusCode === 200) {
                 if (body === null) {
                     console.error(`Error: ${response}`);
                 } else {
-                    this.liveChannels = response.assignedchannels;
+                    callback(JSON.parse(body).assignedchannels);
                 }
             } else {
                 console.error(`Error: ${error}`);
             }
         });
     },
+
     secondScreenRequest(input, nick, callback) {
         const KNOWN_COMMANDS = ['on', 'off', 'clear'];
         if (input.startsWith('http') || KNOWN_COMMANDS.indexOf(input) !== -1) {

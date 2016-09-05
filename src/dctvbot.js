@@ -9,6 +9,7 @@ import dctvApi from './services/dctv-api';
 import config from './config/config';
 
 let currentDctvChannels = '-1';
+let assignedDctvChannels = [];
 let currentTopic = '';
 let officialLive = false;
 let ircChannelsNicks = [];
@@ -67,7 +68,14 @@ client.addListener('names', (channel, nicks) => {
 });
 
 // Update DCTV Live Channels every 5 sec
-setInterval(dctvApi.updateLiveChannels, 5000);
+// dctvApi.updateLiveChannels(assigned => {
+//     currentDctvChannels = assigned;
+// });
+
+setInterval(dctvApi.updateLiveChannels, 5000, assigned => {
+    console.log(assigned);
+    assignedDctvChannels = assigned;
+});
 
 // Check live announcements every 3 sec
 setInterval(checkForLiveAnnouncements, 3000);
@@ -108,10 +116,10 @@ function processCommand(cmd, channel, nick) {
     switch (cmd) {
         case 'now':
             replyMsg = 'Nothing is live';
-            if (dctvApi.liveChannels.length > 0) {
+            if (assignedDctvChannels.length > 0) {
                 replyMsg = '';
-                for (var i = 0; i < dctvApi.liveChannels.length; i++) {
-                    let ch = dctvApi.liveChannels[i];
+                for (var i = 0; i < assignedDctvChannels.length; i++) {
+                    let ch = assignedDctvChannels[i];
                     replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias} - ${ch.urltoplayer}`;
                 }
             }
@@ -180,8 +188,8 @@ function checkForLiveAnnouncements() {
 
     let prevDctvChannels = currentDctvChannels;
     currentDctvChannels = [];
-    for (let i = 0; i < dctvApi.liveChannels.length; i++) {
-        let ch = dctvApi.liveChannels[i];
+    for (let i = 0; i < assignedDctvChannels.length; i++) {
+        let ch = assignedDctvChannels[i];
         if (ch.nowonline === 'yes' || ch.yt_upcoming) {
             currentDctvChannels.push(ch);
         }
