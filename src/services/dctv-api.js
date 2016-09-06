@@ -18,6 +18,7 @@ export default {
                 console.error(`Error: ${error}`);
             }
         });
+        setTimeout(this.updateLiveChannels, config.dctv.liveCheckSpeed, callback);
     },
 
     secondScreenRequest(input, nick, callback) {
