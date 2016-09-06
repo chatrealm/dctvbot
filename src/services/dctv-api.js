@@ -42,9 +42,8 @@ export default {
 };
 
 /**
- * DCTV Channel Object, response from api
- * @typedef Channel
- * @type {object}
+ * DCTV Channel Object
+ *
  * @property {number} streamid - Unique ID of stream
  * @property {string} channelname - Channel name
  * @property {string} friendlyalias - Display name for channel

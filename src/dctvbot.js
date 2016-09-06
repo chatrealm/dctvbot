@@ -206,7 +206,7 @@ function processCommand(cmd, channel, nick) {
             }
             break;
         default:
-            console.log('default');
+            console.log(`'${cmd}' used but not recognized as a command`);
     }
 }
 
