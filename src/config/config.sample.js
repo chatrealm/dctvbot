@@ -1,4 +1,7 @@
 export default {
+    // Commands config
+    prefix: '!',
+
     // Bot config
     bot: {
         nick: '',
@@ -9,21 +12,22 @@ export default {
 
     // Server config
     server: {
-        address: 'irs.server.com',
+        address: 'irc.server.com',
         port: 6667,
-        channels: ['#channel']
+        channels: ['#channel'],
+        namesUpdateSpeed: 60000
     },
 
-    // Commands config
-    prefix: '!',
+    // DCTV config
+    dctv: {
+        apiSecsPro: '',
+        liveCheckSpeed: 3000,
+        liveAnnounceSpeed: 3000
+    },
 
     // Google Calendar config
     google: {
         apiKey: '',
         calendarId: ''
-    },
-
-    dctv: {
-        apiSecsPro: ''
     }
 };
