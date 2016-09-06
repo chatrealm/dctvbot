@@ -1,0 +1,10 @@
+{
+    "extends": "google",
+    "rules": {
+        "indent": ["error", 4, {
+            "SwitchCase": 1
+        }],
+        "linebreak-style": 0,
+        "max-len": "off"
+    }
+}

@@ -1,34 +1,45 @@
-[![Chatrealm IRC][irc-chatrealm-badge]][irc-chatrealm-link]
+[![Chatrealm IRC][chatrealm-badge]][chatrealm-link]
+[![Diamondclub.tv][dctv-badge]][dctv-link]
+
 # dctvbot
-A simple IRC bot for chatrealm, built using [Cinch](https://github.com/cinchrb/cinch)
+Simple IRC bot for chatrealm and diamondclub.tv
 
 ## Commands
-###### DCTV Info
-`!now [-v]` - Display channels that are currently live via user notice.  
-`!next [-v]` - Display next scheduled show and estimated time until it starts.  
-`!schedule [-v]` - Display scheduled shows for the next 48 hours via user notice.  
-_The `-v` option will show the reply main chat._
+`!now [v]` - Display channels that are currently live via user notice.  
+`!next [v]` - Display next scheduled show and estimated time until it starts.  
+`!schedule [v]` - Display scheduled shows for the next 48 hours via user notice.  
+_The `v` option will show the reply main chat, requires voice status (or better)._  
+  
+`!secs [on|off|clear|<url>]` - Sends `on`, `off`, `clear`, or `<url>` to [Second Screen](http://diamondclub.tv/secondscreen), requires voice status (or better).
 
-###### Utility
-`!secs [on|off|clear|<url>]` - Executes Second Screen command or sets to `<url>`. Automatically generates a pastebin of links sent to the second screen between `on` and `off` commands.  
-`!poll <title> | <choice>, <choice>` - Requests a straw poll using `<title>` and a minimum of 2 `<choice>` separated by commas  
-~~`!setjoin [on|off|status|<message>]` - Turns on/off, displays status of, or sets message on channel join to `<message>`.~~ SOON&trade;  
-`!topic <info>` - Replace first portion of topic with `<info>`  
-`!topic reset` - Resets the entire topic to default  
-`!topic default <topic>` - Sets a new default topic
-
-###### Maintenence
-`!plugin [load|unload|reload] <PluginName> <file_name>` - Un/re/loads `<PluginName>`, optionally using `<file_name>`.  
-`!plugin set <PluginName> <option> <value>` - Sets `<option>` to `<value>` for `<PluginName>`.  
-`!kill <bot_nick>` - Tells bot to quit completely, you must specify correct `<bot_nick>`  
-
-## Announcements
-dctvbot will announce channels when they go live or are reserved for upcoming events on [diamondclub.tv](https://diamondclub.tv). If that channel is an official one, dctvbot will also update the topic with the announcement.  
-
+## Channel Announcements
 Sample upcoming announcement:  
-![Live Announcement](https://dl.dropboxusercontent.com/u/18589646/dctvbot_announce_soon.png)  
+![Next Announcement](https://dl.dropboxusercontent.com/u/18589646/CDN/dctvbot_announce_next.png)  
 Sample live announcement:  
-![Live Announcement](https://dl.dropboxusercontent.com/u/18589646/dctvbot_announce_live.png)  
+![Live Announcement](https://dl.dropboxusercontent.com/u/18589646/CDN/dctvbot_announce_live.png)  
 
-[irc-chatrealm-link]: http://irc.chatrealm.net
-[irc-chatrealm-badge]: https://img.shields.io/badge/irc-chatrealm-orange.svg?style=flat-square
+## Docker instructions
+1. Clone the repository
+    ```bash
+    git clone https://github.com/chatrealm/dctvbot.git
+    cd dctvbot
+    
+    # Rename sample config file
+    mv src/config/config.sample.js src/config/config.js
+    ```
+2. Edit `src/config/config.js` with desired settings
+3. Install, build and run
+    ```bash
+    npm install
+    npm run build
+
+    # Build and run docker image
+    docker build -t dctvbot .
+    docker run -d --name dctvbot dctvbot
+    ```
+
+[dctv-link]: https://diamondclub.tv
+[dctv-badge]: https://img.shields.io/badge/diamondclub-tv-blue.svg?style=flat-square
+
+[chatrealm-link]: https://irc.chatrealm.net
+[chatrealm-badge]: https://img.shields.io/badge/chatrealm-irc-orange.svg?style=flat-square
