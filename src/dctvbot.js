@@ -182,17 +182,24 @@ function processCommand(cmd, channel, nick) {
             break;
         case 'next':
             googleCalendar.getFromConfig(events => {
-                let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${moment().to(events[0].start.dateTime)}`;
-                replyToCommand(replyMsg, channel, nick, wantLoud);
+                let event = events[0];
+                let i = 0;
+                while (moment(event.start.dateTime).isBefore()) {
+                    i++;
+                    event = events[i];
+                }
+                let replyMsg = `${event.summary} will be on in about ${moment().to(event.start.dateTime, true)}`;
+                replyToCommand(replyMsg, channel, nick, wantLoud, true);
             });
             break;
         case 'schedule':
             googleCalendar.getFromConfig(events => {
-                let replyMsg = 'Scheduled Shows for the Next 48 hours:';
+                let replyMsg = 'Scheduled Shows for the Next 24 Hours:';
                 for (let i = 0; i < events.length; i++) {
                     let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
                     let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
-                    replyMsg += `\n${events[i].summary} - ${timeIsLink}`;
+                    let timeWords = moment().to(events[i].start.dateTime, true);
+                    replyMsg += `\n${timeWords} - ${events[i].summary} - ${timeIsLink}`;
                 }
                 replyToCommand(replyMsg, channel, nick, wantLoud);
             });
@@ -209,7 +216,7 @@ function processCommand(cmd, channel, nick) {
             }
             break;
         default:
-            console.log(`'${cmd}' used but not recognized as a command`);
+            // console.log(`'${cmd}' used but not recognized as a command`);
     }
 }
 
@@ -219,11 +226,12 @@ function processCommand(cmd, channel, nick) {
  * @param {string} channel - channel command was in
  * @param {string} nick - nick of user that sent command
  * @param {boolean} requestLoud - if user wants to not use notice in channel
+ * @param {boolean} forceLoud - force output to channel
  */
-function replyToCommand(msg, channel, nick, requestLoud = false) {
+function replyToCommand(msg, channel, nick, requestLoud = false, forceLoud = false) {
     if (channel === null) {
         client.say(nick, msg);
-    } else if (requestLoud && hasThePower(nick, channel)) {
+    } else if (forceLoud || (requestLoud && hasThePower(nick, channel))) {
         client.say(channel, msg);
     } else {
         client.notice(nick, msg);

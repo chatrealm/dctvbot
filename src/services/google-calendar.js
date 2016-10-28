@@ -5,7 +5,7 @@ export default {
     getFromConfig(callback) {
         let now = new Date();
         let later = new Date();
-        later.setDate(now.getDate() + 2);
+        later.setDate(now.getDate() + 1);
 
         let url = 'https://www.googleapis.com/calendar/v3/calendars' +
             `/${config.google.calendarId}/events?key=${config.google.apiKey}` +
