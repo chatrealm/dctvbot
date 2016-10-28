@@ -182,8 +182,14 @@ function processCommand(cmd, channel, nick) {
             break;
         case 'next':
             googleCalendar.getFromConfig(events => {
-                let replyMsg = `Next Scheduled Show: ${events[0].summary} - ${moment().to(events[0].start.dateTime)}`;
-                replyToCommand(replyMsg, channel, nick, wantLoud);
+                let event = events[0];
+                let i = 0;
+                while (moment(event.start.dateTime).isBefore()) {
+                    i++;
+                    event = events[i];
+                }
+                let replyMsg = `Next Scheduled Show: ${event.summary} - ${moment().to(event.start.dateTime)}`;
+                replyToCommand(replyMsg, channel, nick, wantLoud, true);
             });
             break;
         case 'schedule':
@@ -219,11 +225,12 @@ function processCommand(cmd, channel, nick) {
  * @param {string} channel - channel command was in
  * @param {string} nick - nick of user that sent command
  * @param {boolean} requestLoud - if user wants to not use notice in channel
+ * @param {boolean} forceLoud - force output to channel
  */
-function replyToCommand(msg, channel, nick, requestLoud = false) {
+function replyToCommand(msg, channel, nick, requestLoud = false, forceLoud = false) {
     if (channel === null) {
         client.say(nick, msg);
-    } else if (requestLoud && hasThePower(nick, channel)) {
+    } else if (forceLoud || (requestLoud && hasThePower(nick, channel))) {
         client.say(channel, msg);
     } else {
         client.notice(nick, msg);
