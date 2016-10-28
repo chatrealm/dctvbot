@@ -188,17 +188,18 @@ function processCommand(cmd, channel, nick) {
                     i++;
                     event = events[i];
                 }
-                let replyMsg = `Next Scheduled Show: ${event.summary} - ${moment().to(event.start.dateTime)}`;
+                let replyMsg = `${event.summary} will be on in about ${moment().to(event.start.dateTime, true)}`;
                 replyToCommand(replyMsg, channel, nick, wantLoud, true);
             });
             break;
         case 'schedule':
             googleCalendar.getFromConfig(events => {
-                let replyMsg = 'Scheduled Shows for the Next 48 hours:';
+                let replyMsg = 'Scheduled Shows for the Next 24 Hours:';
                 for (let i = 0; i < events.length; i++) {
                     let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
                     let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
-                    replyMsg += `\n${events[i].summary} - ${timeIsLink}`;
+                    let timeWords = moment().to(events[i].start.dateTime, true);
+                    replyMsg += `\n${timeWords} - ${events[i].summary} - ${timeIsLink}`;
                 }
                 replyToCommand(replyMsg, channel, nick, wantLoud);
             });
@@ -215,7 +216,7 @@ function processCommand(cmd, channel, nick) {
             }
             break;
         default:
-            console.log(`'${cmd}' used but not recognized as a command`);
+            // console.log(`'${cmd}' used but not recognized as a command`);
     }
 }
 
