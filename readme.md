@@ -6,8 +6,8 @@ Simple IRC bot for chatrealm and diamondclub.tv
 
 ## Commands
 `!now [v]` - Display channels that are currently live via user notice.  
-`!next [v]` - Display next scheduled show and estimated time until it starts.  
-`!schedule [v]` - Display scheduled shows for the next 48 hours via user notice.  
+`!next` - Display next scheduled show and estimated time until it starts.  
+`!schedule [v]` - Display scheduled shows for the next 24 hours via user notice.  
 _The `v` option will show the reply main chat, requires voice status (or better)._  
   
 `!secs [on|off|clear|<url>]` - Sends `on`, `off`, `clear`, or `<url>` to [Second Screen](http://diamondclub.tv/secondscreen), requires voice status (or better).
