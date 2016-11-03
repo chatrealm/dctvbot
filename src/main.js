@@ -24,9 +24,88 @@ let client = new irc.Client(config.server.address, config.bot.nick, {
   channels: config.server.channels
 })
 
-/** ***************
- * Event Listeners
- ******************/
+// ***********
+// Timed Loops
+// ***********
+
+// Start live channel checking process
+function liveUpdate () {
+  dctvApi.updateLiveChannels(assigned => {
+    assignedDctvChannels = assigned
+  })
+  setTimeout(liveUpdate, config.dctv.liveCheckSpeed)
+}
+
+// Ask for names update for all channels
+function requestChannelNames () {
+  for (let i = 0; i < config.server.channels.length; i++) {
+    client.send('NAMES', config.server.channels[i])
+  }
+  setTimeout(requestChannelNames, config.server.namesUpdateSpeed)
+}
+
+// Scans DCTV for channel updates every 3 sec to relay to the IRC channel
+function checkForLiveAnnouncements () {
+  let firstRun = false
+
+  if (currentDctvChannels === '-1') {
+    firstRun = true
+    currentDctvChannels = []
+  }
+
+  let prevDctvChannels = currentDctvChannels
+  currentDctvChannels = []
+  for (let i = 0; i < assignedDctvChannels.length; i++) {
+    let ch = assignedDctvChannels[i]
+    if (ch.nowonline === 'yes' || ch.yt_upcoming) {
+      currentDctvChannels.push(ch)
+    }
+  }
+
+  if (!firstRun) {
+    let wasOfficialLive = officialLive
+    officialLive = false
+    for (let i = 0; i < currentDctvChannels.length; i++) {
+      if (currentDctvChannels[i].channel === 1) {
+        officialLive = true
+      }
+    }
+
+    if (wasOfficialLive && !officialLive) { // && !currentTopic.startsWith(' <>')
+      updateTopic(' <>', config.server.channels[0])
+    }
+
+    let newLive = currentDctvChannels.find(liveCh => {
+      let res = prevDctvChannels.find(prevCh => {
+        return (liveCh.streamid === prevCh.streamid &&
+                      liveCh.yt_upcoming === prevCh.yt_upcoming)
+      })
+      return typeof res === 'undefined'
+    })
+
+    if (typeof newLive !== 'undefined') {
+      announceNewLiveChannel(newLive, config.server.channels[0])
+    }
+  }
+
+  setTimeout(checkForLiveAnnouncements, 3000)
+}
+
+// ***************
+// Event Listeners
+// ***************
+
+// Listen for connection
+client.addListener('registered', message => {
+  if (config.bot.password && config.bot.password !== '') {
+    client.say('NickServ', `IDENTIFY ${config.bot.password}`)
+  }
+
+  // Start timed Loops
+  liveUpdate()
+  requestChannelNames()
+  checkForLiveAnnouncements()
+})
 
 // Listen for messages in channels
 client.addListener('message#', (nick, to, text, message) => {
@@ -55,85 +134,11 @@ client.addListener('topic', (channel, topic, nick, message) => {
 // Listen for name list events
 client.addListener('names', (channel, nicks) => {
   ircChannelsNicks[channel] = nicks
-});
-
-/** ***********
- * Timed Loops
- **************/
-
-// Start live channel checking process
-(function liveUpdate () {
-  dctvApi.updateLiveChannels(assigned => {
-    assignedDctvChannels = assigned
-  })
-  setTimeout(liveUpdate, config.dctv.liveCheckSpeed)
-})()
-
-// Listen for connection
-client.addListener('registered', message => {
-  if (config.bot.password && config.bot.password !== '') {
-    client.say('NickServ', `IDENTIFY ${config.bot.password}`)
-  }
-
-    // Ask for names update for all channels
-  (function requestChannelNames () {
-    for (let i = 0; i < config.server.channels.length; i++) {
-      client.send('NAMES', config.server.channels[i])
-    }
-    setTimeout(requestChannelNames, config.server.namesUpdateSpeed)
-  })();
-
-    // Scans DCTV for channel updates every 3 sec to relay to the IRC channel
-  (function checkForLiveAnnouncements () {
-    let firstRun = false
-
-    if (currentDctvChannels === '-1') {
-      firstRun = true
-      currentDctvChannels = []
-    }
-
-    let prevDctvChannels = currentDctvChannels
-    currentDctvChannels = []
-    for (let i = 0; i < assignedDctvChannels.length; i++) {
-      let ch = assignedDctvChannels[i]
-      if (ch.nowonline === 'yes' || ch.yt_upcoming) {
-        currentDctvChannels.push(ch)
-      }
-    }
-
-    if (!firstRun) {
-      let wasOfficialLive = officialLive
-      officialLive = false
-      for (let i = 0; i < currentDctvChannels.length; i++) {
-        if (currentDctvChannels[i].channel === 1) {
-          officialLive = true
-        }
-      }
-
-      if (wasOfficialLive && !officialLive) { // && !currentTopic.startsWith(' <>')
-        updateTopic(' <>', config.server.channels[0])
-      }
-
-      let newLive = currentDctvChannels.find(liveCh => {
-        let res = prevDctvChannels.find(prevCh => {
-          return (liveCh.streamid === prevCh.streamid &&
-                        liveCh.yt_upcoming === prevCh.yt_upcoming)
-        })
-        return typeof res === 'undefined'
-      })
-
-      if (typeof newLive !== 'undefined') {
-        announceNewLiveChannel(newLive, config.server.channels[0])
-      }
-    }
-
-    setTimeout(checkForLiveAnnouncements, 3000)
-  })()
 })
 
-/** ***************
- * Other Functions
- ******************/
+// ***************
+// Other Functions
+// ***************
 
 /**
  * Checks for 'admin' privelage, hard coded to voiced or better for now
