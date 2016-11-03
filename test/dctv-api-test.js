@@ -13,7 +13,7 @@ describe('DctvApi', () => {
   let dctvApi
 
   beforeEach(() => {
-    dctvApi = new DctvApi()
+    dctvApi = new DctvApi(config)
   })
 
   describe('#constructor', () => {

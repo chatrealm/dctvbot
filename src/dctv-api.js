@@ -1,6 +1,8 @@
 /** Class for DCTV API */
 export default class DctvApi {
-
+  constructor (config) {
+    this.config = config
+  }
 }
 
 
