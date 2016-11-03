@@ -1,44 +1,44 @@
-import request from 'request';
-import config from '../config/config';
+import request from 'request'
+import config from '../config/config'
 
-const BASE_URL = 'http://diamondclub.tv/api';
-const CHANNELS_URL = `${BASE_URL}/channelsv2.php`;
-const SECOND_SCREEN_URL = `${BASE_URL}/secondscreen.php`;
+const BASE_URL = 'http://diamondclub.tv/api'
+const CHANNELS_URL = `${BASE_URL}/channelsv2.php`
+const SECOND_SCREEN_URL = `${BASE_URL}/secondscreen.php`
 
 export default {
-    updateLiveChannels(callback) {
-        request(CHANNELS_URL, (error, response, body) => {
-            if (!error && response.statusCode === 200) {
-                if (body === null) {
-                    console.error(`Error: ${response}`);
-                } else {
-                    callback(JSON.parse(body).assignedchannels);
-                }
-            } else {
-                console.error(`Error: ${error}`);
-            }
-        });
-    },
-
-    secondScreenRequest(input, nick, callback) {
-        const KNOWN_COMMANDS = ['on', 'off', 'clear'];
-        if (input.startsWith('http') || KNOWN_COMMANDS.indexOf(input) !== -1) {
-            request(`${SECOND_SCREEN_URL}?url=${input}&user=${nick}&pro=${config.dctv.apiSecsPro}`, (error, response, body) => {
-                if (!error && response.statusCode === 200) {
-                    if (body === null) {
-                        console.error(`Error: ${response}`);
-                    } else {
-                        callback(`Command Sent. Response: ${body}`);
-                    }
-                } else {
-                    console.error(`Error: ${error}`);
-                }
-            });
+  updateLiveChannels (callback) {
+    request(CHANNELS_URL, (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        if (body === null) {
+          console.error(`Error: ${response}`)
         } else {
-            callback('Invalid Selection');
+          callback(JSON.parse(body).assignedchannels)
         }
+      } else {
+        console.error(`Error: ${error}`)
+      }
+    })
+  },
+
+  secondScreenRequest (input, nick, callback) {
+    const KNOWN_COMMANDS = ['on', 'off', 'clear']
+    if (input.startsWith('http') || KNOWN_COMMANDS.indexOf(input) !== -1) {
+      request(`${SECOND_SCREEN_URL}?url=${input}&user=${nick}&pro=${config.dctv.apiSecsPro}`, (error, response, body) => {
+        if (!error && response.statusCode === 200) {
+          if (body === null) {
+            console.error(`Error: ${response}`)
+          } else {
+            callback(`Command Sent. Response: ${body}`)
+          }
+        } else {
+          console.error(`Error: ${error}`)
+        }
+      })
+    } else {
+      callback('Invalid Selection')
     }
-};
+  }
+}
 
 /**
  * DCTV Channel Object
