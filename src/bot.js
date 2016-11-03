@@ -14,7 +14,7 @@ export default class Bot {
    * Kicks off bot
    */
   start () {
-    // IRC Client
+    // Set IRC Client
     this.client = new irc.Client(this.config.server.address, this.config.bot.nick, {
       userName: this.config.bot.userName,
       realName: this.config.bot.realName,

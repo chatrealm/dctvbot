@@ -7,17 +7,23 @@ import config from '../src/config/config'
 
 import Bot from '../src/bot.js'
 
-describe('Bot#constructor', () => {
-  it('should set config property', () => {
-    var bot = new Bot(config)
-    expect(bot.config).to.not.be.null
-  })
-})
+describe('Bot', () => {
+  let bot
 
-describe('Bot#start', () => {
-  it('should set client property', () => {
-    var bot = new Bot(config)
-    bot.start()
-    expect(bot.client).to.not.be.null
+  beforeEach(() => {
+    bot = new Bot(config)
+  })
+
+  describe('#constructor', () => {
+    it('should set config property', () => {
+      expect(bot.config).to.not.be.undefined
+    })
+  })
+
+  describe('#start', () => {
+    it('should set client property', () => {
+      bot.start()
+      expect(bot.client).to.not.be.undefined
+    })
   })
 })
