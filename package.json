@@ -2,7 +2,7 @@
   "name": "dctvbot",
   "version": "3.0.2",
   "description": "IRC bot for diamondclub.tv chat",
-  "main": "dctvbot.js",
+  "main": "main.js",
   "scripts": {
     "build": "babel src -d bin"
   },
