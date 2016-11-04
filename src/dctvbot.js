@@ -184,11 +184,16 @@ function processCommand(cmd, channel, nick) {
             googleCalendar.getFromConfig(events => {
                 let event = events[0];
                 let i = 0;
-                while (moment(event.start.dateTime).isBefore()) {
-                    i++;
-                    event = events[i];
+                let replyMsg;
+                if (event.start === null) {
+                    replyMsg = "Sorry, I can't find the next scheduled show for some reason";
+                } else {
+                    while (moment(event.start.dateTime).isBefore()) {
+                        i++;
+                        event = events[i];
+                    }
+                    replyMsg = `${event.summary} will be on in about ${moment().to(event.start.dateTime, true)}`;
                 }
-                let replyMsg = `${event.summary} will be on in about ${moment().to(event.start.dateTime, true)}`;
                 replyToCommand(replyMsg, channel, nick, wantLoud, true);
             });
             break;
