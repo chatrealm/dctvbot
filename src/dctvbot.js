@@ -200,11 +200,20 @@ function processCommand(cmd, channel, nick) {
         case 'schedule':
             googleCalendar.getFromConfig(events => {
                 let replyMsg = 'Scheduled Shows for the Next 24 Hours:';
-                for (let i = 0; i < events.length; i++) {
-                    let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
-                    let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
-                    let timeWords = moment().to(events[i].start.dateTime, true);
-                    replyMsg += `\n${timeWords} - ${events[i].summary} - ${timeIsLink}`;
+                events = events.filter(event => {
+                    let oneDay = new Date();
+                    oneDay++;
+                    return moment(event.start.dateTime).isBefore(oneDay.toString());
+                });
+                if (events.length > 0) {
+                    for (let i = 0; i < events.length; i++) {
+                        let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
+                        let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
+                        let timeWords = moment().to(events[i].start.dateTime, true);
+                        replyMsg += `\n${timeWords} - ${events[i].summary} - ${timeIsLink}`;
+                    }
+                } else {
+                    replyMsg = 'No shows are scheduled for the next 24 hours';
                 }
                 replyToCommand(replyMsg, channel, nick, wantLoud);
             });
