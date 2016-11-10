@@ -66,7 +66,7 @@ client.addListener('names', (channel, nicks) => {
     dctvApi.updateLiveChannels(assigned => {
         assignedDctvChannels = assigned;
     });
-    setTimeout(liveUpdate, config.dctv.liveCheckSpeed);
+    setTimeout(liveUpdate, 3 * 1000);
 })();
 
 // Listen for connection
@@ -80,7 +80,7 @@ client.addListener('registered', message => {
         for (let i = 0; i < config.server.channels.length; i++) {
             client.send('NAMES', config.server.channels[i]);
         }
-        setTimeout(requestChannelNames, config.server.namesUpdateSpeed);
+        setTimeout(requestChannelNames, 60 * 1000);
     })();
 
     // Scans DCTV for channel updates every 3 sec to relay to the IRC channel
@@ -127,7 +127,7 @@ client.addListener('registered', message => {
             }
         }
 
-        setTimeout(checkForLiveAnnouncements, 3000);
+        setTimeout(checkForLiveAnnouncements, 3 * 1000);
     })();
 });
 

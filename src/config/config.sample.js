@@ -14,15 +14,12 @@ export default {
     server: {
         address: 'irc.server.com',
         port: 6667,
-        channels: ['#channel'],
-        namesUpdateSpeed: 60000
+        channels: ['#channel']
     },
 
     // DCTV config
     dctv: {
-        apiSecsPro: '',
-        liveCheckSpeed: 3000,
-        liveAnnounceSpeed: 3000
+        apiSecsPro: ''
     },
 
     // Google Calendar config
