@@ -202,8 +202,8 @@ function processCommand(cmd, channel, nick) {
                 let replyMsg = 'Scheduled Shows for the Next 24 Hours:';
                 events = events.filter(event => {
                     let oneDay = new Date();
-                    oneDay++;
-                    return moment(event.start.dateTime).isBefore(oneDay.toString());
+                    oneDay.setDate(oneDay.getDate() + 1);
+                    return moment(event.start.dateTime).isBefore(oneDay.toISOString());
                 });
                 if (events.length > 0) {
                     for (let i = 0; i < events.length; i++) {
