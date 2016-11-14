@@ -12,6 +12,6 @@ RUN yarn
 
 # Bundle app source
 COPY . /usr/src/app
-RUN yarn run build
+RUN yarn build
 
-CMD node bin/dctvbot.js
+CMD yarn start

@@ -1,26 +1,28 @@
 import request from 'request'
-import config from '../config/config'
 
-export default {
-  getFromConfig (callback) {
-    let now = new Date()
-    let later = new Date()
-    later.setDate(now.getDate() + 1)
+export default class GoogleCalendar {
+  constructor (calendarId, apiKey) {
+    this.calendarId = calendarId
+    this.apiKey = apiKey
+  }
 
-    let url = 'https://www.googleapis.com/calendar/v3/calendars' +
-            `/${config.google.calendarId}/events?key=${config.google.apiKey}` +
-            `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}` +
-            `&singleEvents=true&orderBy=startTime`
-    request(url, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        if (body === null) {
-          console.error(`Error: ${response}`)
-        } else {
-          callback(JSON.parse(body).items)
+  getEvents (startTime, endTime) {
+    let url = 'https://www.googleapis.com/calendar/v3/calendars/'
+    url += `${this.calendarId}/events/`
+    url += `?key=${this.apiKey}`
+    url += `&timeMin=${startTime.toISOString()}`
+    url += `&timeMax=${endTime.toISOString()}`
+    url += '&singleEvents=true'
+    url += '&orderBy=startTime'
+
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        if (error) {
+          reject(error)
+          return
         }
-      } else {
-        console.error(`Error: ${error}`)
-      }
+        resolve(JSON.parse(body).items)
+      })
     })
   }
 }
