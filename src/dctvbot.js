@@ -137,7 +137,7 @@ export default class DCTVBot {
 
   addCommandListener (command) {
     this.ircClient.on(`${command.word}Command`, (nick, channel, args) => {
-      let hasThePower = !command.needAuthorization
+      let hasThePower = false
       if (channel) {
         let userModes = this.ircClient.chans[channel].users[nick]
         ADMIN_MODES.forEach(mode => {
@@ -145,6 +145,8 @@ export default class DCTVBot {
             hasThePower = true
           }
         })
+      } else if (!command.needAuthorization) {
+        hasThePower = true
       }
 
       if (command.needAuthorization && !hasThePower) {
