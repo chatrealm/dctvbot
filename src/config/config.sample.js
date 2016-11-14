@@ -1,15 +1,8 @@
 export default {
-  server: {
-    channels: ['#channel_one', '#channel_two']
-  },
+  channels: ['#channel_one', '#channel_two'],
+  password: '',
 
-  identity: {
-    password: ''
-  },
-
-  dctvApi: {
-    apiSecsPro: ''
-  },
+  dctvApiSecsPro: '',
 
   google: {
     apiKey: '',
