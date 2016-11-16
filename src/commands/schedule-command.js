@@ -1,12 +1,35 @@
 import moment from 'moment-timezone'
 import Command from './command'
 
+/**
+ * ScheduleCommand class
+ *
+ * @export
+ * @class ScheduleCommnand
+ * @extends {Command}
+ */
 export default class ScheduleCommnand extends Command {
+  /**
+   * Creates an instance of ScheduleCommnand
+   *
+   * @param {GoogleCalendar} gcal
+   *
+   * @memberOf ScheduleCommnand
+   */
   constructor (gcal) {
     super('schedule', 'authorize', false)
     this.gcal = gcal
   }
 
+  /**
+   * Responds to command
+   *
+   * @param {Array<string>} args
+   * @param {string} nick
+   * @returns {string}
+   *
+   * @memberOf ScheduleCommnand
+   */
   async getResponse (args, nick) {
     let now = new Date()
     let later = new Date()

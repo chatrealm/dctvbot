@@ -9,13 +9,36 @@ const SECS_COMMANDS = ['on', 'off', 'clear']
 
 const UPDATE_ASSIGNED_CHANNELS_SPEED = 3 * 1000
 
+/**
+ * DCTVApi class
+ *
+ * @export
+ * @class DCTVApi
+ * @extends {EventEmitter}
+ */
 export default class DCTVApi extends EventEmitter {
+  /**
+   * Creates an instance of DCTVApi
+   *
+   * @param {string} [secsPro='']
+   *
+   * @memberOf DCTVApi
+   */
   constructor (secsPro = '') {
     super()
     this.secsPro = secsPro
     this.assignedChannels = []
   }
 
+  /**
+   * Executes second screen request
+   *
+   * @param {string} input
+   * @param {string} nick
+   * @returns {PromiseLike<string>}
+   *
+   * @memberOf DCTVApi
+   */
   secondScreenRequest (input, nick) {
     return new Promise((resolve, reject) => {
       if (!this.secsPro) {
@@ -37,6 +60,13 @@ export default class DCTVApi extends EventEmitter {
     })
   }
 
+  /**
+   * Gets assigned channels list from dctv api
+   *
+   * @returns {PromiseLike<Array<Object>>}
+   *
+   * @memberOf DCTVApi
+   */
   getAssignedChannels () {
     return new Promise((resolve, reject) => {
       request(CHANNELS_URL, (error, response, body) => {
@@ -49,6 +79,14 @@ export default class DCTVApi extends EventEmitter {
     })
   }
 
+  /**
+   * Filters assigned channels against `oldChannels` to return only new assigned channels
+   *
+   * @param {Array<Object>} oldChannels
+   * @returns {Array<Object>}
+   *
+   * @memberOf DCTVApi
+   */
   getNewChannels (oldChannels) {
     return this.assignedChannels.filter(liveCh => {
       let res = oldChannels.find(oldCh => {
@@ -58,6 +96,13 @@ export default class DCTVApi extends EventEmitter {
     })
   }
 
+  /**
+   * Gets stream currently assigned to channel 1
+   *
+   * @returns {Object}
+   *
+   * @memberOf DCTVApi
+   */
   getOfficialLive () {
     let officialLive = null
     for (let i = 0; i < this.assignedChannels.length; i++) {
@@ -68,6 +113,11 @@ export default class DCTVApi extends EventEmitter {
     return officialLive
   }
 
+  /**
+   * Updates instance assigned channels list and emits events as needed
+   *
+   * @memberOf DCTVApi
+   */
   async updateAssignedChannels () {
     let oldChannels = this.assignedChannels
     let wasOfficialLive = Boolean(this.getOfficialLive())
@@ -85,6 +135,11 @@ export default class DCTVApi extends EventEmitter {
     }
   }
 
+  /**
+   * Starts a timer to update assigned channels list on
+   *
+   * @memberOf DCTVApi
+   */
   start () {
     setInterval(() => { this.updateAssignedChannels() }, UPDATE_ASSIGNED_CHANNELS_SPEED)
   }

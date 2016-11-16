@@ -14,7 +14,23 @@ const DEFAULT_TOPIC_FIRST_ITEM = ' <>'
 const IRC_SERVER = 'irc.chatrealm.net'
 const TOPIC_SEPARATOR = ' | '
 
+/**
+ * DCTVBot Class
+ *
+ * @export
+ * @class DCTVBot
+ */
 export default class DCTVBot {
+  /**
+   * Creates an instance of DCTVBot
+   *
+   * @param {Array<Object>} [ircChannelNames=[]]
+   * @param {string} [ircPassword='']
+   * @param {DCTVApi} [dctvApi=null]
+   * @param {GoogleCalendar} [gcal=null]
+   *
+   * @memberOf DCTVBot
+   */
   constructor (ircChannelNames = [], ircPassword = '', dctvApi = null, gcal = null) {
     this.ircChannelNames = ircChannelNames
     this.ircPassword = ircPassword
@@ -43,6 +59,11 @@ export default class DCTVBot {
     this.officialLive = false
   }
 
+  /**
+   * Registers listeners, starts timed components and irc connection
+   *
+   * @memberOf DCTVBot
+   */
   start () {
     this.ircClient.on('registered', () => {
       if (this.ircPassword) {
@@ -116,6 +137,14 @@ export default class DCTVBot {
     this.ircClient.connect()
   }
 
+  /**
+   * Formats announcement message with irc colors
+   *
+   * @param {Object} channel
+   * @returns {string}
+   *
+   * @memberOf DCTVBot
+   */
   formatAnnouncementMessage (channel) {
     let message = channel.yt_upcoming
                 ? colors.black.bgyellow(' NEXT ')
@@ -127,6 +156,15 @@ export default class DCTVBot {
     return `${message} - ${channel.urltoplayer}`
   }
 
+  /**
+   * Replies to `target` with `message`
+   *
+   * @param {string} target
+   * @param {string} message
+   * @param {boolean} [notice=true]
+   *
+   * @memberOf DCTVBot
+   */
   reply (target, message, notice = true) {
     if (notice) {
       this.ircClient.notice(target, message)
@@ -135,6 +173,13 @@ export default class DCTVBot {
     }
   }
 
+  /**
+   * Adds listener for `command`
+   *
+   * @param {Object} command
+   *
+   * @memberOf DCTVBot
+   */
   addCommandListener (command) {
     this.ircClient.on(`${command.word}Command`, (nick, channel, args) => {
       let hasThePower = false
@@ -177,6 +222,15 @@ export default class DCTVBot {
     })
   }
 
+  /**
+   * Emits event for `command` sent by `nick` in `channel`
+   *
+   * @param {string} command
+   * @param {string} nick
+   * @param {string} channel
+   *
+   * @memberOf DCTVBot
+   */
   fireCommandEvent (command, nick, channel) {
     let commandParts = command.split(' ')
     if (commandParts.length > 1) {
