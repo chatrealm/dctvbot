@@ -1,26 +1,51 @@
-import request from 'request';
-import config from '../config/config';
+import request from 'request'
 
-export default {
-    getFromConfig(callback) {
-        let now = new Date();
-        let later = new Date();
-        later.setDate(now.getDate() + 2);
+/**
+ * GoogleCalendar class
+ *
+ * @export
+ * @class GoogleCalendar
+ */
+export default class GoogleCalendar {
+  /**
+   * Creates an instance of GoogleCalendar
+   *
+   * @param {string} calendarId
+   * @param {string} apiKey
+   *
+   * @memberOf GoogleCalendar
+   */
+  constructor (calendarId, apiKey) {
+    this.calendarId = calendarId
+    this.apiKey = apiKey
+  }
 
-        let url = 'https://www.googleapis.com/calendar/v3/calendars' +
-            `/${config.google.calendarId}/events?key=${config.google.apiKey}` +
-            `&timeMin=${now.toISOString()}&timeMax=${later.toISOString()}` +
-            `&singleEvents=true&orderBy=startTime`;
-        request(url, (error, response, body) => {
-            if (!error && response.statusCode === 200) {
-                if (body === null) {
-                    console.error(`Error: ${response}`);
-                } else {
-                    callback(JSON.parse(body).items);
-                }
-            } else {
-                console.error(`Error: ${error}`);
-            }
-        });
-    }
-};
+  /**
+   * Retrieves events from calendar
+   *
+   * @param {Date} startTime
+   * @param {Date} endTime
+   * @returns {PromiseLike<Array<Object>>}
+   *
+   * @memberOf GoogleCalendar
+   */
+  getEvents (startTime, endTime) {
+    let url = 'https://www.googleapis.com/calendar/v3/calendars/'
+    url += `${this.calendarId}/events/`
+    url += `?key=${this.apiKey}`
+    url += `&timeMin=${startTime.toISOString()}`
+    url += `&timeMax=${endTime.toISOString()}`
+    url += '&singleEvents=true'
+    url += '&orderBy=startTime'
+
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        if (error) {
+          reject(error)
+          return
+        }
+        resolve(JSON.parse(body).items)
+      })
+    })
+  }
+}

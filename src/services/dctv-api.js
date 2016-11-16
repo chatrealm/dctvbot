@@ -1,60 +1,146 @@
-import request from 'request';
-import config from '../config/config';
+import request from 'request'
+import { EventEmitter } from 'events'
 
-const BASE_URL = 'http://diamondclub.tv/api';
-const CHANNELS_URL = `${BASE_URL}/channelsv2.php`;
-const SECOND_SCREEN_URL = `${BASE_URL}/secondscreen.php`;
+const BASE_URL = 'http://diamondclub.tv/api'
+const CHANNELS_URL = `${BASE_URL}/channelsv2.php`
+const SECOND_SCREEN_URL = `${BASE_URL}/secondscreen.php`
 
-export default {
-    updateLiveChannels(callback) {
-        request(CHANNELS_URL, (error, response, body) => {
-            if (!error && response.statusCode === 200) {
-                if (body === null) {
-                    console.error(`Error: ${response}`);
-                } else {
-                    callback(JSON.parse(body).assignedchannels);
-                }
-            } else {
-                console.error(`Error: ${error}`);
-            }
-        });
-    },
+const SECS_COMMANDS = ['on', 'off', 'clear']
 
-    secondScreenRequest(input, nick, callback) {
-        const KNOWN_COMMANDS = ['on', 'off', 'clear'];
-        if (input.startsWith('http') || KNOWN_COMMANDS.indexOf(input) !== -1) {
-            request(`${SECOND_SCREEN_URL}?url=${input}&user=${nick}&pro=${config.dctv.apiSecsPro}`, (error, response, body) => {
-                if (!error && response.statusCode === 200) {
-                    if (body === null) {
-                        console.error(`Error: ${response}`);
-                    } else {
-                        callback(`Command Sent. Response: ${body}`);
-                    }
-                } else {
-                    console.error(`Error: ${error}`);
-                }
-            });
-        } else {
-            callback('Invalid Selection');
-        }
-    }
-};
+const UPDATE_ASSIGNED_CHANNELS_SPEED = 3 * 1000
 
 /**
- * DCTV Channel Object
+ * DCTVApi class
  *
- * @property {number} streamid - Unique ID of stream
- * @property {string} channelname - Channel name
- * @property {string} friendlyalias - Display name for channel
- * @property {string} streamtype - Stream type indicator, one of: "twitch", "rtmp-hls", "youtube", or "override"
- * @property {string} nowonline - Online status, one of: "yes" or "no"
- * @property {boolean} alerts - Indicator for if a channel wants alerts when going live
- * @property {string} twitch_currentgame - If {@link streamtype} is "twitch", this will contain the game the user has set
- * @property {string} twitch_yt_description - If {@link streamtype} is either "twitch" or "youtube", this will contain the description the user has set
- * @property {boolean} yt_upcoming - If {@link streamtype} is "youtube", this will contain the 'upcoming' status of a live broadcast
- * @property {string} yt_liveurl - If {@link streamtype} is "youtube", this will contain a youtube url to the live stream
- * @property {string} imageasset - Url to SD image for channel
- * @property {string} imageassethd - Url to HD image for channel
- * @property {string} urltoplayer - Url to DCTV channel
- * @property {number} channel - The channel's number
+ * @export
+ * @class DCTVApi
+ * @extends {EventEmitter}
  */
+export default class DCTVApi extends EventEmitter {
+  /**
+   * Creates an instance of DCTVApi
+   *
+   * @param {string} [secsPro='']
+   *
+   * @memberOf DCTVApi
+   */
+  constructor (secsPro = '') {
+    super()
+    this.secsPro = secsPro
+    this.assignedChannels = []
+  }
+
+  /**
+   * Executes second screen request
+   *
+   * @param {string} input
+   * @param {string} nick
+   * @returns {PromiseLike<string>}
+   *
+   * @memberOf DCTVApi
+   */
+  secondScreenRequest (input, nick) {
+    return new Promise((resolve, reject) => {
+      if (!this.secsPro) {
+        resolve('Missing SecsPro value')
+        return
+      }
+      if (!input.startsWith('http') && SECS_COMMANDS.indexOf(input) === -1) {
+        resolve('INVALID SELECTION')
+        return
+      }
+      let url = `${SECOND_SCREEN_URL}?url=${input}&user=${nick}&pro=${this.secsPro}`
+      request(url, (error, response, body) => {
+        if (error) {
+          reject(error)
+          return
+        }
+        resolve(`Command Sent. Response: ${body}`)
+      })
+    })
+  }
+
+  /**
+   * Gets assigned channels list from dctv api
+   *
+   * @returns {PromiseLike<Array<Object>>}
+   *
+   * @memberOf DCTVApi
+   */
+  getAssignedChannels () {
+    return new Promise((resolve, reject) => {
+      request(CHANNELS_URL, (error, response, body) => {
+        if (error) {
+          reject(error)
+          return
+        }
+        resolve(JSON.parse(body).assignedchannels)
+      })
+    })
+  }
+
+  /**
+   * Filters assigned channels against `oldChannels` to return only new assigned channels
+   *
+   * @param {Array<Object>} oldChannels
+   * @returns {Array<Object>}
+   *
+   * @memberOf DCTVApi
+   */
+  getNewChannels (oldChannels) {
+    return this.assignedChannels.filter(liveCh => {
+      let res = oldChannels.find(oldCh => {
+        return (liveCh.streamid === oldCh.streamid && liveCh.yt_upcoming === oldCh.yt_upcoming)
+      })
+      return typeof res === 'undefined'
+    })
+  }
+
+  /**
+   * Gets stream currently assigned to channel 1
+   *
+   * @returns {Object}
+   *
+   * @memberOf DCTVApi
+   */
+  getOfficialLive () {
+    let officialLive = null
+    for (let i = 0; i < this.assignedChannels.length; i++) {
+      if (this.assignedChannels[i].channel === 1) {
+        officialLive = this.assignedChannels[i]
+      }
+    }
+    return officialLive
+  }
+
+  /**
+   * Updates instance assigned channels list and emits events as needed
+   *
+   * @memberOf DCTVApi
+   */
+  async updateAssignedChannels () {
+    let oldChannels = this.assignedChannels
+    let wasOfficialLive = Boolean(this.getOfficialLive())
+
+    this.assignedChannels = await this.getAssignedChannels()
+
+    let officialLive = this.getOfficialLive()
+    if (wasOfficialLive !== Boolean(officialLive)) {
+      this.emit('officialLive', officialLive)
+    }
+
+    let newChannels = this.getNewChannels(oldChannels)
+    if (newChannels && newChannels.length > 0) {
+      this.emit('newChannels', newChannels)
+    }
+  }
+
+  /**
+   * Starts a timer to update assigned channels list on
+   *
+   * @memberOf DCTVApi
+   */
+  start () {
+    setInterval(() => { this.updateAssignedChannels() }, UPDATE_ASSIGNED_CHANNELS_SPEED)
+  }
+}

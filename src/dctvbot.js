@@ -1,287 +1,241 @@
-import irc from 'irc';
-import colors from 'irc-colors';
-import moment from 'moment-timezone';
-import Cleverbot from 'cleverbot-node';
+import irc from 'irc'
+import colors from 'irc-colors'
+import Cleverbot from 'cleverbot-node'
 
-import googleCalendar from './services/google-calendar';
-import dctvApi from './services/dctv-api';
+import NextCommand from './commands/next-command'
+import NowCommand from './commands/now-command'
+import ScheduleCommand from './commands/schedule-command'
+import SecsCommand from './commands/secs-command'
 
-import config from './config/config';
+const ADMIN_MODES = ['~', '@', '%', '+']
+const BOT_NICK = 'dctvbot'
+const CMD_PREFIX = '!'
+const DEFAULT_TOPIC_FIRST_ITEM = ' <>'
+const IRC_SERVER = 'irc.chatrealm.net'
+const TOPIC_SEPARATOR = ' | '
 
-let currentDctvChannels = '-1';
-let assignedDctvChannels = [];
-let currentTopic = '';
-let officialLive = false;
-let ircChannelsNicks = [];
-let cleverbot = new Cleverbot();
+/**
+ * DCTVBot Class
+ *
+ * @export
+ * @class DCTVBot
+ */
+export default class DCTVBot {
+  /**
+   * Creates an instance of DCTVBot
+   *
+   * @param {Array<Object>} [ircChannelNames=[]]
+   * @param {string} [ircPassword='']
+   * @param {DCTVApi} [dctvApi=null]
+   * @param {GoogleCalendar} [gcal=null]
+   *
+   * @memberOf DCTVBot
+   */
+  constructor (ircChannelNames = [], ircPassword = '', dctvApi = null, gcal = null) {
+    this.ircChannelNames = ircChannelNames
+    this.ircPassword = ircPassword
+    this.dctvApi = dctvApi
 
-// IRC Client
-let client = new irc.Client(config.server.address, config.bot.nick, {
-    userName: config.bot.userName,
-    realName: config.bot.realName,
-    port: config.server.port,
-    // debug: true,
-    channels: config.server.channels
-});
+    this.ircCommands = []
+    if (this.dctvApi) {
+      this.ircCommands.push(new NowCommand(this.dctvApi))
+      if (this.dctvApi.secsPro) {
+        this.ircCommands.push(new SecsCommand(this.dctvApi))
+      }
+    }
+    if (gcal) {
+      this.ircCommands.push(
+        new NextCommand(gcal),
+        new ScheduleCommand(gcal)
+      )
+    }
 
-/** ***************
- * Event Listeners
- ******************/
+    this.ircClient = new irc.Client(IRC_SERVER, BOT_NICK, {
+      autoConnect: false,
+      debug: false
+    })
 
-// Listen for messages in channels
-client.addListener('message#', (nick, to, text, message) => {
-    if (text.startsWith(config.prefix)) {
-        processCommand(text.slice(1).trim(), to, nick);
-    } else if (text.startsWith(config.bot.nick)) {
+    this.cleverbot = new Cleverbot()
+    this.officialLive = false
+  }
+
+  /**
+   * Registers listeners, starts timed components and irc connection
+   *
+   * @memberOf DCTVBot
+   */
+  start () {
+    this.ircClient.on('registered', () => {
+      if (this.ircPassword) {
+        this.ircClient.say('NickServ', `IDENTIFY ${this.ircPassword}`)
+      }
+
+      let joinedIrcChannels = 0
+      this.ircChannelNames.forEach(channelName => {
+        this.ircClient.join(channelName, (nick, raw) => {
+          joinedIrcChannels++
+          if (joinedIrcChannels === this.ircChannelNames.length) {
+            this.ircCommands.forEach(command => {
+              this.addCommandListener(command)
+            })
+
+            if (this.dctvApi) {
+              this.dctvApi.on('officialLive', officialLiveChannel => {
+                let wasOfficialLive = this.officialLive
+                this.officialLive = Boolean(officialLiveChannel)
+                let newText = DEFAULT_TOPIC_FIRST_ITEM
+                if (!wasOfficialLive && this.officialLive) {
+                  newText = this.formatAnnouncementMessage(officialLiveChannel)
+                }
+                for (let ircChannel in this.ircClient.chans) {
+                  let topic = this.ircClient.chans[ircChannel].topic
+                  let pipeArray = topic.split(TOPIC_SEPARATOR)
+                  pipeArray[0] = newText
+                  this.ircClient.send('TOPIC', ircChannel, pipeArray.join(TOPIC_SEPARATOR))
+                }
+              })
+
+              this.dctvApi.on('newChannels', newChannels => {
+                if (!this.officialLive) {
+                  newChannels.forEach(newChannel => {
+                    let message = this.formatAnnouncementMessage(newChannel)
+                    for (let ircChannel in this.ircClient.chans) {
+                      this.reply(ircChannel, message, false)
+                    }
+                  }, this)
+                }
+              })
+
+              this.dctvApi.start()
+            }
+          }
+        })
+      }, this)
+    })
+
+    this.ircClient.addListener('message#', (nick, to, text, raw) => {
+      if (text.startsWith(CMD_PREFIX)) {
+        this.fireCommandEvent(text.slice(1).trim(), nick, to)
+      } else if (text.startsWith(this.ircClient.nick)) {
         Cleverbot.prepare(() => {
-            let msg = text.replace(new RegExp(`${nick}[:\,]?\s?`, 'g'), '');
-            cleverbot.write(msg, response => {
-                client.say(to, `${nick}: ${response.message}`);
-            });
-        });
+          let regex = new RegExp(`${this.ircClient.nick}[:,]?`, 'g')
+          let msg = text.replace(regex, '').trim()
+
+          this.cleverbot.write(msg, response => {
+            this.reply(to, `${nick}: ${response.message}`, false)
+          })
+        })
+      } else {
+        // console.log(raw)
+      }
+    })
+
+    this.ircClient.addListener('pm', (nick, text, raw) => {
+      this.fireCommandEvent(text.trim(), nick, null)
+    })
+
+    this.ircClient.connect()
+  }
+
+  /**
+   * Formats announcement message with irc colors
+   *
+   * @param {Object} channel
+   * @returns {string}
+   *
+   * @memberOf DCTVBot
+   */
+  formatAnnouncementMessage (channel) {
+    let message = channel.yt_upcoming
+                ? colors.black.bgyellow(' NEXT ')
+                : colors.white.bgred(' LIVE ')
+    message += ` ${channel.friendlyalias}`
+    if (channel.twitch_yt_description) {
+      message += ` - ${channel.twitch_yt_description}`
     }
-});
+    return `${message} - ${channel.urltoplayer}`
+  }
 
-// Listen for PMs
-client.addListener('pm', (nick, text, message) => {
-    processCommand(text.trim(), null, nick);
-});
-
-// Listen for topic changes
-client.addListener('topic', (channel, topic, nick, message) => {
-    currentTopic = topic;
-});
-
-// Listen for name list events
-client.addListener('names', (channel, nicks) => {
-    ircChannelsNicks[channel] = nicks;
-});
-
-/** ***********
- * Timed Loops
- **************/
-
-// Start live channel checking process
-(function liveUpdate() {
-    dctvApi.updateLiveChannels(assigned => {
-        assignedDctvChannels = assigned;
-    });
-    setTimeout(liveUpdate, 3 * 1000);
-})();
-
-// Listen for connection
-client.addListener('registered', message => {
-    if (config.bot.password && config.bot.password !== '') {
-        client.say('NickServ', `IDENTIFY ${config.bot.password}`);
-    }
-
-    // Ask for names update for all channels
-    (function requestChannelNames() {
-        for (let i = 0; i < config.server.channels.length; i++) {
-            client.send('NAMES', config.server.channels[i]);
-        }
-        setTimeout(requestChannelNames, 60 * 1000);
-    })();
-
-    // Scans DCTV for channel updates every 3 sec to relay to the IRC channel
-    (function checkForLiveAnnouncements() {
-        let firstRun = false;
-
-        if (currentDctvChannels === '-1') {
-            firstRun = true;
-            currentDctvChannels = [];
-        }
-
-        let prevDctvChannels = currentDctvChannels;
-        currentDctvChannels = [];
-        for (let i = 0; i < assignedDctvChannels.length; i++) {
-            let ch = assignedDctvChannels[i];
-            if (ch.nowonline === 'yes' || ch.yt_upcoming) {
-                currentDctvChannels.push(ch);
-            }
-        }
-
-        if (!firstRun) {
-            let wasOfficialLive = officialLive;
-            officialLive = false;
-            for (let i = 0; i < currentDctvChannels.length; i++) {
-                if (currentDctvChannels[i].channel === 1) {
-                    officialLive = true;
-                }
-            }
-
-            if (wasOfficialLive && !officialLive) { // && !currentTopic.startsWith(' <>')
-                updateTopic(' <>', config.server.channels[0]);
-            }
-
-            let newLive = currentDctvChannels.find(liveCh => {
-                let res = prevDctvChannels.find(prevCh => {
-                    return (liveCh.streamid === prevCh.streamid &&
-                        liveCh.yt_upcoming === prevCh.yt_upcoming);
-                });
-                return typeof res === 'undefined';
-            });
-
-            if (typeof newLive !== 'undefined') {
-                announceNewLiveChannel(newLive, config.server.channels[0]);
-            }
-        }
-
-        setTimeout(checkForLiveAnnouncements, 3 * 1000);
-    })();
-});
-
-/** ***************
- * Other Functions
- ******************/
-
-/**
- * Checks for 'admin' privelage, hard coded to voiced or better for now
- * @param {string} nick - nick of requestor
- * @param {string} channel - channel permissions were requested in
- * @return {boolean} - do they have the power?
- */
-function hasThePower(nick, channel) {
-    const adminModes = ['~', '@', '%', '+'];
-    let userModes = ircChannelsNicks[channel][nick];
-
-    for (let i = 0; i < adminModes.length; i++) {
-        if (userModes.indexOf(adminModes[i]) > -1) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * Processes incoming commands
- * @param {string} cmd - command text
- * @param {string} channel - channel the command was sent to (null if pm)
- * @param {string} nick - nick that sent command
- */
-function processCommand(cmd, channel, nick) {
-    let cmdParts = cmd.split(' ');
-    if (cmdParts.length > 1) {
-        cmd = cmdParts[0];
-    }
-    let wantLoud = /\-?v/g.test(cmdParts[1]);
-
-    let replyMsg = '';
-
-    switch (cmd) {
-        case 'now':
-            replyMsg = 'Nothing is live';
-            if (assignedDctvChannels.length > 0) {
-                replyMsg = '';
-                for (var i = 0; i < assignedDctvChannels.length; i++) {
-                    let ch = assignedDctvChannels[i];
-                    replyMsg += `\nChannel ${ch.channel}: ${ch.friendlyalias} - ${ch.urltoplayer}`;
-                }
-            }
-            replyToCommand(replyMsg, channel, nick, wantLoud);
-            break;
-        case 'next':
-            googleCalendar.getFromConfig(events => {
-                let event = events[0];
-                let i = 0;
-                let replyMsg;
-                if (event.start === null) {
-                    replyMsg = "Sorry, I can't find the next scheduled show for some reason";
-                } else {
-                    while (moment(event.start.dateTime).isBefore()) {
-                        i++;
-                        event = events[i];
-                    }
-                    replyMsg = `${event.summary} will be on in about ${moment().to(event.start.dateTime, true)}`;
-                }
-                replyToCommand(replyMsg, channel, nick, wantLoud, true);
-            });
-            break;
-        case 'schedule':
-            googleCalendar.getFromConfig(events => {
-                let replyMsg = 'Scheduled Shows for the Next 24 Hours:';
-                events = events.filter(event => {
-                    let oneDay = new Date();
-                    oneDay.setDate(oneDay.getDate() + 1);
-                    return moment(event.start.dateTime).isBefore(oneDay.toISOString());
-                });
-                if (events.length > 0) {
-                    for (let i = 0; i < events.length; i++) {
-                        let showDate = moment(events[i].start.dateTime).tz(moment.tz.guess());
-                        let timeIsLink = `http://time.is/${showDate.format('HHmm_DD_MMM_YYYY_zz')}`;
-                        let timeWords = moment().to(events[i].start.dateTime, true);
-                        replyMsg += `\n${timeWords} - ${events[i].summary} - ${timeIsLink}`;
-                    }
-                } else {
-                    replyMsg = 'No shows are scheduled for the next 24 hours';
-                }
-                replyToCommand(replyMsg, channel, nick, wantLoud);
-            });
-            break;
-        case 'secs':
-            if (hasThePower(nick, channel)) {
-                if (typeof cmdParts[1] !== 'undefined') {
-                    dctvApi.secondScreenRequest(cmdParts[1], nick, response => {
-                        replyToCommand(response, channel, nick);
-                    });
-                }
-            } else {
-                replyToCommand('You have insufficient priveleges.', channel, nick);
-            }
-            break;
-        default:
-            // console.log(`'${cmd}' used but not recognized as a command`);
-    }
-}
-
-/**
- * Appropriately replies to a command
- * @param {string} msg - message to send
- * @param {string} channel - channel command was in
- * @param {string} nick - nick of user that sent command
- * @param {boolean} requestLoud - if user wants to not use notice in channel
- * @param {boolean} forceLoud - force output to channel
- */
-function replyToCommand(msg, channel, nick, requestLoud = false, forceLoud = false) {
-    if (channel === null) {
-        client.say(nick, msg);
-    } else if (forceLoud || (requestLoud && hasThePower(nick, channel))) {
-        client.say(channel, msg);
+  /**
+   * Replies to `target` with `message`
+   *
+   * @param {string} target
+   * @param {string} message
+   * @param {boolean} [notice=true]
+   *
+   * @memberOf DCTVBot
+   */
+  reply (target, message, notice = true) {
+    if (notice) {
+      this.ircClient.notice(target, message)
     } else {
-        client.notice(nick, msg);
+      this.ircClient.say(target, message)
     }
-}
+  }
 
-/**
- * Makes channel announcement
- * @param {Channel} ch - channel to announce
- * @param {string} ircChannel - irc channel to make announcement in
- */
-function announceNewLiveChannel(ch, ircChannel) {
-    let msg = ch.yt_upcoming ? colors.black.bgyellow(' NEXT ') : colors.white.bgred(' LIVE ');
-    msg += ` ${ch.friendlyalias}`;
+  /**
+   * Adds listener for `command`
+   *
+   * @param {Object} command
+   *
+   * @memberOf DCTVBot
+   */
+  addCommandListener (command) {
+    this.ircClient.on(`${command.word}Command`, (nick, channel, args) => {
+      let hasThePower = false
+      if (channel) {
+        let userModes = this.ircClient.chans[channel].users[nick]
+        ADMIN_MODES.forEach(mode => {
+          if (userModes.indexOf(mode) > -1) {
+            hasThePower = true
+          }
+        })
+      } else if (!command.needAuthorization) {
+        hasThePower = true
+      }
 
-    if (ch.twitch_yt_description !== '') {
-        msg += ` - ${ch.twitch_yt_description}`;
+      if (command.needAuthorization && !hasThePower) {
+        this.reply(nick, `I'm sorry, ${nick}. I'm afraid I can't do that.`, Boolean(channel))
+        return
+      }
+
+      let notice = Boolean(channel)
+      let target = nick
+      switch (command.outputTo) {
+        case 'authorize':
+          if (args.length > 0 && args[0] === 'v' && hasThePower) {
+            notice = false
+            target = channel || nick
+            args.shift()
+          }
+          break
+        case 'channel':
+          notice = false
+          target = channel || nick
+          break
+        default:
+          notice = Boolean(channel)
+      }
+      command.getResponse(args, nick).then(response => {
+        this.reply(target, response, notice)
+      })
+    })
+  }
+
+  /**
+   * Emits event for `command` sent by `nick` in `channel`
+   *
+   * @param {string} command
+   * @param {string} nick
+   * @param {string} channel
+   *
+   * @memberOf DCTVBot
+   */
+  fireCommandEvent (command, nick, channel) {
+    let commandParts = command.split(' ')
+    if (commandParts.length > 1) {
+      command = commandParts.shift()
     }
-
-    msg += ` - ${ch.urltoplayer}`;
-
-    if (ch.channel === 1) {
-        updateTopic(msg, ircChannel);
-    } else if (!officialLive) {
-        client.say(ircChannel, msg);
-    }
-}
-
-/**
- * Updates first portion of topic with new info
- * @param {string} newText - New text for first section of topic
- * @param {string} ircChannel - irc channel to update topic in
- */
-function updateTopic(newText, ircChannel) {
-    const separator = ' | ';
-    let topicArray = currentTopic.split(separator);
-    topicArray[0] = newText;
-    client.send('TOPIC', ircChannel, topicArray.join(separator));
+    this.ircClient.emit(`${command}Command`, nick, channel, commandParts)
+  }
 }

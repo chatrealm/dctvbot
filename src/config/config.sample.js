@@ -1,30 +1,11 @@
 export default {
-    // Commands config
-    prefix: '!',
+  channels: ['#channel_one', '#channel_two'],
+  password: '',
 
-    // Bot config
-    bot: {
-        nick: '',
-        userName: '',
-        realName: '',
-        password: ''
-    },
+  dctvApiSecsPro: '',
 
-    // Server config
-    server: {
-        address: 'irc.server.com',
-        port: 6667,
-        channels: ['#channel']
-    },
-
-    // DCTV config
-    dctv: {
-        apiSecsPro: ''
-    },
-
-    // Google Calendar config
-    google: {
-        apiKey: '',
-        calendarId: ''
-    }
-};
+  google: {
+    apiKey: '',
+    calendarId: ''
+  }
+}
