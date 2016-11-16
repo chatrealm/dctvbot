@@ -8,7 +8,7 @@ import ScheduleCommand from './commands/schedule-command'
 import SecsCommand from './commands/secs-command'
 
 const ADMIN_MODES = ['~', '@', '%', '+']
-const BOT_NICK = 'testbot'
+const BOT_NICK = 'dctvbot'
 const CMD_PREFIX = '!'
 const DEFAULT_TOPIC_FIRST_ITEM = ' <>'
 const IRC_SERVER = 'irc.chatrealm.net'
