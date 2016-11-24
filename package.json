@@ -4,8 +4,9 @@
   "description": "IRC bot for diamondclub.tv chat",
   "main": "main.js",
   "scripts": {
-    "build": "babel src -d bin",
-    "start": "node bin/main.js"
+    "clean": "rm -rf bin",
+    "build": "yarn run clean && babel src --out-dir bin",
+    "start": "yarn run build && node bin/main.js"
   },
   "repository": {
     "type": "git",
