@@ -120,12 +120,14 @@ export default class DCTVApi extends EventEmitter {
    */
   async updateAssignedChannels () {
     let oldChannels = this.assignedChannels
-    let wasOfficialLive = Boolean(this.getOfficialLive())
+    let wasOfficialLive = this.getOfficialLive()
 
     this.assignedChannels = await this.getAssignedChannels()
 
     let officialLive = this.getOfficialLive()
-    if (wasOfficialLive !== Boolean(officialLive)) {
+
+    if ((Boolean(wasOfficialLive) !== Boolean(officialLive)) ||
+      ((wasOfficialLive && officialLive) && (wasOfficialLive.yt_upcoming !== officialLive.yt_upcoming))) {
       this.emit('officialLive', officialLive)
     }
 
