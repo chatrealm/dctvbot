@@ -84,7 +84,7 @@ export default class DCTVBot {
                 let wasOfficialLive = this.officialLive
                 this.officialLive = Boolean(officialLiveChannel)
                 let newText = DEFAULT_TOPIC_FIRST_ITEM
-                if (!wasOfficialLive && this.officialLive) {
+                if ((!wasOfficialLive && this.officialLive) || (officialLiveChannel && !officialLiveChannel.yt_upcoming)) {
                   newText = this.formatAnnouncementMessage(officialLiveChannel)
                 }
                 for (let ircChannel in this.ircClient.chans) {
