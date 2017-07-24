@@ -12,4 +12,4 @@ RUN npm install
 # Bundle app source
 COPY . /usr/src/app
 
-CMD yarn start
+CMD npm start
