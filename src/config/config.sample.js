@@ -7,5 +7,7 @@ export default {
   google: {
     apiKey: '',
     calendarId: ''
-  }
+  },
+
+  machineLearning: true
 }

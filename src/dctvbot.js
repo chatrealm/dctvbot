@@ -1,6 +1,6 @@
 import irc from 'irc'
 import colors from 'irc-colors'
-import Cleverbot from 'cleverbot-node'
+import Ector from 'ector'
 
 import NextCommand from './commands/next-command'
 import NowCommand from './commands/now-command'
@@ -8,7 +8,7 @@ import ScheduleCommand from './commands/schedule-command'
 import SecsCommand from './commands/secs-command'
 
 const ADMIN_MODES = ['~', '@', '%', '+']
-const BOT_NICK = 'dctvbot'
+const BOT_NICK = 'notdctvbot'
 const CMD_PREFIX = '!'
 const DEFAULT_TOPIC_FIRST_ITEM = ' <>'
 const IRC_SERVER = 'irc.chatrealm.net'
@@ -28,10 +28,11 @@ export default class DCTVBot {
    * @param {string} [ircPassword='']
    * @param {DCTVApi} [dctvApi=null]
    * @param {GoogleCalendar} [gcal=null]
+   * @param {boolean} [machineLearning=false]
    *
    * @memberOf DCTVBot
    */
-  constructor (ircChannelNames = [], ircPassword = '', dctvApi = null, gcal = null) {
+  constructor (ircChannelNames = [], ircPassword = '', dctvApi = null, gcal = null, machineLearning = false) {
     this.ircChannelNames = ircChannelNames
     this.ircPassword = ircPassword
     this.dctvApi = dctvApi
@@ -55,7 +56,12 @@ export default class DCTVBot {
       debug: false
     })
 
-    this.cleverbot = new Cleverbot()
+    // handle errors so no crashing
+    this.ircClient.on('error', err => console.error(err))
+
+    if (machineLearning) {
+      this.ector = new Ector()
+    }
     this.officialLive = false
   }
 
@@ -118,17 +124,16 @@ export default class DCTVBot {
     this.ircClient.addListener('message#', (nick, to, text, raw) => {
       if (text.startsWith(CMD_PREFIX)) {
         this.fireCommandEvent(text.slice(1).trim(), nick, to)
-      } else if (text.startsWith(this.ircClient.nick)) {
-        Cleverbot.prepare(() => {
-          let regex = new RegExp(`${this.ircClient.nick}[:,]?`, 'g')
-          let msg = text.replace(regex, '').trim()
+      } else if (text.startsWith(this.ircClient.nick) && this.ector) {
+        let regex = new RegExp(`${this.ircClient.nick}[:,]?`, 'g')
+        let msg = text.replace(regex, '').trim()
 
-          this.cleverbot.write(msg, response => {
-            this.reply(to, `${nick}: ${response.message}`, false)
-          })
-        })
-      } else {
-        // console.log(raw)
+        this.ector.addEntry(msg)
+        const {sentence} = this.ector.generateResponse()
+
+        this.reply(to, `${nick}: ${sentence}`, false)
+      } else if(this.ector) {
+        this.ector.addEntry(text)
       }
     })
 
