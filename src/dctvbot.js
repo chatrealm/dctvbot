@@ -74,44 +74,46 @@ export default class DCTVBot {
       this.ircChannelNames.forEach(channelName => {
         this.ircClient.join(channelName, (nick, raw) => {
           joinedIrcChannels++
-          if (joinedIrcChannels === this.ircChannelNames.length) {
-            this.ircCommands.forEach(command => {
-              this.addCommandListener(command)
-            })
-
-            if (this.dctvApi) {
-              this.dctvApi.on('officialLive', officialLiveChannel => {
-                let wasOfficialLive = this.officialLive
-                this.officialLive = Boolean(officialLiveChannel)
-                let newText = DEFAULT_TOPIC_FIRST_ITEM
-                if ((!wasOfficialLive && this.officialLive) || (officialLiveChannel && !officialLiveChannel.yt_upcoming)) {
-                  newText = this.formatAnnouncementMessage(officialLiveChannel)
-                }
-                for (let ircChannel in this.ircClient.chans) {
-                  let topic = this.ircClient.chans[ircChannel].topic
-                  let pipeArray = topic.split(TOPIC_SEPARATOR)
-                  pipeArray[0] = newText
-                  this.ircClient.send('TOPIC', ircChannel, pipeArray.join(TOPIC_SEPARATOR))
-                }
-              })
-
-              this.dctvApi.on('newChannels', newChannels => {
-                if (!this.officialLive) {
-                  newChannels.forEach(newChannel => {
-                    let message = this.formatAnnouncementMessage(newChannel)
-                    for (let ircChannel in this.ircClient.chans) {
-                      this.reply(ircChannel, message, false)
-                    }
-                  }, this)
-                }
-              })
-
-              this.dctvApi.start()
-            }
-          }
         })
       }, this)
     })
+
+    this.ircCommands.forEach(command => {
+      this.addCommandListener(command)
+    })
+
+    if (this.dctvApi) {
+      this.dctvApi.on('officialLive', officialLiveChannel => {
+        let wasOfficialLive = this.officialLive
+        this.officialLive = Boolean(officialLiveChannel)
+        let newText = DEFAULT_TOPIC_FIRST_ITEM
+        if ((!wasOfficialLive && this.officialLive) || (officialLiveChannel && !officialLiveChannel.yt_upcoming)) {
+          newText = this.formatAnnouncementMessage(officialLiveChannel)
+        }
+        for (let ircChannel in this.ircClient.chans) {
+          let topic = this.ircClient.chans[ircChannel].topic
+          if (!topic) {
+            continue;
+          }
+          let pipeArray = topic.split(TOPIC_SEPARATOR)
+          pipeArray[0] = newText
+          this.ircClient.send('TOPIC', ircChannel, pipeArray.join(TOPIC_SEPARATOR))
+        }
+      })
+
+      this.dctvApi.on('newChannels', newChannels => {
+        if (!this.officialLive) {
+          newChannels.forEach(newChannel => {
+            let message = this.formatAnnouncementMessage(newChannel)
+            for (let ircChannel in this.ircClient.chans) {
+              this.reply(ircChannel, message, false)
+            }
+          }, this)
+        }
+      })
+
+      this.dctvApi.start()
+    }
 
     this.ircClient.addListener('message#', (nick, to, text, raw) => {
       if (text.startsWith(CMD_PREFIX)) {
